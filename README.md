@@ -69,3 +69,31 @@ ADD CONSTRAINT unique_market_outcome_entry UNIQUE (market_entry_id, outcome_name
 ALTER TABLE market_outcomes 
 ADD CONSTRAINT unique_market_outcome_market UNIQUE (market_id, market_entry_id, outcome_name);
 ```
+
+### Fixtures Source Map
+```sql
+CREATE TABLE source_matches (
+  id SERIAL PRIMARY KEY,
+  source_fixture_id VARCHAR(50),
+  source_competition_id VARCHAR(50),
+  source_event_name VARCHAR(255),
+  fixture_id INT REFERENCES fixtures(id) UNIQUE,
+  competition_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+```
+
+### Leagues Source Map
+```sql
+CREATE TABLE source_league_matches (
+  id SERIAL PRIMARY KEY,
+  source_league_id VARCHAR(50) UNIQUE,
+  source_league_name VARCHAR(255),
+  source_country_name VARCHAR(255),
+  league_id INT REFERENCES leagues(id) UNIQUE,
+  country_code TEXT REFERENCES countries(code),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
