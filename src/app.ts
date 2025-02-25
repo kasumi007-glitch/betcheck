@@ -9,6 +9,7 @@ import { openWebsiteWithProxy } from "./utils/puppeteer-proxy"; // ✅ Import Pu
 import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchCompetitionService from "./services/premierbet/FetchCompetitionService";
 import FetchMatchLeagueService from "./services/premierbet/FetchMatchLeagueService";
+import AddPremierBetOddService from "./services/premierbet/AddPremierBetOddService";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const processData = async () => {
   // await FetchPremierBetOddService.syncOdds();
   // await FetchCompetitionService.syncCompetitions();
   // await FetchMatchLeagueService.syncLeagues();
+  // await AddPremierBetOddService.syncOdds();
   // ✅ Open Website with Proxy (Puppeteer)
   // await openWebsiteWithProxy();
 };

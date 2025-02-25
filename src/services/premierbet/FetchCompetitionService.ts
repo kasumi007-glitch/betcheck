@@ -55,6 +55,12 @@ class FetchCompetitionService {
 
     if (eventDate >= today) {
       let fixture = await db("fixtures")
+        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+        .select(
+            "fixtures.*",
+            "leagues.id as parent_league_id",
+            "leagues.name as league_name"
+          )
         .whereRaw(
           `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
           [`%${homeTeam}%`, `%${awayTeam}%`]
@@ -67,6 +73,12 @@ class FetchCompetitionService {
 
         // Fuzzy match with similarity check
         fixture = await db("fixtures")
+        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+        .select(
+            "fixtures.*",
+            "leagues.id as parent_league_id",
+            "leagues.name as league_name"
+          )
           .whereRaw(
             `SIMILARITY(LOWER(home_team_name), LOWER(?)) > 0.6 AND SIMILARITY(LOWER(away_team_name), LOWER(?)) > 0.6`,
             [homeTeam, awayTeam]
@@ -84,7 +96,7 @@ class FetchCompetitionService {
             source_competition_id: competitionId,
             source_event_name: `${homeTeam} vs ${awayTeam}`,
             fixture_id: fixture.id,
-            competition_id: fixture.league_id,
+            competition_id: fixture.parent_league_id,
           })
           .onConflict("fixture_id")
           .merge();
