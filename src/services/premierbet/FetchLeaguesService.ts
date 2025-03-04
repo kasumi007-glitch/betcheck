@@ -1,17 +1,25 @@
 import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
+import { leagueNameMappings } from '../leagueNameMappings';
 
-class FetchMatchLeagueService {
+
+class FetchLeaguesService {
   private readonly apiUrl =
     "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
 
-  // Dictionary for name mappings to handle variations
-  // can be done based on countries ..add new table for alias name of countries and fetch from there ..and also can be done based on source incase
-  private readonly nameMappings: Record<string, string> = {
-    "LaLiga": "La Liga",
-    "Taca de Portugal": "Taça de Portugal",
-    "U23 Liga Revelacao" : "Liga Revelação U23"
-  };
+  private readonly sourceName = "PremierBet";
+  private sourceId!: number;
+
+  async init() {
+    const source = await db("sources").where("name", this.sourceName).first();
+    if (!source) {
+      [this.sourceId] = await db("sources")
+        .insert({ name: this.sourceName })
+        .returning("id");
+    } else {
+      this.sourceId = source.id;
+    }
+  }
 
   async syncLeagues() {
     console.log("🚀 Fetching leagues data...");
@@ -40,7 +48,7 @@ class FetchMatchLeagueService {
 
     // Apply name mappings if available
     const mappedLeagueName =
-      this.nameMappings[sourceLeagueName] || sourceLeagueName;
+      leagueNameMappings[sourceLeagueName] || sourceLeagueName;
 
     const country = await db("countries")
       .where("name", sourceCountryName)
@@ -61,18 +69,29 @@ class FetchMatchLeagueService {
         `✅ Matched league: ${mappedLeagueName} in ${sourceCountryName}`
       );
 
-      await db("source_league_matches")
+      const result = await db("source_league_matches")
         .insert({
           source_league_id: sourceLeagueId,
           source_league_name: sourceLeagueName,
           source_country_name: sourceCountryName,
           league_id: league.id,
           country_code: country.code,
+          source_id: this.sourceId,
         })
-        .onConflict("league_id")
-        .merge();
+        .onConflict(["league_id", "source_id"])
+        .ignore() // This prevents duplicate inserts
+        .returning("*"); // Returns the inserted row(s) if successful
 
-      console.log(`✅ Stored source league match for league ID: ${league.id}`);
+      // Check if insert was successful or ignored
+      if (result.length > 0) {
+        console.log(
+          `✅ Inserted new league: ${sourceLeagueName} (League ID: ${league.id}, Source: ${this.sourceId})`
+        );
+      } else {
+        console.warn(
+          `⚠️ Ignored duplicate league: ${sourceLeagueName} (League ID: ${league.id}, Source: ${this.sourceId})`
+        );
+      }
     } else {
       console.warn(
         `⚠️ No match found for league: ${sourceLeagueName} in ${sourceCountryName}`
@@ -81,4 +100,4 @@ class FetchMatchLeagueService {
   }
 }
 
-export default new FetchMatchLeagueService();
+export default new FetchLeaguesService();

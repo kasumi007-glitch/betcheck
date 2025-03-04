@@ -7,9 +7,13 @@ import FetchOddService from "./services/fetchOddService ";
 import FetchMatchService from "./services/fetchMatchService";
 import { openWebsiteWithProxy } from "./utils/puppeteer-proxy"; // ✅ Import Puppeteer Function
 import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
-import FetchCompetitionService from "./services/premierbet/FetchCompetitionService";
-import FetchMatchLeagueService from "./services/premierbet/FetchMatchLeagueService";
+import FetchPremierBetFixtureService from "./services/premierbet/FetchFixturesService";
+import FetchPremierBetLeagueService from "./services/premierbet/FetchLeaguesService";
 import AddPremierBetOddService from "./services/premierbet/AddPremierBetOddService";
+import FetchMegaPariLeagueService from "./services/mega-pari/FetchMegaPariLeagueService";
+import fetchMegaPariFixturesService from "./services/mega-pari/FetchMegaPariFixturesService";
+import AddMegaPariOddService from "./services/mega-pari/AddMegaPariOddServiceV2";
+import fetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService";
 
 dotenv.config();
 
@@ -21,11 +25,31 @@ const processData = async () => {
   // await FetchGroupService.processData();
   // await FetchOddService.processOddsData();
   // await FetchMatchService.processData();
+
   //PremierBet
   // await FetchPremierBetOddService.syncOdds();
-  // await FetchCompetitionService.syncCompetitions();
-  // await FetchMatchLeagueService.syncLeagues();
-  // await AddPremierBetOddService.syncOdds();
+
+  // await FetchPremierBetLeagueService.init();
+  // await FetchPremierBetLeagueService.syncLeagues();
+
+  // await FetchPremierBetFixtureService.init();
+  // await FetchPremierBetFixtureService.syncFixtures();
+
+  await AddPremierBetOddService.init();
+  await AddPremierBetOddService.syncOdds();
+
+  //MegaPari
+  // await FetchMegaPariLeagueService.init();
+  // await FetchMegaPariLeagueService.syncLeagues();
+
+  // await fetchMegaPariFixturesService.initialize();
+  // await fetchMegaPariFixturesService.syncFixtures();
+
+  // await fetchMegaPariFixturesWithOddsService.initialize();
+  // await fetchMegaPariFixturesWithOddsService.syncFixtures();
+
+  // await AddMegaPariOddService.initialize();
+  // await AddMegaPariOddService.syncOdds();
   // ✅ Open Website with Proxy (Puppeteer)
   // await openWebsiteWithProxy();
 };

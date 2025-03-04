@@ -1,9 +1,39 @@
 import { db } from "../../infrastructure/database/Database";
+import Market from "../../models/Market";
+import MarketType from "../../models/MarketType";
 import { fetchFromApi } from "../../utils/ApiClient";
+import { MarketObj } from "../interfaces/MarketObj";
 
 class AddPremierBetOddService {
   private readonly apiUrlTemplate =
     "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
+
+  private readonly sourceName = "PremierBet";
+  private sourceId!: number;
+
+  // 1) Market ID → Market Name
+  private readonly marketMapping: Record<number, string> = {
+    3: "1X2",
+    29: "Over / Under",
+    7: "Both Teams to Score",
+  };
+
+  private dbMarkets: Market[] = [];
+  private dbMarketTypes: MarketType[] = [];
+
+  async init() {
+    const source = await db("sources").where("name", this.sourceName).first();
+    if (!source) {
+      [this.sourceId] = await db("sources")
+        .insert({ name: this.sourceName })
+        .returning("id");
+    } else {
+      this.sourceId = source.id;
+    }
+
+    this.dbMarkets = await this.getMarkets();
+    this.dbMarketTypes = await this.getMarketTypes();
+  }
 
   async syncOdds() {
     console.log("🚀 Fetching odds data...");
@@ -15,13 +45,7 @@ class AddPremierBetOddService {
     // Fetch all fixtures with date >= current datetime
     const fixtures = await db("source_matches")
       .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
-      .join(
-        "source_league_matches",
-        "source_matches.competition_id",
-        "=",
-        "source_league_matches.league_id"
-      )
-      .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+      .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
       .select(
         "source_matches.source_fixture_id",
         "fixtures.id",
@@ -29,6 +53,7 @@ class AddPremierBetOddService {
         "source_matches.competition_id"
       )
       .where("fixtures.date", ">=", new Date())
+      .where("source_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true);
 
     for (const fixture of fixtures) {
@@ -61,194 +86,111 @@ class AddPremierBetOddService {
   ) {
     const { marketGroups } = event;
 
-    for (const marketGroup of marketGroups) {
-      await this.processMarketGroup(fixtureId, sourceFixtureId, marketGroup);
+    if (!marketGroups?.length) {
+      return;
     }
-  }
 
-  private async processMarketGroup(
-    fixtureId: number,
-    sourceFixtureId: string,
-    marketGroup: any
-  ) {
-    const marketGroupData = await this.getOrCreateMarketGroup(marketGroup.name);
+    let marketGroup = marketGroups.find((group: any) => group.name === "Main");
 
-    for (const market of marketGroup.markets) {
-      await this.processMarket(
-        fixtureId,
-        sourceFixtureId,
-        market,
-        marketGroupData.name,
-        marketGroupData.id
-      );
+    if (!marketGroup?.markets?.length) {
+      return;
     }
-  }
 
-  private async getOrCreateMarketGroup(groupName: string) {
-    let marketGroup = await db("market_groups")
-      .where({ name: groupName })
-      .first();
-    if (!marketGroup) {
-      const [newMarketGroup] = await db("market_groups")
-        .insert({ name: groupName })
-        .returning("*");
-      marketGroup = newMarketGroup;
+    // Process each "marketObj" in E
+    const filteredData = marketGroup.markets.filter((match: MarketObj) =>
+      Object.keys(this.marketMapping).includes(String(match.id))
+    );
+
+    if (!filteredData?.length) {
+      return;
     }
-    return marketGroup;
+
+    for (const market of filteredData) {
+      await this.processMarket(fixtureId, sourceFixtureId, market);
+    }
   }
 
   private async processMarket(
     fixtureId: number,
     sourceFixtureId: string,
-    market: any,
-    groupName: string,
-    groupId: number
+    market: any
   ) {
-    if (groupName === "Goal Scorers") {
-      // ✅ Ensure "Goal Scorers" is a market under this group
-      const goalScorersMarket = await this.getOrCreateMarket(
-        "Goal Scorers",
-        groupId
-      );
+    // find market
+    const dbMarket = this.dbMarkets.find(
+      (marketData) => marketData.name === market.name
+    );
 
-      // ✅ Each "market" in Goal Scorers is actually a PLAYER, so we process players
-      await this.processMarketEntry(
-        fixtureId,
-        sourceFixtureId,
-        goalScorersMarket.id,
-        market
-      );
-    } else {
-      // ✅ Normal market
-      const marketData = await this.getOrCreateMarket(market.name, groupId);
-      for (const outcome of market.outcomes) {
-        await this.saveMarketOutcome(
-          outcome,
-          null,
-          marketData.id,
-          fixtureId,
-          sourceFixtureId
-        );
+    if (!dbMarket) {
+      console.warn(`❌ No 'Market Found' : ${market.name}`);
+      return;
+    }
+
+    for (const outcome of market.outcomes) {
+      if (
+        (outcome.name === "Over" || outcome.name === "Under") &&
+        outcome.handicap !== "2.5"
+      ) {
+        // Skip if the name is "Over" or "Under" and the handicap is not "2.5"
+        continue;
       }
-    }
-  }
 
-  private async getOrCreateMarket(marketName: string, groupId: number) {
-    let market = await db("markets")
-      .where({ name: marketName, group_id: groupId })
-      .first();
+      const dbMarketType = this.dbMarketTypes.find(
+        (marketType) =>
+          marketType.name === outcome.name &&
+          marketType.market_id === dbMarket.id
+      );
 
-    if (!market) {
-      const [newMarket] = await db("markets")
-        .insert({ name: marketName, group_id: groupId })
-        .returning("*");
-      market = newMarket;
-    }
+      if (!dbMarketType) {
+        console.warn(`❌ No 'Market Type Found' : ${outcome.name}`);
+        continue;
+      }
 
-    return market;
-  }
-
-  private async processMarketEntry(
-    fixtureId: number,
-    sourceFixtureId: string,
-    goalScorersMarketId: number,
-    player: any
-  ) {
-    // ✅ Ensure the player is stored as a market entry under "Goal Scorers"
-    let marketEntry = await db("market_entries")
-      .where({
-        market_id: goalScorersMarketId,
-        entry_name: player.name,
-        fixture_id: fixtureId,
-        external_source_fixture_id: sourceFixtureId,
-      }) // Store player's name as entry
-      .first();
-
-    if (!marketEntry) {
-      const [newEntry] = await db("market_entries")
-        .insert({
-          market_id: goalScorersMarketId, // ✅ Link to the "Goal Scorers" market
-          entry_name: player.name, // ✅ Store player's name
-          fixture_id: fixtureId,
-          external_source_fixture_id: sourceFixtureId,
-        })
-        .returning("*");
-      marketEntry = newEntry;
-    }
-
-    // ✅ Store market outcomes under this market entry
-    for (const outcome of player.outcomes) {
       await this.saveMarketOutcome(
-        outcome,
-        marketEntry.id,
-        goalScorersMarketId,
+        dbMarketType.id,
+        outcome.value,
+        dbMarket.id,
         fixtureId,
         sourceFixtureId
       );
     }
   }
 
-  private async saveMarketOutcome(
-    outcome: any,
-    entryId: number | null,
-    marketId: number | null,
-    fixtureId: number | null,
-    externalSourceFixtureId: string | null
-  ) {
-    const conflictTarget = [
-      "market_id",
-      "market_entry_id",
-      "outcome_name",
-      "fixture_id",
-      "external_source_fixture_id",
-    ];
-
-    await db("market_outcomes")
-      .insert({
-        market_entry_id: entryId,
-        market_id: marketId,
-        outcome_name: outcome.name,
-        coefficient: outcome.value,
-        fixture_id: fixtureId,
-        external_source_fixture_id: externalSourceFixtureId,
-      })
-      .onConflict(conflictTarget)
-      .merge(["coefficient"]);
-
-    console.log(
-      `✅ Saved market outcome: ${outcome.name} for ${
-        entryId ? "market_entry" : "market"
-      } ${entryId ?? marketId} for fixture ${
-        fixtureId ?? externalSourceFixtureId
-      }`
-    );
+  private async getMarkets(): Promise<Market[]> {
+    let row: Market[] = await db("markets");
+    return row;
   }
 
-  private async saveMarketOutcomeOld(
-    outcome: any,
-    entryId: number | null,
-    marketId: number | null
-  ) {
-    const conflictTarget =
-      entryId && marketId
-        ? ["market_entry_id", "outcome_name"]
-        : ["market_id", "market_entry_id", "outcome_name"];
+  private async getMarketTypes(): Promise<MarketType[]> {
+    let row: MarketType[] = await db("market_types");
+    return row;
+  }
 
-    await db("market_outcomes")
+  private async saveMarketOutcome(
+    marketTypeId: number,
+    coefficient: number,
+    marketId: number,
+    fixtureId: number,
+    externalSourceFixtureId: string
+  ) {
+    await db("odds")
       .insert({
-        market_entry_id: entryId,
         market_id: marketId,
-        outcome_name: outcome.name,
-        coefficient: outcome.value,
+        market_type_id: marketTypeId,
+        coefficient,
+        fixture_id: fixtureId,
+        external_source_fixture_id: externalSourceFixtureId,
+        source_id: this.sourceId,
       })
-      .onConflict(conflictTarget)
+      .onConflict([
+        "market_id",
+        "market_type_id",
+        "fixture_id",
+        "external_source_fixture_id",
+        "source_id",
+      ])
       .merge(["coefficient"]);
 
-    console.log(
-      `✅ Saved market outcome: ${outcome.name} for ${
-        entryId ? "market_entry" : "market"
-      } ${entryId ?? marketId}`
-    );
+    console.log("Odds data inserted/updated successfully.");
   }
 }
 
