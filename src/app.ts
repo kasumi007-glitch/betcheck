@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import FetchGroupService from "./services/fetchAndDumpService";
 import FetchOddService from "./services/fetchOddService ";
 import FetchMatchService from "./services/fetchMatchService";
-import { openWebsiteWithProxy } from "./utils/puppeteer-proxy"; // ✅ Import Puppeteer Function
+// import { openWebsiteWithProxy } from "./utils/puppeteer-proxy"; // ✅ Import Puppeteer Function
 import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchPremierBetFixtureService from "./services/premierbet/FetchFixturesService";
 import FetchPremierBetLeagueService from "./services/premierbet/FetchLeaguesService";
@@ -13,7 +13,9 @@ import AddPremierBetOddService from "./services/premierbet/AddPremierBetOddServi
 import FetchMegaPariLeagueService from "./services/mega-pari/FetchMegaPariLeagueService";
 import fetchMegaPariFixturesService from "./services/mega-pari/FetchMegaPariFixturesService";
 import AddMegaPariOddService from "./services/mega-pari/AddMegaPariOddServiceV2";
-import fetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService";
+import fetch1xBetFixturesWithOddsService from "./services/1xbet/Fetch1xBetFixturesWithOddsService";
+import fetch1xBetLeagueService from "./services/1xbet/Fetch1xBetLeagueService";
+import fetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService"
 
 dotenv.config();
 
@@ -35,8 +37,8 @@ const processData = async () => {
   // await FetchPremierBetFixtureService.init();
   // await FetchPremierBetFixtureService.syncFixtures();
 
-  await AddPremierBetOddService.init();
-  await AddPremierBetOddService.syncOdds();
+  // await AddPremierBetOddService.init();
+  // await AddPremierBetOddService.syncOdds();
 
   //MegaPari
   // await FetchMegaPariLeagueService.init();
@@ -52,6 +54,14 @@ const processData = async () => {
   // await AddMegaPariOddService.syncOdds();
   // ✅ Open Website with Proxy (Puppeteer)
   // await openWebsiteWithProxy();
+
+  // 1xBet
+  await fetch1xBetLeagueService.init();
+  await fetch1xBetLeagueService.syncLeagues();
+
+  await fetch1xBetFixturesWithOddsService.initialize();
+  await fetch1xBetFixturesWithOddsService.syncFixtures();
+
 };
 
 processData().catch((error) => {
