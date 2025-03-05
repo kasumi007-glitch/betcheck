@@ -14,6 +14,8 @@ import FetchMegaPariLeagueService from "./services/mega-pari/FetchMegaPariLeague
 import fetchMegaPariFixturesService from "./services/mega-pari/FetchMegaPariFixturesService";
 import AddMegaPariOddService from "./services/mega-pari/AddMegaPariOddServiceV2";
 import fetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService";
+import FetchYellowBetLeagueService from "./services/yellowbet/FetchYellowBetLeagueService";
+import FetchYellowBetFixturesWithOddsService from "./services/yellowbet/FetchYellowBetFixturesWithOddsService";
 
 dotenv.config();
 
@@ -35,8 +37,8 @@ const processData = async () => {
   // await FetchPremierBetFixtureService.init();
   // await FetchPremierBetFixtureService.syncFixtures();
 
-  await AddPremierBetOddService.init();
-  await AddPremierBetOddService.syncOdds();
+  // await AddPremierBetOddService.init();
+  // await AddPremierBetOddService.syncOdds();
 
   //MegaPari
   // await FetchMegaPariLeagueService.init();
@@ -52,6 +54,13 @@ const processData = async () => {
   // await AddMegaPariOddService.syncOdds();
   // ✅ Open Website with Proxy (Puppeteer)
   // await openWebsiteWithProxy();
+
+  //YellowBet
+  // await FetchYellowBetLeagueService.init();
+  // await FetchYellowBetLeagueService.syncLeagues();
+
+  await FetchYellowBetFixturesWithOddsService.initialize();
+  await FetchYellowBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
