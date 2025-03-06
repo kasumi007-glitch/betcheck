@@ -4,7 +4,7 @@ import { leagueNameMappings } from "../leagueNameMappings";
 
 class Fetch1xBetLeagueService {
   private readonly apiUrl =
-    "https://1xbet.com/LiveFeed/GetSportsShortZip?sports=1&lng=en&gr=70&country=214&virtualSports=true&groupChamps=true";
+    "https://1xbet.com/LineFeed/GetSportsShortZip?sports=1&lng=en&tf=2200000&tz=3&country=213&virtualSports=true&gr=70&groupChamps=true";
   private readonly sourceName = "1xBet";
   private sourceId!: number;
 

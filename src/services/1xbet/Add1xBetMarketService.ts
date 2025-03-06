@@ -28,11 +28,11 @@ class Add1xBetMarketService {
   }
 
   async syncMarkets() {
-    console.log(`🚀 Fetching MegaPari market groups and markets...`);
+    console.log(`🚀 Fetching 1xBet market groups and markets...`);
 
     const response = await fetchFromApi(this.apiUrl);
     if (!response) {
-      console.warn(`⚠️ No data received from MegaPari API.`);
+      console.warn(`⚠️ No data received from 1xBet API.`);
       return;
     }
 
@@ -41,7 +41,7 @@ class Add1xBetMarketService {
       await this.saveMarkets(markets);
     }
 
-    console.log("✅ MegaPari market groups & markets synced successfully!");
+    console.log("✅ 1xBet market groups & markets synced successfully!");
   }
 
   private processMarketData(rawData: any) {
