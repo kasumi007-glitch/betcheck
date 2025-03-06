@@ -16,6 +16,10 @@ import AddMegaPariOddService from "./services/mega-pari/AddMegaPariOddServiceV2"
 import fetch1xBetFixturesWithOddsService from "./services/1xbet/Fetch1xBetFixturesWithOddsService";
 import fetch1xBetLeagueService from "./services/1xbet/Fetch1xBetLeagueService";
 import fetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService"
+import fetchLineBetLeagueService from "./services/linebet/FetchLineBetLeagueService";
+import fetchLineBetFixturesWithOddsService from "./services/linebet/FetchLineBetFixturesWithOddsService";
+import fetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueService";
+import fetchParipesaFixturesWithOddsService from "./services/paripesa/FetchParipesaFixturesWithOddsService";
 
 dotenv.config();
 
@@ -56,12 +60,25 @@ const processData = async () => {
   // await openWebsiteWithProxy();
 
   // 1xBet
-  await fetch1xBetLeagueService.init();
-  await fetch1xBetLeagueService.syncLeagues();
+  // await fetch1xBetLeagueService.init();
+  // await fetch1xBetLeagueService.syncLeagues();
+  //
+  // await fetch1xBetFixturesWithOddsService.initialize();
+  // await fetch1xBetFixturesWithOddsService.syncFixtures();
 
-  await fetch1xBetFixturesWithOddsService.initialize();
-  await fetch1xBetFixturesWithOddsService.syncFixtures();
+  // Paripesa
+  // await fetchParipesaLeagueService.init();
+  // await fetchParipesaLeagueService.syncLeagues();
+  //
+  // await fetchParipesaFixturesWithOddsService.initialize();
+  // await fetchParipesaFixturesWithOddsService.syncFixtures();
 
+  // LineBet
+  // await fetchLineBetLeagueService.init();
+  // await fetchLineBetLeagueService.syncLeagues();
+  //
+  // await fetchLineBetFixturesWithOddsService.initialize();
+  // await fetchLineBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
