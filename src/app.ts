@@ -20,6 +20,8 @@ import fetchLineBetLeagueService from "./services/linebet/FetchLineBetLeagueServ
 import fetchLineBetFixturesWithOddsService from "./services/linebet/FetchLineBetFixturesWithOddsService";
 import fetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueService";
 import fetchParipesaFixturesWithOddsService from "./services/paripesa/FetchParipesaFixturesWithOddsService";
+import fetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService";
+import fetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
 
 dotenv.config();
 
@@ -79,6 +81,13 @@ const processData = async () => {
   //
   // await fetchLineBetFixturesWithOddsService.initialize();
   // await fetchLineBetFixturesWithOddsService.syncFixtures();
+
+  // MelBet
+  // await fetchMelBetLeagueService.init();
+  // await fetchMelBetLeagueService.syncLeagues();
+  //
+  // await fetchMelBetFixturesWithOddsService.initialize();
+  // await fetchMelBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
