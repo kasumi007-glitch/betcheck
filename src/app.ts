@@ -22,6 +22,8 @@ import fetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueS
 import fetchParipesaFixturesWithOddsService from "./services/paripesa/FetchParipesaFixturesWithOddsService";
 import fetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService";
 import fetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
+import fetchGeniusBetLeagueService from "./services/geniusbet/FetchGeniusBetLeagueService";
+import fetchGeniusBetFixturesWithOddsService from "./services/geniusbet/FetchGeniusBetFixturesWithOddsService";
 
 dotenv.config();
 
@@ -49,7 +51,7 @@ const processData = async () => {
   //MegaPari
   // await FetchMegaPariLeagueService.init();
   // await FetchMegaPariLeagueService.syncLeagues();
-
+  //
   // await fetchMegaPariFixturesService.initialize();
   // await fetchMegaPariFixturesService.syncFixtures();
 
@@ -88,6 +90,13 @@ const processData = async () => {
   //
   // await fetchMelBetFixturesWithOddsService.initialize();
   // await fetchMelBetFixturesWithOddsService.syncFixtures();
+
+  // GeniusBet
+  await fetchGeniusBetLeagueService.init();
+  await fetchGeniusBetLeagueService.syncLeagues();
+
+  await fetchGeniusBetFixturesWithOddsService.initialize();
+  await fetchGeniusBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {

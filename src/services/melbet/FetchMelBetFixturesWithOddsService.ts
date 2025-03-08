@@ -65,8 +65,7 @@ class FetchMelBetFixturesWithOddsService {
             "leagues.external_id as league_id"
         )
         .where("source_league_matches.source_id", this.sourceId)
-        .andWhere("leagues.is_active", true)
-        .andWhere("leagues.external_id", 39);
+        .andWhere("leagues.is_active", true);
 
     for (const league of leagues) {
       await this.fetchAndProcessFixtures(
@@ -121,6 +120,7 @@ class FetchMelBetFixturesWithOddsService {
       O2: awayTeamRaw,
       S: startTime,
     } = fixture;
+    console.log(fixture)
     const eventDate = new Date(startTime * 1000);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to start of day

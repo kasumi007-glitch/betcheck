@@ -61,3 +61,50 @@ Inserting batch 29: 500 records
 Inserting batch 30: 272 records
 ✅ Batch 30 inserted successfully.
 ✅ Finished inserting all market records.
+
+
+
+
+curl ^"https://uodyc08.com/api/v3/user/line/list?t^\[^\]=1^&lc^\[^\]=45^&ss=all^&l=20^&ltr=0^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9^" ^
+  -H ^"baggage: sentry-environment=production,sentry-release=9bd755f3fc7c386f26b8e5169c4bcf6e10a5f767,sentry-public_key=4a626086556647d191e62e9bef5eb347,sentry-trace_id=d48052ecc7374a7cb007f1e18c5338f3,sentry-sample_rate=0.1^" ^
+  -b ^"uidz=7299777709771735040; uid=7299777710321225730; rst4-uid=7299777710321225730; rulid=01JMW197RFQZEEX6S66VJS55C4; rculid=01JMW197RFQZEEX6S66VJS55C4; PHPSESSID=jgm4063qjpceeihlokhh2vdt2c; tz=Africa^%^2FAccra; registration-saved-type=1; User_cookie_key=01JMW19D3FCBBY2PPF8Y69CF7S; pid=263382; sip=0; design=old; jivo_unauthorized_user_token=8rT-CqSRoTXp7Y5n7_RUz; feature_ab_cdn=cf; rst4-sstart=1740981187485; theme=desktop; lunetics_locale=en; multiAuthRepeatAfter=true; cid=6409995070; prid=most_partner.6409995070^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://uodyc08.com/sport?t=1^&lc=45^&from_left_menu=^&ss=all^" ^
+  -H ^"sec-ch-ua: ^\^"Not(A:Brand^\^";v=^\^"99^\^", ^\^"Microsoft Edge^\^";v=^\^"133^\^", ^\^"Chromium^\^";v=^\^"133^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"sentry-trace: d48052ecc7374a7cb007f1e18c5338f3-bc7faeeed8d59784-0^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0^" ^
+  -H ^"x-client-device-id: xf1qp1j25vm5xzh71rin^" ^
+  -H ^"x-client-name: mostbet-com-spa^" ^
+  -H ^"x-client-platform: desktop-web^" ^
+  -H ^"x-client-session: 4h19fvjkxx0fjrb7itec^" ^
+  -H ^"x-client-version: 1.4.1764^" ^
+  -H ^"x-requested-with: XMLHttpRequest^"
+
+curl ^"https://uodyc08.com/api/v3/user/line/list?t^\[^\]=1^&lc^\[^\]=23^&ss=all^&l=20^&ltr=0^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9^" ^
+  -H ^"baggage: sentry-environment=production,sentry-release=9bd755f3fc7c386f26b8e5169c4bcf6e10a5f767,sentry-public_key=4a626086556647d191e62e9bef5eb347,sentry-trace_id=f0064fcadd1e42d39c0ab233508cbb71,sentry-sample_rate=0.1^" ^
+  -b ^"uidz=7299777709771735040; uid=7299777710321225730; rst4-uid=7299777710321225730; rulid=01JMW197RFQZEEX6S66VJS55C4; rculid=01JMW197RFQZEEX6S66VJS55C4; PHPSESSID=jgm4063qjpceeihlokhh2vdt2c; tz=Africa^%^2FAccra; registration-saved-type=1; User_cookie_key=01JMW19D3FCBBY2PPF8Y69CF7S; pid=263382; sip=0; design=old; jivo_unauthorized_user_token=8rT-CqSRoTXp7Y5n7_RUz; feature_ab_cdn=cf; rst4-sstart=1740981187485; theme=desktop; lunetics_locale=en; multiAuthRepeatAfter=true; cid=6409995070; prid=most_partner.6409995070^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://uodyc08.com/sport?t=1^&lc=23^&from_left_menu=^&ss=all^" ^
+  -H ^"sec-ch-ua: ^\^"Not(A:Brand^\^";v=^\^"99^\^", ^\^"Microsoft Edge^\^";v=^\^"133^\^", ^\^"Chromium^\^";v=^\^"133^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"sentry-trace: f0064fcadd1e42d39c0ab233508cbb71-a247b58ff0350c2c-0^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0^" ^
+  -H ^"x-client-device-id: xf1qp1j25vm5xzh71rin^" ^
+  -H ^"x-client-name: mostbet-com-spa^" ^
+  -H ^"x-client-platform: desktop-web^" ^
+  -H ^"x-client-session: 4h19fvjkxx0fjrb7itec^" ^
+  -H ^"x-client-version: 1.4.1764^" ^
+  -H ^"x-requested-with: XMLHttpRequest^"
