@@ -6,7 +6,9 @@ import {MarketObj} from "../interfaces/MarketObj";
 import {teamNameMappings} from "../teamNameMappings";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
-class FetchAkwaBetFixturesWithOddsService {
+class FetchBetPawaFixturesWithOddsService {
+    private readonly apiUrlTemplate =
+        "https://megapari.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
     private readonly sourceName = "AkwaBet";
     private sourceId!: number;
 
@@ -337,6 +339,6 @@ class FetchAkwaBetFixturesWithOddsService {
 
 // Export and initialize
 const fetchAkwaBetFixturesWithOddsService =
-    new FetchAkwaBetFixturesWithOddsService();
+    new FetchBetPawaFixturesWithOddsService();
 
 export default fetchAkwaBetFixturesWithOddsService;

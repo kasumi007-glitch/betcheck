@@ -28,6 +28,8 @@ import fetchGuineeGamesLeagueService from "./services/guinee-games/FetchGuineeGa
 import fetchGuineeGamesFixturesWithOddsService from "./services/guinee-games/FetchGuineeGamesFixturesWithOddsService";
 import fetchAkwaBetLeagueService from "./services/akwabet/FetchAkwaBetLeagueService";
 import fetchAkwaBetFixturesWithOddsService from "./services/akwabet/FetchAkwaBetFixturesWithOddsService";
+import fetchBetPawaLeagueService from "./services/betpawa/FetchBetPawaLeagueService";
+import fetchBetPawaFixturesWithOddsService from "./services/betpawa/FetchBetPawaFixturesWithOddsService";
 
 dotenv.config();
 
@@ -36,90 +38,97 @@ app.use(express.json());
 app.use(OddsRoutes);
 
 const processData = async () => {
-  // await FetchGroupService.processData();
-  // await FetchOddService.processOddsData();
-  // await FetchMatchService.processData();
+    // await FetchGroupService.processData();
+    // await FetchOddService.processOddsData();
+    // await FetchMatchService.processData();
 
-  //PremierBet
-  // await FetchPremierBetOddService.syncOdds();
+    //PremierBet
+    // await FetchPremierBetOddService.syncOdds();
 
-  // await FetchPremierBetLeagueService.init();
-  // await FetchPremierBetLeagueService.syncLeagues();
+    // await FetchPremierBetLeagueService.init();
+    // await FetchPremierBetLeagueService.syncLeagues();
 
-  // await FetchPremierBetFixtureService.init();
-  // await FetchPremierBetFixtureService.syncFixtures();
+    // await FetchPremierBetFixtureService.init();
+    // await FetchPremierBetFixtureService.syncFixtures();
 
-  // await AddPremierBetOddService.init();
-  // await AddPremierBetOddService.syncOdds();
+    // await AddPremierBetOddService.init();
+    // await AddPremierBetOddService.syncOdds();
 
-  //MegaPari
-  // await FetchMegaPariLeagueService.init();
-  // await FetchMegaPariLeagueService.syncLeagues();
-  //
-  // await fetchMegaPariFixturesService.initialize();
-  // await fetchMegaPariFixturesService.syncFixtures();
+    //MegaPari
+    // await FetchMegaPariLeagueService.init();
+    // await FetchMegaPariLeagueService.syncLeagues();
+    //
+    // await fetchMegaPariFixturesService.initialize();
+    // await fetchMegaPariFixturesService.syncFixtures();
 
-  // await fetchMegaPariFixturesWithOddsService.initialize();
-  // await fetchMegaPariFixturesWithOddsService.syncFixtures();
+    // await fetchMegaPariFixturesWithOddsService.initialize();
+    // await fetchMegaPariFixturesWithOddsService.syncFixtures();
 
-  // await AddMegaPariOddService.initialize();
-  // await AddMegaPariOddService.syncOdds();
-  // ✅ Open Website with Proxy (Puppeteer)
-  // await openWebsiteWithProxy();
+    // await AddMegaPariOddService.initialize();
+    // await AddMegaPariOddService.syncOdds();
+    // ✅ Open Website with Proxy (Puppeteer)
+    // await openWebsiteWithProxy();
 
-  // 1xBet
-  // await fetch1xBetLeagueService.init();
-  // await fetch1xBetLeagueService.syncLeagues();
-  //
-  // await fetch1xBetFixturesWithOddsService.initialize();
-  // await fetch1xBetFixturesWithOddsService.syncFixtures();
+    // 1xBet
+    // await fetch1xBetLeagueService.init();
+    // await fetch1xBetLeagueService.syncLeagues();
+    //
+    // await fetch1xBetFixturesWithOddsService.initialize();
+    // await fetch1xBetFixturesWithOddsService.syncFixtures();
 
-  // Paripesa
-  // await fetchParipesaLeagueService.init();
-  // await fetchParipesaLeagueService.syncLeagues();
-  //
-  // await fetchParipesaFixturesWithOddsService.initialize();
-  // await fetchParipesaFixturesWithOddsService.syncFixtures();
+    // Paripesa
+    // await fetchParipesaLeagueService.init();
+    // await fetchParipesaLeagueService.syncLeagues();
+    //
+    // await fetchParipesaFixturesWithOddsService.initialize();
+    // await fetchParipesaFixturesWithOddsService.syncFixtures();
 
-  // LineBet
-  // await fetchLineBetLeagueService.init();
-  // await fetchLineBetLeagueService.syncLeagues();
-  //
-  // await fetchLineBetFixturesWithOddsService.initialize();
-  // await fetchLineBetFixturesWithOddsService.syncFixtures();
+    // LineBet
+    // await fetchLineBetLeagueService.init();
+    // await fetchLineBetLeagueService.syncLeagues();
+    //
+    // await fetchLineBetFixturesWithOddsService.initialize();
+    // await fetchLineBetFixturesWithOddsService.syncFixtures();
 
-  // MelBet
-  // await fetchMelBetLeagueService.init();
-  // await fetchMelBetLeagueService.syncLeagues();
-  //
-  // await fetchMelBetFixturesWithOddsService.initialize();
-  // await fetchMelBetFixturesWithOddsService.syncFixtures();
+    // MelBet
+    // await fetchMelBetLeagueService.init();
+    // await fetchMelBetLeagueService.syncLeagues();
+    //
+    // await fetchMelBetFixturesWithOddsService.initialize();
+    // await fetchMelBetFixturesWithOddsService.syncFixtures();
 
-  // GeniusBet
-  // await fetchGeniusBetLeagueService.init();
-  // await fetchGeniusBetLeagueService.syncLeagues();
-  //
-  // await fetchGeniusBetFixturesWithOddsService.initialize();
-  // await fetchGeniusBetFixturesWithOddsService.syncFixtures();
+    // GeniusBet
+    // await fetchGeniusBetLeagueService.init();
+    // await fetchGeniusBetLeagueService.syncLeagues();
+    //
+    // await fetchGeniusBetFixturesWithOddsService.initialize();
+    // await fetchGeniusBetFixturesWithOddsService.syncFixtures();
 
-  // Guinee Games
-  // await fetchGuineeGamesLeagueService.init();
-  // await fetchGuineeGamesLeagueService.syncLeagues();
+    // Guinee Games
+    // await fetchGuineeGamesLeagueService.init();
+    // await fetchGuineeGamesLeagueService.syncLeagues();
 
-  // await fetchGuineeGamesFixturesWithOddsService.initialize();
-  // await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
+    // await fetchGuineeGamesFixturesWithOddsService.initialize();
+    // await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
 
 
-  // AkwaBet
-  await fetchAkwaBetLeagueService.init();
-  await fetchAkwaBetLeagueService.syncLeagues();
+    // AkwaBet
+    // await fetchAkwaBetLeagueService.init();
+    // await fetchAkwaBetLeagueService.syncLeagues();
+    //
+    // await fetchAkwaBetFixturesWithOddsService.initialize();
+    // await fetchAkwaBetFixturesWithOddsService.syncFixtures();
 
-  await fetchAkwaBetFixturesWithOddsService.initialize();
-  await fetchAkwaBetFixturesWithOddsService.syncFixtures();
+    // BetPawa
+    await fetchBetPawaLeagueService.init();
+    await fetchBetPawaLeagueService.syncLeagues();
+    //
+    // await fetchBetPawaFixturesWithOddsService.initialize();
+    // await fetchBetPawaFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
-  console.error("Error running FetchGroupService processData:", error);
+    console.error("Error running FetchGroupService processData:", error);
 });
 
 export default app;
