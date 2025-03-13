@@ -97,6 +97,26 @@ class FetchAkwaBetLeagueService {
                 `✅ Matched league: ${league.name} (Source: ${league.name}) for ${country.name}`
             );
 
+            const sourceCountriesResult = await db("source_countries")
+                .insert({
+                    name: country.name,
+                    external_id: Number(countryId),
+                    source_id: Number(this.sourceId)
+                })
+                .onConflict(["external_id", "source_id"]) // Prevent  duplicates based on unique columns
+                .ignore() // Ignore existing records instead of inserting duplicates
+                .returning("*");
+
+            if (sourceCountriesResult.length > 0) {
+                console.log(
+                    `✅ Inserted new source country entries, Source: ${this.sourceId})`
+                );
+            } else {
+                console.warn(
+                    `⚠️ Ignored duplicate league entries, Source: ${this.sourceId})`
+                );
+            }
+
             const result = await db("source_league_matches")
                 .insert({
                     source_league_id: sourceLeagueId,
@@ -128,4 +148,6 @@ class FetchAkwaBetLeagueService {
     }
 }
 
-export default new FetchAkwaBetLeagueService();
+export default new
+
+FetchAkwaBetLeagueService();

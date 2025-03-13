@@ -114,8 +114,8 @@ const processData = async () => {
   await fetchAkwaBetLeagueService.init();
   await fetchAkwaBetLeagueService.syncLeagues();
 
-  // await fetchAkwaBetFixturesWithOddsService.initialize();
-  // await fetchAkwaBetFixturesWithOddsService.syncFixtures();
+  await fetchAkwaBetFixturesWithOddsService.initialize();
+  await fetchAkwaBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
