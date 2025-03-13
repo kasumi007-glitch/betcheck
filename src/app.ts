@@ -24,6 +24,10 @@ import fetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService
 import fetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
 import fetchGeniusBetLeagueService from "./services/geniusbet/FetchGeniusBetLeagueService";
 import fetchGeniusBetFixturesWithOddsService from "./services/geniusbet/FetchGeniusBetFixturesWithOddsService";
+import fetchGuineeGamesLeagueService from "./services/guinee-games/FetchGuineeGamesLeagueService";
+import fetchGuineeGamesFixturesWithOddsService from "./services/guinee-games/FetchGuineeGamesFixturesWithOddsService";
+import fetchAkwaBetLeagueService from "./services/akwabet/FetchAkwaBetLeagueService";
+import fetchAkwaBetFixturesWithOddsService from "./services/akwabet/FetchAkwaBetFixturesWithOddsService";
 
 dotenv.config();
 
@@ -92,11 +96,26 @@ const processData = async () => {
   // await fetchMelBetFixturesWithOddsService.syncFixtures();
 
   // GeniusBet
-  await fetchGeniusBetLeagueService.init();
-  await fetchGeniusBetLeagueService.syncLeagues();
+  // await fetchGeniusBetLeagueService.init();
+  // await fetchGeniusBetLeagueService.syncLeagues();
+  //
+  // await fetchGeniusBetFixturesWithOddsService.initialize();
+  // await fetchGeniusBetFixturesWithOddsService.syncFixtures();
 
-  await fetchGeniusBetFixturesWithOddsService.initialize();
-  await fetchGeniusBetFixturesWithOddsService.syncFixtures();
+  // Guinee Games
+  // await fetchGuineeGamesLeagueService.init();
+  // await fetchGuineeGamesLeagueService.syncLeagues();
+
+  // await fetchGuineeGamesFixturesWithOddsService.initialize();
+  // await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
+
+
+  // AkwaBet
+  await fetchAkwaBetLeagueService.init();
+  await fetchAkwaBetLeagueService.syncLeagues();
+
+  // await fetchAkwaBetFixturesWithOddsService.initialize();
+  // await fetchAkwaBetFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {

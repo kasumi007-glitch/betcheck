@@ -5,17 +5,18 @@ import {fetchFromApi} from "../../utils/ApiClient";
 import {teamNameMappings} from "../teamNameMappings";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
-class FetchGeniusBetFixturesWithOddsService {
+class FetchGuineeGamesFixturesWithOddsService {
     private readonly apiUrlTemplate =
-        "https://api.geniusbet.com.gn/api/v2/get-tournament-events-refactor";
-    private readonly sourceName = "GeniusBet";
+        "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=fr&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
+
+    private readonly sourceName = "GuineeGames";
     private sourceId!: number;
 
     // 1) Market ID → Market Name
     private readonly marketMapping: Record<number, string> = {
-        10: "1X2",
-        430: "Over / Under",
-        434: "Both Teams to Score", // Labelled as "GG/NG"
+        3: "1X2",
+        29: "Over / Under", // labelled as "Nombre total de buts"
+        7: "Both Teams to Score", // Labelled as "Les deux équipes marquent"
     };
 
     // 2) Market Name → Group Name
@@ -26,14 +27,14 @@ class FetchGeniusBetFixturesWithOddsService {
     };
 
     // 3) Outcome Name Mapping
-    private readonly outcomeNameNewMapping: Record<string, string> = {
-        "1": "1",
-        "X": "X",
-        "2": "2",
-        "Over": "Over",
-        "Under": "Under",
-        "GG": "Yes",
-        "NG": "No",
+    private readonly outcomeNameNewMapping: Record<number, string> = {
+        615: "1",
+        616: "X",
+        617: "2",
+        1495: "Over", // labelled as "plus de"
+        1496: "Under", // labelled as "moins de"
+        626: "Yes", // labelled as "oui"
+        627: "No", // labelled as "non"
     };
 
     private dbMarkets: Market[] = [];
@@ -56,7 +57,7 @@ class FetchGeniusBetFixturesWithOddsService {
     async syncFixtures() {
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
-        // Fetch active leagues linked to GeniusBet
+        // Fetch active leagues linked to GuineeGames
         const leagues = await db("source_league_matches")
             .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
             .select(
@@ -67,10 +68,16 @@ class FetchGeniusBetFixturesWithOddsService {
             .andWhere("leagues.is_active", true);
 
         for (const league of leagues) {
-            await this.fetchAndProcessFixtures(
-                league.source_league_id,
-                league.league_id
-            );
+            const sourceMarketIds = Object.keys(this.marketMapping);
+
+            for (const sourceMarketId of sourceMarketIds) {
+                console.log(sourceMarketId, 'source Market')
+                await this.fetchAndProcessFixtures(
+                    league.source_league_id,
+                    league.league_id,
+                    sourceMarketId
+                );
+            }
         }
 
         console.log(`✅ Fixtures synced successfully from ${this.sourceName}!`);
@@ -78,37 +85,67 @@ class FetchGeniusBetFixturesWithOddsService {
 
     private async fetchAndProcessFixtures(
         sourceLeagueId: string,
-        leagueId: number
+        leagueId: number,
+        sourceMarketId: string
     ) {
         const apiUrl = this.apiUrlTemplate.replace(
             "{sourceLeagueId}",
             sourceLeagueId
+        ).replace(
+            "{sourceMarketId}",
+            sourceMarketId
         );
-        // Use this to test
-        // const payload = {"tournament_ids": [218708]}; // TODO: remove this
-        const payload = {"tournament_ids": [Number(sourceLeagueId)]};
-        const response = await fetchFromApi(apiUrl, "POST", payload);
 
-        if (!response?.data?.tournaments?.[0]?.marketGroupEvents?.length) {
-            console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
+        // TODO: Remove this test
+        // const apiUrl = this.apiUrlTemplate.replace(
+        //     "{sourceLeagueId}",
+        //     '1030903'
+        // ).replace(
+        //     "{sourceMarketId}",
+        //     '3'
+        // );
+
+        const response = await fetchFromApi(apiUrl);
+
+        if (!response?.data?.categories.length) {
+            console.warn(`⚠️ No country categories received for league ID: ${sourceLeagueId}`);
             return;
         }
 
-        const fixtures = response.data.tournaments[0].marketGroupEvents[0].events;
+        const countryData = response.data.categories;
 
-        for (const fixture of fixtures) {
-            const isFixtureProcessed = await this.processFixture(
-                fixture,
-                leagueId,
-                sourceLeagueId
-            );
+        for (const country of countryData) {
+            const leagues = country.competitions;
 
-            if (isFixtureProcessed) {
-                await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-            } else {
-                console.warn(
-                    `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
-                );
+            if (!leagues.length) {
+                console.warn(`⚠️ No league data received for league ID: ${sourceLeagueId}`);
+                return;
+            }
+
+            for (const league of leagues) {
+                const fixtures = league.events;
+
+                if (!fixtures.length) {
+                    console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
+                    return;
+                }
+
+                for (const fixture of fixtures) {
+                    const isFixtureProcessed = await this.processFixture(
+                        fixture,
+                        leagueId,
+                        sourceLeagueId
+                    );
+
+                    if (isFixtureProcessed) {
+                        console.log('hereeeeeeeeeeeeeeeeeee')
+                        await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
+                    } else {
+                        console.warn(
+                            `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
+                        );
+                    }
+                }
             }
         }
     }
@@ -120,10 +157,19 @@ class FetchGeniusBetFixturesWithOddsService {
     ): Promise<boolean> {
         const {
             id: sourceFixtureId,
-            home: homeTeamRaw,
-            away: awayTeamRaw,
-            start_time: startTime,
+            startTime: startTime,
+            eventNames: competingTeams,
+            markets: markets
         } = fixture;
+
+
+        console.log(markets[0].outcomes[0].id); // outcomeId
+        console.log(markets[0].outcomes[0].value); // outcomeName
+
+
+        const homeTeamRaw = competingTeams[0];
+        const awayTeamRaw = competingTeams[1];
+
         const eventDate = new Date(startTime);
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Normalize to start of day
@@ -193,6 +239,7 @@ class FetchGeniusBetFixturesWithOddsService {
         sourceLeagueId: string
     ) {
         const {id: sourceFixtureId} = fixtureData;
+        console.log(sourceFixtureId, 'id')
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
@@ -227,53 +274,54 @@ class FetchGeniusBetFixturesWithOddsService {
         const markets = fixtureData.markets;
 
         for (const market of markets) {
+            console.log(market, 'market')
             // The market ID
-            const marketId = market.market_id; // e.g. 7 => "Correct Score" // market_id
-
-            // Map to Market Name
-            const marketName = this.marketMapping[marketId];
-
-            // // find market
-            const dbMarket = this.dbMarkets.find(
-                (market) => market.name === marketName
-            );
-            if (!dbMarket) {
-                console.warn(`❌ No 'Market Found' : ${marketName}`);
-                continue;
-            }
-
-            if (!market?.rows?.length) {
-                console.warn(`❌ No 'Odds Found' : ${marketName}`);
-                continue;
-            }
-
-            const odds = market.rows[0].odds;
-
-            for (const odd of odds) {
-                // The outcome code we want to map
-                const outcomeCode = odd.code;
-
-                const outcome = this.outcomeNameNewMapping[outcomeCode];
-
-                const dbMarketType = this.dbMarketTypes.find(
-                    (marketType) =>
-                        marketType.name === outcome && marketType.market_id === dbMarket.id
-                );
-
-                if (!dbMarketType) {
-                    console.warn(`❌ No 'Market Type Found' : ${marketName}`);
-                    continue;
-                }
-
-                // If there's a single coefficient .value, store as an outcome
-                await this.saveMarketOutcome(
-                    dbMarketType.id,
-                    Number(odd.value),
-                    dbMarket.id,
-                    fixture.id,
-                    sourceFixtureId
-                );
-            }
+            // const marketId = market.market_id; // e.g. 7 => "Correct Score" // market_id
+            //
+            // // Map to Market Name
+            // const marketName = this.marketMapping[marketId];
+            //
+            // // // find market
+            // const dbMarket = this.dbMarkets.find(
+            //     (market) => market.name === marketName
+            // );
+            // if (!dbMarket) {
+            //     console.warn(`❌ No 'Market Found' : ${marketName}`);
+            //     continue;
+            // }
+            //
+            // if (!market?.rows?.length) {
+            //     console.warn(`❌ No 'Odds Found' : ${marketName}`);
+            //     continue;
+            // }
+            //
+            // const odds = market.rows[0].odds;
+            //
+            // for (const odd of odds) {
+            //     // The outcome code we want to map
+            //     const outcomeCode = odd.code;
+            //
+            //     const outcome = this.outcomeNameNewMapping[outcomeCode];
+            //
+            //     const dbMarketType = this.dbMarketTypes.find(
+            //         (marketType) =>
+            //             marketType.name === outcome && marketType.market_id === dbMarket.id
+            //     );
+            //
+            //     if (!dbMarketType) {
+            //         console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+            //         continue;
+            //     }
+            //     console.log(marketName, fixture.id)
+            //     // If there's a single coefficient .value, store as an outcome
+            //     await this.saveMarketOutcome(
+            //         dbMarketType.id,
+            //         Number(odd.value),
+            //         dbMarket.id,
+            //         fixture.id,
+            //         sourceFixtureId
+            //     );
+            // }
 
             // If you also have multiple "outcomes" in market.ME or market.outcomes, you’d loop them similarly
         }
@@ -319,7 +367,7 @@ class FetchGeniusBetFixturesWithOddsService {
 }
 
 // Export and initialize
-const fetchGeniusBetFixturesWithOddsService =
-    new FetchGeniusBetFixturesWithOddsService();
+const fetchGuineeGamesFixturesWithOddsService =
+    new FetchGuineeGamesFixturesWithOddsService();
 
-export default fetchGeniusBetFixturesWithOddsService;
+export default fetchGuineeGamesFixturesWithOddsService;
