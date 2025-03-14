@@ -51,7 +51,6 @@ class FetchBetPawaLeagueService {
 
         const response = await this.fetchData(requestOptions);
 
-        console.log(response, 'response')
         if (!response?.withRegions?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
             return;

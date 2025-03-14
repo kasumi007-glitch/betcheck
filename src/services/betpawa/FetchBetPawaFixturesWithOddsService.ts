@@ -76,78 +76,23 @@ class FetchBetPawaFixturesWithOddsService {
         for (const marketTypeId of marketTypeIds) {
             // Todo: remove to load other market types (test)
             if (marketTypeId == "3743") {
-                const marketName = this.marketMapping[marketTypeId];
-                console.log(`https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`, 'marketName');
-                const myHeaders = new Headers();
-                myHeaders.append("accept", "*/*");
-                myHeaders.append("accept-language", "en-US,en;q=0.9");
-                myHeaders.append("devicetype", "web");
-                myHeaders.append("priority", "u=1, i");
-                myHeaders.append("referer", `https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`);
-                myHeaders.append("sec-ch-ua", "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Microsoft Edge\";v=\"134\"");
-                myHeaders.append("sec-ch-ua-mobile", "?0");
-                myHeaders.append("sec-ch-ua-platform", "\"Windows\"");
-                myHeaders.append("sec-fetch-dest", "empty");
-                myHeaders.append("sec-fetch-mode", "cors");
-                myHeaders.append("sec-fetch-site", "same-origin");
-                myHeaders.append("traceid", "cb12065c-e282-4d18-853c-0988e5d6b195");
-                myHeaders.append("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0");
-                myHeaders.append("vuejs", "true");
-                myHeaders.append("x-pawa-brand", "betpawa-senegal");
-                myHeaders.append("x-pawa-language", "en");
-                myHeaders.append("Cookie", process.env.COOKIE_HEADER_BETPAWA_FIXTURES_WITH_ODDS ?? "");
-
-                const requestOptions: RequestInit = {
-                    method: "GET",
-                    headers: myHeaders,
-                    redirect: "follow"
-                };
-
-                const eventTypeName = "UPCOMING";
-                const sportId = ["2"];
-                const skip = 0; // make this dynamic
-                const take = 20;
-
-                const queryObject = {
-                    queries: [
-                        {
-                            query: {
-                                eventType: eventTypeName,
-                                categories: sportId,
-                                zones: {},
-                                hasOdds: true
-                            },
-                            view: {
-                                marketTypes: marketTypeId
-                            },
-                            skip: skip,
-                            take: take
-                        }
-                    ]
-                };
-
-                const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
-
-                const response = await this.fetchData(apiUrl, requestOptions);
-console.log(response,apiUrl, 'here');
-
                 // Fetch active leagues linked to BetPawa
-                // const leagues = await db("source_league_matches")
-                //     .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-                //     .select(
-                //         "source_league_matches.source_league_id",
-                //         "leagues.external_id as league_id"
-                //     )
-                //     .where("source_league_matches.source_id", this.sourceId)
-                //     .andWhere("leagues.is_active", true);
-                //
-                // for (const league of leagues) {
-                //     await this.fetchAndProcessFixtures(
-                //         league.source_league_id,
-                //         league.league_id,
-                //         country.external_id
-                //     );
-                // }
+                const leagues = await db("source_league_matches")
+                    .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+                    .select(
+                        "source_league_matches.source_league_id",
+                        "leagues.external_id as league_id"
+                    )
+                    .where("source_league_matches.source_id", this.sourceId)
+                    .andWhere("leagues.is_active", true);
+
+                for (const league of leagues) {
+                    await this.fetchAndProcessFixtures(
+                        league.source_league_id,
+                        league.league_id,
+                        marketTypeId
+                    );
+                }
             }
 
         }
@@ -169,48 +114,86 @@ console.log(response,apiUrl, 'here');
     private async fetchAndProcessFixtures(
         sourceLeagueId: string,
         leagueId: number,
-        countryExternalId: string,
+        marketTypeId: string,
     ) {
-        const apiUrl = "https://api.logiqsport.com:60009/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
+        const marketName = this.marketMapping[Number(marketTypeId)];
 
-        const payloadData = {
-            data: JSON.stringify({
-                ProviderId: 1, // Fixed value
-                tournId: `1,${countryExternalId},${sourceLeagueId}`, // Concatenated tournId format: sportId, countryId, tournamentId
-                filter: "All",
-                groupName: null,
-                subGroupName: null,
-            }),
+        const myHeaders = new Headers();
+        myHeaders.append("accept", "*/*");
+        myHeaders.append("accept-language", "en-US,en;q=0.9");
+        myHeaders.append("devicetype", "web");
+        myHeaders.append("priority", "u=1, i");
+        myHeaders.append("referer", `https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`);
+        myHeaders.append("sec-ch-ua", "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Microsoft Edge\";v=\"134\"");
+        myHeaders.append("sec-ch-ua-mobile", "?0");
+        myHeaders.append("sec-ch-ua-platform", "\"Windows\"");
+        myHeaders.append("sec-fetch-dest", "empty");
+        myHeaders.append("sec-fetch-mode", "cors");
+        myHeaders.append("sec-fetch-site", "same-origin");
+        myHeaders.append("traceid", "cb12065c-e282-4d18-853c-0988e5d6b195");
+        myHeaders.append("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0");
+        myHeaders.append("vuejs", "true");
+        myHeaders.append("x-pawa-brand", "betpawa-senegal");
+        myHeaders.append("x-pawa-language", "en");
+        myHeaders.append("Cookie", process.env.COOKIE_HEADER_BETPAWA_FIXTURES_WITH_ODDS ?? "");
+
+        const requestOptions: RequestInit = {
+            method: "GET",
+            headers: myHeaders,
+            redirect: "follow"
         };
 
-        const response = await fetchFromApi(apiUrl, "POST", payloadData);
+        const eventTypeName = "UPCOMING";
+        const sportId = ["2"];
+        const skip = 0; // Todo: make this dynamic
+        const take = 100;
 
-        if (!response?.Contents) {
+        const queryObject = {
+            queries: [
+                {
+                    query: {
+                        eventType: eventTypeName,
+                        categories: sportId,
+                        zones: {},
+                        hasOdds: true
+                    },
+                    view: {
+                        marketTypes: [marketTypeId]
+                    },
+                    skip: skip,
+                    take: take
+                }
+            ]
+        };
+
+        const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
+
+        const response = await this.fetchData(apiUrl, requestOptions);
+
+        if (!response?.responses?.length) {
             console.warn(`⚠️ No fixtures received for league  ID: ${sourceLeagueId}`);
             return;
         }
 
-        if (!response?.Contents?.Events.length) {
-            console.warn(`⚠️ No fixtures received for league  ID: ${sourceLeagueId}`);
-            return;
-        }
+        const responseData = response?.responses;
+        for (const fixtureData of responseData) {
+            if (!fixtureData?.responses?.length) return false;
 
-        console.log(response?.Contents?.Events, 'events');
-
-        for (const fixture of response?.Contents?.Events) {
-            console.log('here')
-            const isFixtureProcessed = await this.processFixture(
-                fixture,
-                leagueId,
-                sourceLeagueId
-            );
-
-            if (isFixtureProcessed) {
-                await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-            } else {
-                console.warn(
-                    `⚠️ Skipping odds fetch for fixture: ${fixture.I} due to failed processing.`
+            for (const fixture of fixtureData.responses) {
+                const isFixtureProcessed = await this.processFixture(
+                    fixture,
+                    leagueId,
+                    sourceLeagueId
                 );
+                console.log(fixture,
+                    'fixture')
+                if (isFixtureProcessed) {
+                    await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
+                } else {
+                    console.warn(
+                        `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
+                    );
+                }
             }
         }
     }
@@ -221,12 +204,12 @@ console.log(response,apiUrl, 'here');
         sourceLeagueId: string
     ): Promise<boolean> {
         const {
-            MatchId: sourceFixtureId,
-            Info,
-            DateOfMatch: startTime,
+            id: sourceFixtureId,
+            participants,
+            startTime,
         } = fixture;
-        const homeTeamRaw = Info?.HomeTeamName?.International;
-        const awayTeamRaw = Info?.AwayTeamName?.International;
+        const homeTeamRaw = participants[0]?.name;
+        const awayTeamRaw = participants[1]?.name;
 
         const eventDate = new Date(startTime);
         const today = new Date();
@@ -296,7 +279,7 @@ console.log(response,apiUrl, 'here');
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {MatchId: sourceFixtureId} = fixtureData;
+        const {id: sourceFixtureId} = fixtureData;
 
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
@@ -319,22 +302,21 @@ console.log(response,apiUrl, 'here');
             return;
         }
 
-        // Typically the markets are in data.Value.E
-        if (!fixtureData?.Markets?.length) {
+        if (!fixtureData?.markets?.length) {
             console.warn(`❌ No 'Markets' array for fixture: ${sourceFixtureId}`);
             return;
         }
 
         // Process each "marketObj" in Markets
-        const markets = fixtureData.Markets;
+        const markets = fixtureData.markets;
 
         for (const marketObj of markets) {
 
             // the market ID
-            const marketId = marketObj.MarketTypeId; // e.g. 7 => "Correct Score"
+            const marketId = marketObj.marketType.id; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
-            const marketName = this.marketMapping[marketId];
+            const marketName = this.marketMapping[Number(marketId)];
 
             // find market
             const dbMarket = this.dbMarkets.find(
@@ -345,16 +327,16 @@ console.log(response,apiUrl, 'here');
                 continue;
             }
 
-            if (!marketObj.MarketFields?.length) {
+            if (!marketObj.prices?.length) {
                 console.warn(`❌ No 'Outcomes Found for' : ${marketName}`);
                 continue;
             }
 
-            for (const outcomeData of marketObj.MarketFields) {
+            for (const outcomeData of marketObj.prices) {
                 // the outcome ID we want to map
-                const outcomeName = outcomeData.FieldName.International; // e.g. 221
+                const outcomeId = outcomeData.typeId; // e.g. 221
 
-                const outcome = this.outcomeIdNewMapping[outcomeName];
+                const outcome = this.outcomeIdNewMapping[outcomeId];
 
                 const dbMarketType = this.dbMarketTypes.find(
                     (marketType) =>
@@ -368,7 +350,7 @@ console.log(response,apiUrl, 'here');
                 // If there's a single coefficient .Value, store as an outcome
                 await this.saveMarketOutcome(
                     dbMarketType.id,
-                    Number(outcomeData.Value),
+                    outcomeData.price,
                     dbMarket.id,
                     fixture.id,
                     sourceFixtureId
