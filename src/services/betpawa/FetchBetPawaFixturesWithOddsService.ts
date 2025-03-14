@@ -8,15 +8,29 @@ import {teamNameMappings} from "../teamNameMappings";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchBetPawaFixturesWithOddsService {
     private readonly apiUrlTemplate =
-        "https://megapari.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-    private readonly sourceName = "AkwaBet";
+        `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q={encodeURIComponent(JSON.stringify({
+          queries: [{
+            query: {
+              eventType: eventType,
+              categories: [categoryId],
+              zones: {},
+              hasOdds: true
+            },
+            view: {
+              marketTypes: [marketType]
+            },
+            skip: skip,
+            take: take
+          }]
+        }))}`;
+    private readonly sourceName = "BetPawa";
     private sourceId!: number;
 
     // 1) Market ID → Market Name
     private readonly marketMapping: Record<number, string> = {
-        14: "1X2",
-        2211: "Over / Under",
-        20562: "Both Teams to Score",
+        3743: "1X2",
+        5000: "Over / Under",
+        3795: "Both Teams to Score",
     };
 
     // 2) Market Name → Group Name
@@ -27,14 +41,14 @@ class FetchBetPawaFixturesWithOddsService {
     };
 
     // 3) Outcome Name Mapping
-    private readonly outcomeNameNewMapping: Record<string, string> = {
-        "W1": "1",
-        "Draw": "X",
-        "W2": "2",
-        "Over (2.5)": "Over",
-        "Under (2.5)": "Under",
-        "Yes": "Yes",
-        "No": "No",
+    private readonly outcomeIdNewMapping: Record<number, string> = {
+        3744: "1",
+        3745: "X",
+        3746: "2",
+        5001: "Over",
+        5002: "Under",
+        3796: "Yes",
+        3797: "No",
     };
 
     private dbMarkets: Market[] = [];
@@ -57,33 +71,99 @@ class FetchBetPawaFixturesWithOddsService {
 
     async syncFixtures() {
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
-        const countries = await db("source_countries").where("source_id", this.sourceId);
+        const marketTypeIds = Object.keys(this.marketMapping);
 
-        for (const country of countries) {
-            if (country.external_id == 236) { // Todo: remove to load other countries
+        for (const marketTypeId of marketTypeIds) {
+            // Todo: remove to load other market types (test)
+            if (marketTypeId == "3743") {
+                const marketName = this.marketMapping[marketTypeId];
+                console.log(`https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`, 'marketName');
+                const myHeaders = new Headers();
+                myHeaders.append("accept", "*/*");
+                myHeaders.append("accept-language", "en-US,en;q=0.9");
+                myHeaders.append("devicetype", "web");
+                myHeaders.append("priority", "u=1, i");
+                myHeaders.append("referer", `https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`);
+                myHeaders.append("sec-ch-ua", "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Microsoft Edge\";v=\"134\"");
+                myHeaders.append("sec-ch-ua-mobile", "?0");
+                myHeaders.append("sec-ch-ua-platform", "\"Windows\"");
+                myHeaders.append("sec-fetch-dest", "empty");
+                myHeaders.append("sec-fetch-mode", "cors");
+                myHeaders.append("sec-fetch-site", "same-origin");
+                myHeaders.append("traceid", "cb12065c-e282-4d18-853c-0988e5d6b195");
+                myHeaders.append("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0");
+                myHeaders.append("vuejs", "true");
+                myHeaders.append("x-pawa-brand", "betpawa-senegal");
+                myHeaders.append("x-pawa-language", "en");
+                myHeaders.append("Cookie", process.env.COOKIE_HEADER_BETPAWA_FIXTURES_WITH_ODDS ?? "");
 
-                // Fetch active leagues linked to AkwaBet
-                const leagues = await db("source_league_matches")
-                    .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-                    .select(
-                        "source_league_matches.source_league_id",
-                        "leagues.external_id as league_id"
-                    )
-                    .where("source_league_matches.source_id", this.sourceId)
-                    .andWhere("leagues.is_active", true);
+                const requestOptions: RequestInit = {
+                    method: "GET",
+                    headers: myHeaders,
+                    redirect: "follow"
+                };
 
-                for (const league of leagues) {
-                    await this.fetchAndProcessFixtures(
-                        league.source_league_id,
-                        league.league_id,
-                        country.external_id
-                    );
-                }
+                const eventTypeName = "UPCOMING";
+                const sportId = ["2"];
+                const skip = 0; // make this dynamic
+                const take = 20;
+
+                const queryObject = {
+                    queries: [
+                        {
+                            query: {
+                                eventType: eventTypeName,
+                                categories: sportId,
+                                zones: {},
+                                hasOdds: true
+                            },
+                            view: {
+                                marketTypes: marketTypeId
+                            },
+                            skip: skip,
+                            take: take
+                        }
+                    ]
+                };
+
+                const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
+
+                const response = await this.fetchData(apiUrl, requestOptions);
+console.log(response,apiUrl, 'here');
+
+                // Fetch active leagues linked to BetPawa
+                // const leagues = await db("source_league_matches")
+                //     .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+                //     .select(
+                //         "source_league_matches.source_league_id",
+                //         "leagues.external_id as league_id"
+                //     )
+                //     .where("source_league_matches.source_id", this.sourceId)
+                //     .andWhere("leagues.is_active", true);
+                //
+                // for (const league of leagues) {
+                //     await this.fetchAndProcessFixtures(
+                //         league.source_league_id,
+                //         league.league_id,
+                //         country.external_id
+                //     );
+                // }
             }
 
         }
 
         console.log(`✅ Fixtures synced successfully from ${this.sourceName}!`);
+    }
+
+    private async fetchData(apiUrl: string, requestOptions: RequestInit) {
+        try {
+            const response = await fetch(apiUrl, requestOptions);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return;
+        }
     }
 
     private async fetchAndProcessFixtures(
@@ -274,7 +354,7 @@ class FetchBetPawaFixturesWithOddsService {
                 // the outcome ID we want to map
                 const outcomeName = outcomeData.FieldName.International; // e.g. 221
 
-                const outcome = this.outcomeNameNewMapping[outcomeName];
+                const outcome = this.outcomeIdNewMapping[outcomeName];
 
                 const dbMarketType = this.dbMarketTypes.find(
                     (marketType) =>
@@ -338,7 +418,7 @@ class FetchBetPawaFixturesWithOddsService {
 }
 
 // Export and initialize
-const fetchAkwaBetFixturesWithOddsService =
+const fetchBetPawaFixturesWithOddsService =
     new FetchBetPawaFixturesWithOddsService();
 
-export default fetchAkwaBetFixturesWithOddsService;
+export default fetchBetPawaFixturesWithOddsService;

@@ -58,26 +58,27 @@ class FetchAkwaBetFixturesWithOddsService {
         const countries = await db("source_countries").where("source_id", this.sourceId);
 
         for (const country of countries) {
-            if (country.external_id == 236) { // Todo: remove to load other countries
+            // Todo: remove to load other countries (TEST)
+            // if (country.external_id == 236) {
 
-                // Fetch active leagues linked to AkwaBet
-                const leagues = await db("source_league_matches")
-                    .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-                    .select(
-                        "source_league_matches.source_league_id",
-                        "leagues.external_id as league_id"
-                    )
-                    .where("source_league_matches.source_id", this.sourceId)
-                    .andWhere("leagues.is_active", true);
+            // Fetch active leagues linked to AkwaBet
+            const leagues = await db("source_league_matches")
+                .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+                .select(
+                    "source_league_matches.source_league_id",
+                    "leagues.external_id as league_id"
+                )
+                .where("source_league_matches.source_id", this.sourceId)
+                .andWhere("leagues.is_active", true);
 
-                for (const league of leagues) {
-                    await this.fetchAndProcessFixtures(
-                        league.source_league_id,
-                        league.league_id,
-                        country.external_id
-                    );
-                }
+            for (const league of leagues) {
+                await this.fetchAndProcessFixtures(
+                    league.source_league_id,
+                    league.league_id,
+                    country.external_id
+                );
             }
+            // }
 
         }
 

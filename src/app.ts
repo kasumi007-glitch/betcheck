@@ -123,8 +123,8 @@ const processData = async () => {
     await fetchBetPawaLeagueService.init();
     await fetchBetPawaLeagueService.syncLeagues();
     //
-    // await fetchBetPawaFixturesWithOddsService.initialize();
-    // await fetchBetPawaFixturesWithOddsService.syncFixtures();
+    await fetchBetPawaFixturesWithOddsService.initialize();
+    await fetchBetPawaFixturesWithOddsService.syncFixtures();
 };
 
 processData().catch((error) => {
