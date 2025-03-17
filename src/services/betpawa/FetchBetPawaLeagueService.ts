@@ -1,11 +1,9 @@
 import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClient";
-import {leagueNameMappings} from "../leagueNameMappings";
-import dotenv from "dotenv";
 
 class FetchBetPawaLeagueService {
+    // Sport category 2 is football.
     private readonly apiUrl =
-        "https://www.betpawa.sn/api/sportsbook/v3/categories/list/2"; // Category 2 is football.
+        "https://www.betpawa.sn/api/sportsbook/v3/categories/list/2";
     private readonly sourceName = "BetPawa";
     private sourceId!: number;
 
@@ -20,7 +18,6 @@ class FetchBetPawaLeagueService {
         }
     }
 
-// Skip 0; take 100 - skip 100; take 100 -  until current.length = 0 then stop
     async syncLeagues() {
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
 
@@ -41,7 +38,7 @@ class FetchBetPawaLeagueService {
         myHeaders.append("vuejs", "true");
         myHeaders.append("x-pawa-brand", "betpawa-senegal");
         myHeaders.append("x-pawa-language", "en");
-        myHeaders.append("Cookie", process.env.COOKIE ?? "");
+        myHeaders.append("Cookie", process.env.COOKIE_HEADER_BETPAWA_LEAGUES ?? "");
 
         const requestOptions: RequestInit = {
             method: "GET",
@@ -52,26 +49,33 @@ class FetchBetPawaLeagueService {
         const response = await this.fetchData(requestOptions);
 
         if (!response?.withRegions?.length) {
-            console.warn(`⚠️ No data received from ${this.sourceName}.`);
+            console.warn(`⚠️ No data received from ${this.sourceName}. 1`);
             return;
         }
 
-        const countryData = response.withRegions;
+        if (!response?.withRegions[0].regions) {
+            console.warn(`⚠️ No data received from ${this.sourceName}. 2`);
+            return;
+        }
 
-        for (const datum of countryData) {
-            if (!datum.regions?.length) continue; // Skip if no leagues exist
-            for (const country of datum.regions) {
-                const countryData = await this.transformData(country);
-                const leagueData = await this.isolateLeagueData(countryData);
+        const regionalFootballData = response.withRegions[0].regions;
 
-                for (const leagueDatum of leagueData) {
-                    await this.processLeague(
-                        leagueDatum.league_name,
-                        leagueDatum.external_league_id,
-                        leagueDatum.country_name,
-                        leagueDatum.external_country_id
-                    );
-                }
+        for (const country of regionalFootballData) {
+            if (!country.competitions?.length) {
+                console.warn(`⚠️ No leagues exist for: ${country.region.name}.`);
+                continue;
+            }
+
+            const countryData = await this.transformData(country);
+            const leagueData = await this.isolateLeagueData(countryData);
+
+            for (const leagueDatum of leagueData) {
+                await this.processLeague(
+                    leagueDatum.league_name,
+                    leagueDatum.external_league_id,
+                    leagueDatum.country_name,
+                    leagueDatum.external_country_id
+                );
             }
         }
 
@@ -80,9 +84,8 @@ class FetchBetPawaLeagueService {
 
     private async fetchData(requestOptions: RequestInit) {
         try {
-            const response = await fetch("https://www.betpawa.sn/api/sportsbook/v3/categories/list/2", requestOptions);
-            const result = await response.json();
-            return result;
+            const response = await fetch(this.apiUrl, requestOptions);
+            return await response.json();
         } catch (error) {
             console.error("Error fetching data:", error);
             return;
@@ -93,19 +96,24 @@ class FetchBetPawaLeagueService {
         return {
             name: data.region.name,
             id: data.region.id,
-            leagues: data.competitions.map((item: { competition: { id: any; name: any } }) => ({
+            leagues: data.competitions.map((item: SourceLeague) => ({
                 id: item.competition?.id,
                 name: item.competition?.name
             }))
         }
     }
 
-    private async isolateLeagueData(country: { name: any; id: any; leagues: any }): Promise<any> {
-        return country.leagues.map((league: { id: any; name: any; }) => ({
-            external_league_id: league.id,
+    private async isolateLeagueData(country: Country): Promise<{
+        external_league_id: number;
+        league_name: string;
+        country_name: string;
+        external_country_id: number;
+    }[]> {
+        return country.leagues.map((league) => ({
+            external_league_id: Number(league.id),
             league_name: league.name,
             country_name: country.name,
-            external_country_id: country.id,
+            external_country_id: Number(country.id),
         }))
     };
 
@@ -115,21 +123,23 @@ class FetchBetPawaLeagueService {
         countryName: string,
         countryId: number
     ) {
-        // Find country by country code
+        // Find a matching country in our db
         const country = await db("countries")
             .where("name", countryName)
             .first();
+
         if (!country) {
             console.warn(`⚠️ Country with external_id ${countryId} not found.`);
             return;
         }
 
-        // Find a matching league in our database
+        // Find a matching league in our db
         const league = await db("leagues")
             .where("name", leagueName)
             .andWhere("country_code", country.code)
             .first();
 
+        // Only save if there is a matching pair that exists on both ours and the bookmaker's db
         if (league) {
             console.log(
                 `✅ Matched league: ${league.name} (Source: ${league.name}) for ${country.name}`
@@ -163,6 +173,21 @@ class FetchBetPawaLeagueService {
             );
         }
     }
+}
+
+interface League {
+    id: string;
+    name: string;
+}
+
+interface Country {
+    name: string;
+    id: string;
+    leagues: League[]
+}
+
+interface SourceLeague {
+    competition: League;
 }
 
 export default new FetchBetPawaLeagueService();
