@@ -1,4 +1,6 @@
 import {db} from "../../infrastructure/database/Database";
+import {SourceLeague} from "../interfaces/BetPawa/SourceLeague";
+import {Country} from "../interfaces/BetPawa/Country";
 
 class FetchBetPawaLeagueService {
     // Sport category 2 is football.
@@ -126,6 +128,7 @@ class FetchBetPawaLeagueService {
         // Find a matching country in our db
         const country = await db("countries")
             .where("name", countryName)
+            .andWhere("is_active", true)
             .first();
 
         if (!country) {
@@ -139,7 +142,7 @@ class FetchBetPawaLeagueService {
             .andWhere("country_code", country.code)
             .first();
 
-        // Only save if there is a matching pair that exists on both ours and the bookmaker's db
+        // Only save if there is a matching pair that exists on both ours and the source's db
         if (league) {
             console.log(
                 `✅ Matched league: ${league.name} (Source: ${league.name}) for ${country.name}`
@@ -173,21 +176,6 @@ class FetchBetPawaLeagueService {
             );
         }
     }
-}
-
-interface League {
-    id: string;
-    name: string;
-}
-
-interface Country {
-    name: string;
-    id: string;
-    leagues: League[]
-}
-
-interface SourceLeague {
-    competition: League;
 }
 
 export default new FetchBetPawaLeagueService();

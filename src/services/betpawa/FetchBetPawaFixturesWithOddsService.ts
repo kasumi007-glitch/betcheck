@@ -1,46 +1,30 @@
 import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import MarketType from "../../models/MarketType";
-import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
-import {MarketObj} from "../interfaces/MarketObj";
 import {teamNameMappings} from "../teamNameMappings";
+import {EventResponse} from "../interfaces/BetPawa/EventResponse";
+import {ResponseData} from "../interfaces/BetPawa/ResponseData";
+import {QueryObject} from "../interfaces/BetPawa/QueryObject";
 
-//for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchBetPawaFixturesWithOddsService {
-    private readonly apiUrlTemplate =
-        `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q={encodeURIComponent(JSON.stringify({
-          queries: [{
-            query: {
-              eventType: eventType,
-              categories: [categoryId],
-              zones: {},
-              hasOdds: true
-            },
-            view: {
-              marketTypes: [marketType]
-            },
-            skip: skip,
-            take: take
-          }]
-        }))}`;
     private readonly sourceName = "BetPawa";
     private sourceId!: number;
 
-    // 1) Market ID → Market Name
+    // Map the source market ID → Market Name
     private readonly marketMapping: Record<number, string> = {
         3743: "1X2",
         5000: "Over / Under",
         3795: "Both Teams to Score",
     };
 
-    // 2) Market Name → Group Name
+    // Map market name to group name
     private readonly marketGroupMapping: Record<string, string> = {
         "1X2": "Main",
         "Over / Under": "Main",
         "Both Teams to Score": "Main",
     };
 
-    // 3) Outcome Name Mapping
+    // Outcome name mapping
     private readonly outcomeIdNewMapping: Record<number, string> = {
         3744: "1",
         3745: "X",
@@ -54,7 +38,6 @@ class FetchBetPawaFixturesWithOddsService {
     private dbMarkets: Market[] = [];
     private dbMarketTypes: MarketType[] = [];
 
-// sport, category, tournament
     async initialize() {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
@@ -74,50 +57,39 @@ class FetchBetPawaFixturesWithOddsService {
         const marketTypeIds = Object.keys(this.marketMapping);
 
         for (const marketTypeId of marketTypeIds) {
-            // Todo: remove to load other market types (test)
-            if (marketTypeId == "3743") {
-                // Fetch active leagues linked to BetPawa
-                const leagues = await db("source_league_matches")
-                    .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-                    .select(
-                        "source_league_matches.source_league_id",
-                        "leagues.external_id as league_id"
-                    )
-                    .where("source_league_matches.source_id", this.sourceId)
-                    .andWhere("leagues.is_active", true);
+            // TODO: Remove/add test.
+            // if (marketTypeId == "3743") {
+            const marketName = this.marketMapping[Number(marketTypeId)];
+            const events = await this.fetchAllFixtures(marketName, marketTypeId);
 
-                for (const league of leagues) {
-                    await this.fetchAndProcessFixtures(
-                        league.source_league_id,
-                        league.league_id,
-                        marketTypeId
-                    );
+            // Fetch active leagues linked to BetPawa
+            const leagues = await db("source_league_matches")
+                .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+                .select(
+                    "source_league_matches.source_league_id",
+                    "leagues.external_id as league_id"
+                )
+                .where("source_league_matches.source_id", this.sourceId)
+                .andWhere("leagues.is_active", true);
+
+            for (const league of leagues) {
+                for (const event of events) {
+                    if (event.competition.id === league.source_league_id) {
+                        await this.fetchAndProcessFixtures(
+                            league.source_league_id,
+                            league.league_id,
+                            event
+                        );
+                    }
                 }
             }
-
+            // }
         }
 
         console.log(`✅ Fixtures synced successfully from ${this.sourceName}!`);
     }
 
-    private async fetchData(apiUrl: string, requestOptions: RequestInit) {
-        try {
-            const response = await fetch(apiUrl, requestOptions);
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return;
-        }
-    }
-
-    private async fetchAndProcessFixtures(
-        sourceLeagueId: string,
-        leagueId: number,
-        marketTypeId: string,
-    ) {
-        const marketName = this.marketMapping[Number(marketTypeId)];
-
+    private async fetchAllFixtures(marketName: string, marketTypeId: string): Promise<EventResponse[]> {
         const myHeaders = new Headers();
         myHeaders.append("accept", "*/*");
         myHeaders.append("accept-language", "en-US,en;q=0.9");
@@ -144,57 +116,89 @@ class FetchBetPawaFixturesWithOddsService {
         };
 
         const eventTypeName = "UPCOMING";
-        const sportId = ["2"];
-        const skip = 0; // Todo: make this dynamic
-        const take = 100;
+        const sportId = ["2"]; // Football.
+        const take = 100; // Max is 100.
 
-        const queryObject = {
-            queries: [
-                {
-                    query: {
-                        eventType: eventTypeName,
-                        categories: sportId,
-                        zones: {},
-                        hasOdds: true
-                    },
-                    view: {
-                        marketTypes: [marketTypeId]
-                    },
-                    skip: skip,
-                    take: take
+        let skip = 0;
+        let hasMoreData = true;
+        let allFixtures: EventResponse[] = [];
+
+        while (hasMoreData) {
+            const queryObject: QueryObject = {
+                queries: [
+                    {
+                        query: {
+                            eventType: eventTypeName,
+                            categories: sportId,
+                            zones: {},
+                            hasOdds: true
+                        },
+                        view: {
+                            marketTypes: [marketTypeId]
+                        },
+                        skip: skip,
+                        take: take
+                    }
+                ]
+            };
+
+            const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
+
+            try {
+                const response: ResponseData = await this.fetchData(apiUrl, requestOptions);
+
+                if (!response?.responses?.length) {
+                    console.warn(`⚠️ No more fixtures received for market type ${marketName}, ID: ${marketTypeId}`);
+                    hasMoreData = false;
+                    break;
                 }
-            ]
-        };
 
-        const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
+                // Accumulate data
+                response.responses.forEach((res) => {
+                    allFixtures = allFixtures.concat(res.responses);
+                });
 
-        const response = await this.fetchData(apiUrl, requestOptions);
-
-        if (!response?.responses?.length) {
-            console.warn(`⚠️ No fixtures received for league  ID: ${sourceLeagueId}`);
-            return;
+                // Check if we got less than `take`, meaning no more pages
+                if (response.responses[0].responses.length < take) {
+                    hasMoreData = false;
+                } else {
+                    skip += take;
+                }
+            } catch (error) {
+                console.error("Error fetching fixtures:", error);
+                hasMoreData = false;
+            }
         }
 
-        const responseData = response?.responses;
-        for (const fixtureData of responseData) {
-            if (!fixtureData?.responses?.length) return false;
+        return allFixtures;
+    }
 
-            for (const fixture of fixtureData.responses) {
-                const isFixtureProcessed = await this.processFixture(
-                    fixture,
-                    leagueId,
-                    sourceLeagueId
-                );
-                console.log(fixture,
-                    'fixture')
-                if (isFixtureProcessed) {
-                    await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-                } else {
-                    console.warn(
-                        `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
-                    );
-                }
-            }
+    private async fetchData(apiUrl: string, requestOptions: RequestInit) {
+        try {
+            const response = await fetch(apiUrl, requestOptions);
+            return response.json();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return;
+        }
+    }
+
+    private async fetchAndProcessFixtures(
+        sourceLeagueId: string,
+        leagueId: number,
+        fixture: EventResponse
+    ) {
+        const isFixtureProcessed = await this.processFixture(
+            fixture,
+            leagueId,
+            sourceLeagueId
+        );
+        if (isFixtureProcessed) {
+            await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
+        } else {
+            console.warn(
+                `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
+            );
         }
     }
 
@@ -307,12 +311,10 @@ class FetchBetPawaFixturesWithOddsService {
             return;
         }
 
-        // Process each "marketObj" in Markets
         const markets = fixtureData.markets;
 
         for (const marketObj of markets) {
-
-            // the market ID
+            // Market ID
             const marketId = marketObj.marketType.id; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
@@ -333,8 +335,8 @@ class FetchBetPawaFixturesWithOddsService {
             }
 
             for (const outcomeData of marketObj.prices) {
-                // the outcome ID we want to map
-                const outcomeId = outcomeData.typeId; // e.g. 221
+                // The outcome ID we want to map
+                const outcomeId = outcomeData.typeId; // e.g. 3744 '1'
 
                 const outcome = this.outcomeIdNewMapping[outcomeId];
 
@@ -356,18 +358,16 @@ class FetchBetPawaFixturesWithOddsService {
                     sourceFixtureId
                 );
             }
-            //     // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
+            // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
         }
     }
 
     private async getMarkets(): Promise<Market[]> {
-        let row: Market[] = await db("markets");
-        return row;
+        return db("markets");
     }
 
     private async getMarketTypes(): Promise<MarketType[]> {
-        let row: MarketType[] = await db("market_types");
-        return row;
+        return db("market_types");
     }
 
     private async saveMarketOutcome(
@@ -399,8 +399,6 @@ class FetchBetPawaFixturesWithOddsService {
     }
 }
 
-// Export and initialize
-const fetchBetPawaFixturesWithOddsService =
-    new FetchBetPawaFixturesWithOddsService();
+const fetchBetPawaFixturesWithOddsService = new FetchBetPawaFixturesWithOddsService();
 
 export default fetchBetPawaFixturesWithOddsService;
