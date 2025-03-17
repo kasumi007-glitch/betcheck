@@ -2,7 +2,6 @@ import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import MarketType from "../../models/MarketType";
 import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
-import {MarketObj} from "../interfaces/MarketObj";
 import {teamNameMappings} from "../teamNameMappings";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
@@ -125,6 +124,7 @@ class FetchAkwaBetFixturesWithOddsService {
             );
 
             if (isFixtureProcessed) {
+                console.log('testetetete')
                 await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
             } else {
                 console.warn(
@@ -337,7 +337,6 @@ class FetchAkwaBetFixturesWithOddsService {
 }
 
 // Export and initialize
-const fetchAkwaBetFixturesWithOddsService =
-    new FetchAkwaBetFixturesWithOddsService();
+const fetchAkwaBetFixturesWithOddsService = new FetchAkwaBetFixturesWithOddsService();
 
 export default fetchAkwaBetFixturesWithOddsService;

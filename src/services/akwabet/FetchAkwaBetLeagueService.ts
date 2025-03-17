@@ -80,6 +80,7 @@ class FetchAkwaBetLeagueService {
         // Find country by country code
         const country = await db("countries")
             .where("name", countryName)
+            .andWhere("is_active", true)
             .first();
         if (!country) {
             console.warn(`⚠️ Country with external_id ${countryId} not found.`);
