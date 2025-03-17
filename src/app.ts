@@ -108,8 +108,8 @@ const processData = async () => {
     // await fetchGuineeGamesLeagueService.init();
     // await fetchGuineeGamesLeagueService.syncLeagues();
 
-    // await fetchGuineeGamesFixturesWithOddsService.initialize();
-    // await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
+    await fetchGuineeGamesFixturesWithOddsService.initialize();
+    await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
 
 
     // AkwaBet

@@ -7,7 +7,7 @@ import {teamNameMappings} from "../teamNameMappings";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchGuineeGamesFixturesWithOddsService {
     private readonly apiUrlTemplate =
-        "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=fr&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
+        "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=en&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
 
     private readonly sourceName = "GuineeGames";
     private sourceId!: number;
@@ -27,7 +27,7 @@ class FetchGuineeGamesFixturesWithOddsService {
     };
 
     // 3) Outcome Name Mapping
-    private readonly outcomeNameNewMapping: Record<number, string> = {
+    private readonly outcomeIdNameMapping: Record<number, string> = {
         615: "1",
         616: "X",
         617: "2",
@@ -71,7 +71,6 @@ class FetchGuineeGamesFixturesWithOddsService {
             const sourceMarketIds = Object.keys(this.marketMapping);
 
             for (const sourceMarketId of sourceMarketIds) {
-                console.log(sourceMarketId, 'source Market')
                 await this.fetchAndProcessFixtures(
                     league.source_league_id,
                     league.league_id,
@@ -96,13 +95,13 @@ class FetchGuineeGamesFixturesWithOddsService {
             sourceMarketId
         );
 
-        // TODO: Remove this test
+        // TODO: Add/remove test
         // const apiUrl = this.apiUrlTemplate.replace(
         //     "{sourceLeagueId}",
         //     '1030903'
         // ).replace(
         //     "{sourceMarketId}",
-        //     '3'
+        //     '7'
         // );
 
         const response = await fetchFromApi(apiUrl);
@@ -131,6 +130,10 @@ class FetchGuineeGamesFixturesWithOddsService {
                 }
 
                 for (const fixture of fixtures) {
+                    if (!fixture?.markets?.length) {
+                        console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
+                        return;
+                    }
                     const isFixtureProcessed = await this.processFixture(
                         fixture,
                         leagueId,
@@ -138,8 +141,7 @@ class FetchGuineeGamesFixturesWithOddsService {
                     );
 
                     if (isFixtureProcessed) {
-                        console.log('hereeeeeeeeeeeeeeeeeee')
-                        await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
+                       await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
                     } else {
                         console.warn(
                             `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
@@ -158,15 +160,8 @@ class FetchGuineeGamesFixturesWithOddsService {
         const {
             id: sourceFixtureId,
             startTime: startTime,
-            eventNames: competingTeams,
-            markets: markets
+            eventNames: competingTeams
         } = fixture;
-
-
-        console.log(markets[0].outcomes[0].id); // outcomeId
-        console.log(markets[0].outcomes[0].value); // outcomeName
-
-
         const homeTeamRaw = competingTeams[0];
         const awayTeamRaw = competingTeams[1];
 
@@ -239,7 +234,7 @@ class FetchGuineeGamesFixturesWithOddsService {
         sourceLeagueId: string
     ) {
         const {id: sourceFixtureId} = fixtureData;
-        console.log(sourceFixtureId, 'id')
+
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
@@ -274,67 +269,63 @@ class FetchGuineeGamesFixturesWithOddsService {
         const markets = fixtureData.markets;
 
         for (const market of markets) {
-            console.log(market, 'market')
             // The market ID
-            // const marketId = market.market_id; // e.g. 7 => "Correct Score" // market_id
-            //
-            // // Map to Market Name
-            // const marketName = this.marketMapping[marketId];
-            //
-            // // // find market
-            // const dbMarket = this.dbMarkets.find(
-            //     (market) => market.name === marketName
-            // );
-            // if (!dbMarket) {
-            //     console.warn(`❌ No 'Market Found' : ${marketName}`);
-            //     continue;
-            // }
-            //
-            // if (!market?.rows?.length) {
-            //     console.warn(`❌ No 'Odds Found' : ${marketName}`);
-            //     continue;
-            // }
-            //
-            // const odds = market.rows[0].odds;
-            //
-            // for (const odd of odds) {
-            //     // The outcome code we want to map
-            //     const outcomeCode = odd.code;
-            //
-            //     const outcome = this.outcomeNameNewMapping[outcomeCode];
-            //
-            //     const dbMarketType = this.dbMarketTypes.find(
-            //         (marketType) =>
-            //             marketType.name === outcome && marketType.market_id === dbMarket.id
-            //     );
-            //
-            //     if (!dbMarketType) {
-            //         console.warn(`❌ No 'Market Type Found' : ${marketName}`);
-            //         continue;
-            //     }
-            //     console.log(marketName, fixture.id)
-            //     // If there's a single coefficient .value, store as an outcome
-            //     await this.saveMarketOutcome(
-            //         dbMarketType.id,
-            //         Number(odd.value),
-            //         dbMarket.id,
-            //         fixture.id,
-            //         sourceFixtureId
-            //     );
-            // }
+            const marketId = market.id; // e.g. 7 => "Correct Score" // market_id
+
+            // Map to Market Name
+            const marketName = this.marketMapping[marketId];
+
+            // // find market
+            const dbMarket = this.dbMarkets.find(
+                (market) => market.name === marketName
+            );
+            if (!dbMarket) {
+                console.warn(`❌ No 'Market Found' : ${marketName}`);
+                continue;
+            }
+
+            if (!market?.outcomes?.length) {
+                console.warn(`❌ No 'Odds Found' : ${marketName}`);
+                continue;
+            }
+
+            const odds = market.outcomes;
+
+            for (const odd of odds) {
+                // The outcome code we want to map
+                const outcomeId = odd.id;
+
+                const outcome = this.outcomeIdNameMapping[outcomeId];
+
+                const dbMarketType = this.dbMarketTypes.find(
+                    (marketType) =>
+                        marketType.name === outcome && marketType.market_id === dbMarket.id
+                );
+
+                if (!dbMarketType) {
+                    console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+                    continue;
+                }
+                // If there's a single coefficient .value, store as an outcome
+                await this.saveMarketOutcome(
+                    dbMarketType.id,
+                    Number(odd.value),
+                    dbMarket.id,
+                    fixture.id,
+                    sourceFixtureId
+                );
+            }
 
             // If you also have multiple "outcomes" in market.ME or market.outcomes, you’d loop them similarly
         }
     }
 
     private async getMarkets(): Promise<Market[]> {
-        let row: Market[] = await db("markets");
-        return row;
+        return db("markets");
     }
 
     private async getMarketTypes(): Promise<MarketType[]> {
-        let row: MarketType[] = await db("market_types");
-        return row;
+        return db("market_types");
     }
 
     private async saveMarketOutcome(
@@ -367,7 +358,6 @@ class FetchGuineeGamesFixturesWithOddsService {
 }
 
 // Export and initialize
-const fetchGuineeGamesFixturesWithOddsService =
-    new FetchGuineeGamesFixturesWithOddsService();
+const fetchGuineeGamesFixturesWithOddsService = new FetchGuineeGamesFixturesWithOddsService();
 
 export default fetchGuineeGamesFixturesWithOddsService;

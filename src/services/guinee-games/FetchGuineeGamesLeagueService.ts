@@ -4,7 +4,7 @@ import {leagueNameMappings} from "../leagueNameMappings";
 
 class FetchGuineeGamesLeagueService {
     private readonly apiUrl =
-        "https://sports-api.guineegames.com/v1/competitions?country=GN&group=g6&platform=desktop&locale=fr&timeOffset=-180&sportId=1";
+        "https://sports-api.guineegames.com/v1/competitions?country=GN&group=g6&platform=desktop&locale=en&timeOffset=-180&sportId=1";
     private readonly sourceName = "GuineeGames";
     private sourceId!: number;
 
