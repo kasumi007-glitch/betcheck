@@ -1,6 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
+import Group from "../../models/Group";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { teamNameMappings } from "../teamNameMappings";
 
@@ -41,9 +41,11 @@ class FetchYellowBetFixturesWithOddsService {
     "https://yellowbet.com.gn/services/evapi/event/GetEvents?betTypeIds=-1&take=100&statusId=0&eventTypeId=0&leagueIds={sourceLeagueId}";
   private readonly sourceName = "YellowBet";
   private sourceId!: number;
+  private fetchFixture!: boolean;
+  private fetchOdd!: boolean;
 
   // 1) Market ID → Market Name
-  private readonly marketMapping: Record<string, string> = {
+  private readonly groupMapping: Record<string, string> = {
     "FT 1X2": "1X2",
     "Under/Over": "Over / Under",
     "GG/NG": "Both Teams to Score",
@@ -60,8 +62,8 @@ class FetchYellowBetFixturesWithOddsService {
     No: "No",
   };
 
+  private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
-  private dbMarketTypes: MarketType[] = [];
 
   async initialize() {
     // Ensure the source exists
@@ -74,11 +76,14 @@ class FetchYellowBetFixturesWithOddsService {
       this.sourceId = source.id;
     }
     // Load markets and market types from the database
+    this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
-    this.dbMarketTypes = await this.getMarketTypes();
   }
 
-  async syncFixtures() {
+  async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+    await this.initialize();
+    this.fetchFixture = fetchFixture;
+    this.fetchOdd = fetchOdd;
     console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
     // Get source league IDs mapped for YellowBet from your DB table
@@ -107,8 +112,10 @@ class FetchYellowBetFixturesWithOddsService {
       }
 
       for (const fixture of response.data) {
-        const processed = await this.processFixture(fixture, league.league_id);
-        if (processed) {
+        if (this.fetchFixture) {
+          await this.processFixture(fixture, league.league_id);
+        }
+        if (this.fetchOdd) {
           await this.processOdds(fixture);
         } else {
           console.warn(
@@ -222,17 +229,17 @@ class FetchYellowBetFixturesWithOddsService {
 
     for (const betType of fixture.bts) {
       // Use the bet type id to look up the market name using marketMapping
-      const marketName = this.marketMapping[betType.n];
-      if (!marketName) {
+      const groupName = this.groupMapping[betType.n];
+      if (!groupName) {
         // Skip bet types not defined in the mapping
         continue;
       }
 
       // Find matching market in your DB by name.
-      const dbMarket = this.dbMarkets.find((m) => m.name === marketName);
-      if (!dbMarket) {
+      const dbGroup = this.dbGroups.find((m) => m.group_name === groupName);
+      if (!dbGroup) {
         console.warn(
-          `❌ No market found for "${marketName}" in fixture ${sourceFixtureId}`
+          `❌ No Group found for "${groupName}" in fixture ${sourceFixtureId}`
         );
         continue;
       }
@@ -254,14 +261,14 @@ class FetchYellowBetFixturesWithOddsService {
         }
 
         // Find matching market type in your DB.
-        const dbMarketType = this.dbMarketTypes.find(
+        const dbMarket = this.dbMarkets.find(
           (mt) =>
-            mt.name.toLowerCase() === outcome.toLowerCase() &&
-            mt.market_id === dbMarket.id
+            mt.market_name.toLowerCase() === outcome.toLowerCase() &&
+            mt.group_id === dbGroup.group_id
         );
-        if (!dbMarketType) {
+        if (!dbMarket) {
           console.warn(
-            `❌ No market type found for outcome "${outcome}" in market "${marketName}"`
+            `❌ No market found for outcome "${outcome}" in market "${groupName}"`
           );
           continue;
         }
@@ -275,9 +282,9 @@ class FetchYellowBetFixturesWithOddsService {
         }
 
         await this.saveMarketOutcome(
-          dbMarketType.id,
+          dbGroup.group_id,
           coefficient,
-          dbMarket.id,
+          dbMarket.market_id,
           fixtureRecord.id,
           sourceFixtureId
         );
@@ -285,33 +292,33 @@ class FetchYellowBetFixturesWithOddsService {
     }
   }
 
+  private async getGroups(): Promise<Group[]> {
+    return await db("groups");
+  }
+
   private async getMarkets(): Promise<Market[]> {
     return await db("markets");
   }
 
-  private async getMarketTypes(): Promise<MarketType[]> {
-    return await db("market_types");
-  }
-
   private async saveMarketOutcome(
-    marketTypeId: number,
+    groupId: number,
     coefficient: number,
     marketId: number,
     fixtureId: number,
     externalSourceFixtureId: string
   ) {
-    await db("odds")
+    await db("fixture_odds")
       .insert({
+        group_id: groupId,
         market_id: marketId,
-        market_type_id: marketTypeId,
         coefficient,
         fixture_id: fixtureId,
         external_source_fixture_id: externalSourceFixtureId,
         source_id: this.sourceId,
       })
       .onConflict([
+        "group_id",
         "market_id",
-        "market_type_id",
         "fixture_id",
         "external_source_fixture_id",
         "source_id",

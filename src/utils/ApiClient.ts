@@ -8,7 +8,10 @@ const proxies = [
 
 let proxyIndex = 0; // ✅ Track which proxy is being used
 
-export const fetchFromApi = async (url: string) => {
+export const fetchFromApi = async (
+  url: string,
+  options?: AxiosRequestConfig
+) => {
   try {
     // ✅ Select and Rotate Proxy
     const proxy = proxies[proxyIndex];
@@ -25,16 +28,18 @@ export const fetchFromApi = async (url: string) => {
 
     console.log(`🌍 Using Proxy: ${proxyUrl}`);
 
-    // ✅ Axios Request Configuration
-    const axiosConfig: AxiosRequestConfig = {
+    // ✅ Default Axios Request Configuration
+    const defaultConfig: AxiosRequestConfig = {
       httpsAgent: proxyAgent,
-      timeout: 20000, // Increased timeout to 20s
+      timeout: 20000, // 20 seconds timeout,
     };
+
+    // Merge any additional options (such as headers)
+    const axiosConfig: AxiosRequestConfig = { ...defaultConfig, ...options };
 
     // ✅ Make API Call
     const response = await axios.get(url, axiosConfig);
     return response.data;
-
   } catch (error: any) {
     console.error(`❌ Error fetching data: ${error.message}`);
 

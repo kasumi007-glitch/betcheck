@@ -172,7 +172,4 @@ class FetchMegaPariFixturesService {
   }
 }
 
-// Export and initialize
-const fetchMegaPariFixturesService = new FetchMegaPariFixturesService();
-
-export default fetchMegaPariFixturesService;
+export default new FetchMegaPariFixturesService();
