@@ -7,11 +7,10 @@ const proxies = [
 ];
 
 let proxyIndex = 0; // ✅ Track which proxy is being used
+
 export const fetchFromApi = async (
-    url: string,
-    method: "GET" | "POST" = "GET", // Default to GET
-    data: any = null, // Optional request body
-    headers: Record<string, string> = {} // Optional headers
+  url: string,
+  options?: AxiosRequestConfig
 ) => {
   try {
     // ✅ Select and Rotate Proxy
@@ -29,20 +28,18 @@ export const fetchFromApi = async (
 
     console.log(`🌍 Using Proxy: ${proxyUrl}`);
 
-    // ✅ Axios Request Configuration
-    const axiosConfig: AxiosRequestConfig = {
-      method,
-      url,
+    // ✅ Default Axios Request Configuration
+    const defaultConfig: AxiosRequestConfig = {
       httpsAgent: proxyAgent,
-      timeout: 20000,
-      headers,
-      ...(data && { data }), // Add data only if present
+      timeout: 20000, // 20 seconds timeout,
     };
 
-    // ✅ Make API Call
-    const response = await axios(axiosConfig);
-    return response.data;
+    // Merge any additional options (such as headers)
+    const axiosConfig: AxiosRequestConfig = { ...defaultConfig, ...options };
 
+    // ✅ Make API Call
+    const response = await axios.get(url, axiosConfig);
+    return response.data;
   } catch (error: any) {
     console.error(`❌ Error fetching data: ${error.message}`);
 

@@ -1,6 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
+import Group from "../../models/Group";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { MarketObj } from "../interfaces/MarketObj";
 
@@ -12,14 +12,14 @@ class AddPremierBetOddService {
   private sourceId!: number;
 
   // 1) Market ID → Market Name
-  private readonly marketMapping: Record<number, string> = {
+  private readonly groupMapping: Record<number, string> = {
     3: "1X2",
     29: "Over / Under",
     7: "Both Teams to Score",
   };
 
+  private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
-  private dbMarketTypes: MarketType[] = [];
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -31,11 +31,12 @@ class AddPremierBetOddService {
       this.sourceId = source.id;
     }
 
+    this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
-    this.dbMarketTypes = await this.getMarketTypes();
   }
 
   async syncOdds() {
+    await this.init();
     console.log("🚀 Fetching odds data...");
 
     // Fetch all countries and leagues from the database
@@ -98,7 +99,7 @@ class AddPremierBetOddService {
 
     // Process each "marketObj" in E
     const filteredData = marketGroup.markets.filter((match: MarketObj) =>
-      Object.keys(this.marketMapping).includes(String(match.id))
+      Object.keys(this.groupMapping).includes(String(match.id))
     );
 
     if (!filteredData?.length) {
@@ -116,12 +117,12 @@ class AddPremierBetOddService {
     market: any
   ) {
     // find market
-    const dbMarket = this.dbMarkets.find(
-      (marketData) => marketData.name === market.name
+    const dbGroup = this.dbGroups.find(
+      (marketData) => marketData.group_name === market.name
     );
 
-    if (!dbMarket) {
-      console.warn(`❌ No 'Market Found' : ${market.name}`);
+    if (!dbGroup) {
+      console.warn(`❌ No 'Group Found' : ${market.name}`);
       return;
     }
 
@@ -134,56 +135,54 @@ class AddPremierBetOddService {
         continue;
       }
 
-      const dbMarketType = this.dbMarketTypes.find(
+      const dbMarket = this.dbMarkets.find(
         (marketType) =>
-          marketType.name === outcome.name &&
-          marketType.market_id === dbMarket.id
+          marketType.market_name === outcome.name &&
+          marketType.group_id === dbGroup.group_id
       );
 
-      if (!dbMarketType) {
-        console.warn(`❌ No 'Market Type Found' : ${outcome.name}`);
+      if (!dbMarket) {
+        console.warn(`❌ No 'Market Found' : ${outcome.name}`);
         continue;
       }
 
       await this.saveMarketOutcome(
-        dbMarketType.id,
+        dbGroup.group_id,
         outcome.value,
-        dbMarket.id,
+        dbMarket.market_id,
         fixtureId,
         sourceFixtureId
       );
     }
   }
 
-  private async getMarkets(): Promise<Market[]> {
-    let row: Market[] = await db("markets");
-    return row;
+  private async getGroups(): Promise<Group[]> {
+    return await db("groups");
   }
 
-  private async getMarketTypes(): Promise<MarketType[]> {
-    let row: MarketType[] = await db("market_types");
-    return row;
+  private async getMarkets(): Promise<Market[]> {
+    return await db("markets");
   }
 
   private async saveMarketOutcome(
-    marketTypeId: number,
+    groupId: number,
     coefficient: number,
     marketId: number,
     fixtureId: number,
     externalSourceFixtureId: string
   ) {
-    await db("odds")
+    await db("fixture_odds")
       .insert({
+        group_id: groupId,
         market_id: marketId,
-        market_type_id: marketTypeId,
         coefficient,
         fixture_id: fixtureId,
         external_source_fixture_id: externalSourceFixtureId,
         source_id: this.sourceId,
       })
       .onConflict([
+        "group_id",
         "market_id",
-        "market_type_id",
         "fixture_id",
         "external_source_fixture_id",
         "source_id",

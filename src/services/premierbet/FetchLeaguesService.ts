@@ -22,6 +22,7 @@ class FetchLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching leagues data...");
     const response = await fetchFromApi(this.apiUrl);
 

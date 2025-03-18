@@ -1,10 +1,10 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClient";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchFixturesService {
-  private readonly apiUrl =
-    "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId=1008226&isGroup=false";
+  private readonly apiUrlTemplate =
+    "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
 
   private readonly sourceName = "PremierBet";
   private sourceId!: number;
@@ -21,30 +21,57 @@ class FetchFixturesService {
   }
 
   async syncFixtures() {
+    await this.init();
     console.log("🚀 Fetching competitions data...");
-    const response = await fetchFromApi(this.apiUrl);
 
-    if (!response?.data?.categories.length) {
-      console.warn("⚠️ No data received from API.");
+    // Get all leagues for ONEBET from the source_league_matches table
+    const leagues = await db("source_league_matches")
+      .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+      .select(
+        "source_league_matches.source_league_id",
+        "leagues.external_id as league_id",
+        "source_league_matches.source_country_name as country_name"
+      )
+      .where("source_league_matches.source_id", this.sourceId)
+      .andWhere("source_league_matches.source_league_id", "1008226");
+
+    if (!leagues.length) {
+      console.warn("⚠️ No leagues found for ONEBET in our database.");
       return;
     }
 
-    for (const category of response.data.categories) {
-      for (const competition of category.competitions) {
-        await this.processCompetition(competition);
+    for (const league of leagues) {
+      const leagueId = league.source_league_id;
+      const apiUrl = this.apiUrlTemplate.replace(
+        "{leagueId}",
+        String(leagueId)
+      );
+      const response = await httpClientFromApi(apiUrl);
+      if (!response?.data?.categories.length) {
+        console.warn("⚠️ No data received from API.");
+        return;
+      }
+      for (const category of response.data.categories) {
+        for (const competition of category.competitions) {
+          await this.processCompetition(competition, league);
+        }
       }
     }
 
     console.log("✅ Competitions data synced successfully!");
   }
 
-  private async processCompetition(competition: any) {
+  private async processCompetition(competition: any, league: any) {
     for (const event of competition.events) {
-      await this.matchAndStoreEvent(event, competition.id);
+      await this.matchAndStoreEvent(event, competition.id, league);
     }
   }
 
-  private async matchAndStoreEvent(event: any, competitionId: string) {
+  private async matchAndStoreEvent(
+    event: any,
+    competitionId: string,
+    league: any
+  ) {
     const { id: sourceFixtureId, eventNames, startTime } = event;
 
     const eventDate = new Date(startTime);
@@ -68,26 +95,27 @@ class FetchFixturesService {
           [`%${homeTeam}%`, `%${awayTeam}%`]
         )
         .andWhere("date", ">=", today)
+        .andWhere("leagues.external_id", league.league_id)
         .first();
 
-      if (!fixture) {
-        console.log(`🔍 No exact match found. Trying fuzzy match...`);
+      // if (!fixture) {
+      //   console.log(`🔍 No exact match found. Trying fuzzy match...`);
 
-        // Fuzzy match with similarity check
-        fixture = await db("fixtures")
-          .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
-          .select(
-            "fixtures.*",
-            "leagues.id as parent_league_id",
-            "leagues.name as league_name"
-          )
-          .whereRaw(
-            `SIMILARITY(LOWER(home_team_name), LOWER(?)) > 0.6 AND SIMILARITY(LOWER(away_team_name), LOWER(?)) > 0.6`,
-            [homeTeam, awayTeam]
-          )
-          .andWhere("date", ">=", today)
-          .first();
-      }
+      //   // Fuzzy match with similarity check
+      //   fixture = await db("fixtures")
+      //     .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+      //     .select(
+      //       "fixtures.*",
+      //       "leagues.id as parent_league_id",
+      //       "leagues.name as league_name"
+      //     )
+      //     .whereRaw(
+      //       `SIMILARITY(LOWER(home_team_name), LOWER(?)) > 0.6 AND SIMILARITY(LOWER(away_team_name), LOWER(?)) > 0.6`,
+      //       [homeTeam, awayTeam]
+      //     )
+      //     .andWhere("date", ">=", today)
+      //     .first();
+      // }
 
       if (fixture) {
         console.log(`✅ Matched fixture for event: ${homeTeam} vs ${awayTeam}`);
