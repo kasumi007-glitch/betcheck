@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import FetchGroupService from "./services/fetchAndDumpService";
 import FetchOddService from "./services/fetchOddService ";
 import FetchMatchService from "./services/fetchMatchService";
-import { openWebsiteWithProxy } from "./utils/puppeteer-proxy"; // ✅ Import Puppeteer Function
+import {openWebsiteWithProxy} from "./utils/puppeteer-proxy"; // ✅ Import Puppeteer Function
 import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchPremierBetFixtureService from "./services/premierbet/FetchFixturesService";
 import FetchPremierBetLeagueService from "./services/premierbet/FetchLeaguesService";
@@ -52,14 +52,21 @@ import fetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService
 import fetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
 import fetchGeniusBetLeagueService from "./services/geniusbet/FetchGeniusBetLeagueService";
 import fetchGeniusBetFixturesWithOddsService from "./services/geniusbet/FetchGeniusBetFixturesWithOddsService";
+import saveGeniusBetLeaguesWithFixturesService from "./services/geniusbet/SaveGeniusBetLeaguesWithFixturesService";
 import fetchGuineeGamesLeagueService from "./services/guinee-games/FetchGuineeGamesLeagueService";
 import fetchGuineeGamesFixturesWithOddsService from "./services/guinee-games/FetchGuineeGamesFixturesWithOddsService";
+import saveGuineeGamesLeaguesWithFixturesService
+    from "./services/guinee-games/SaveGuineeGamesLeaguesWithFixturesService";
 import fetchAkwaBetLeagueService from "./services/akwabet/FetchAkwaBetLeagueService";
 import fetchAkwaBetFixturesWithOddsService from "./services/akwabet/FetchAkwaBetFixturesWithOddsService";
 import fetchBetPawaLeagueService from "./services/betpawa/FetchBetPawaLeagueService";
 import fetchBetPawaFixturesWithOddsService from "./services/betpawa/FetchBetPawaFixturesWithOddsService";
 import fetch1xBetFixturesWithOddsService from "./services/1xbet/Fetch1xBetFixturesWithOddsService";
 import fetch1xBetLeagueService from "./services/1xbet/Fetch1xBetLeagueService";
+import saveAkwaBetLeaguesWithFixturesService from "./services/akwabet/SaveAkwaBetLeaguesWithFixturesService";
+import saveBetPawaLeaguesWithFixturesService from "./services/betpawa/SaveBetPawaLeaguesWithFixturesService";
+import save1xBetLeaguesWithFixturesService from "./services/1xbet/Save1xBetLeaguesWithFixturesService";
+import saveParipesaLeaguesWithFixturesService from "./services/paripesa/SaveParipesaLeaguesWithFixturesService";
 
 dotenv.config();
 
@@ -76,7 +83,7 @@ const processData = async () => {
     // await FetchPremierBetLeagueService.init();
     // await FetchPremierBetLeagueService.syncLeagues(); //league
     // await FetchPremierBetFixtureService.init();
-    await FetchPremierBetFixtureService.syncFixtures(); //fixture
+    // await FetchPremierBetFixtureService.syncFixtures(); //fixture
     // await AddPremierBetOddService.init();
     // await AddPremierBetOddService.syncOdds();
     // await SavePremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
@@ -147,18 +154,14 @@ const processData = async () => {
     // await FetchSuperGoalOddService.syncOdds();
 
     // 1xBet
-    // await fetch1xBetLeagueService.init();
     // await fetch1xBetLeagueService.syncLeagues();
-    //
-    // await fetch1xBetFixturesWithOddsService.initialize();
     // await fetch1xBetFixturesWithOddsService.syncFixtures();
+    // await save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // Paripesa
-    // await fetchParipesaLeagueService.init();
     // await fetchParipesaLeagueService.syncLeagues();
-    //
-    // await fetchParipesaFixturesWithOddsService.initialize();
     // await fetchParipesaFixturesWithOddsService.syncFixtures();
+    // await saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // LineBet
     // await fetchLineBetLeagueService.init();
@@ -175,33 +178,25 @@ const processData = async () => {
     // await fetchMelBetFixturesWithOddsService.syncFixtures();
 
     // GeniusBet
-    // await fetchGeniusBetLeagueService.init();
     // await fetchGeniusBetLeagueService.syncLeagues();
-    //
-    // await fetchGeniusBetFixturesWithOddsService.initialize();
-    // await fetchGeniusBetFixturesWithOddsService.syncFixtures();
+    // await fetchGeniusBetFixturesWithOddsService.syncFixtures(true, true);
+    // await saveGeniusBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // Guinee Games
-    // await fetchGuineeGamesLeagueService.init();
     // await fetchGuineeGamesLeagueService.syncLeagues();
-
-    await fetchGuineeGamesFixturesWithOddsService.initialize();
-    await fetchGuineeGamesFixturesWithOddsService.syncFixtures();
+    // await fetchGuineeGamesFixturesWithOddsService.syncFixtures(true, true);
+    // await saveGuineeGamesLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
 
     // AkwaBet
-    // await fetchAkwaBetLeagueService.init();
     // await fetchAkwaBetLeagueService.syncLeagues();
-    //
-    // await fetchAkwaBetFixturesWithOddsService.initialize();
-    // await fetchAkwaBetFixturesWithOddsService.syncFixtures();
+    // await fetchAkwaBetFixturesWithOddsService.syncFixtures(true, true);
+    // await saveAkwaBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // BetPawa
-    // await fetchBetPawaLeagueService.init();
     // await fetchBetPawaLeagueService.syncLeagues();
-    //
-    // await fetchBetPawaFixturesWithOddsService.initialize();
-    // await fetchBetPawaFixturesWithOddsService.syncFixtures();
+    // await fetchBetPawaFixturesWithOddsService.syncFixtures(true, true);
+    // await saveBetPawaLeaguesWithFixturesService.syncLeaguesAndFixtures();
 };
 
 processData().catch((error) => {

@@ -1,10 +1,10 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 export const fetchFromApi = async (
-  url: string,
-  method: "GET" | "POST" = "GET", // Default to GET
-  data: any = null, // Optional request body
-  headers: Record<string, string> = {} // Optional headers
+    url: string,
+    method: "GET" | "POST" = "GET", // Default to GET
+    data: any = null, // Optional request body
+    headers: Record<string, string> = {} // Optional headers
 ) => {
   try {
     console.log(`🌍 Fetching: ${url}`);

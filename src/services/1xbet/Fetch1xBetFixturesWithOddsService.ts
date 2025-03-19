@@ -1,6 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
+import Group from "../../models/Group";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { MarketObj } from "../interfaces/MarketObj";
 import { teamNameMappings } from "../teamNameMappings";
@@ -8,12 +8,14 @@ import { teamNameMappings } from "../teamNameMappings";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class Fetch1xBetFixturesWithOddsService {
   private readonly apiUrlTemplate=
-      "https://1xbet.com/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=50&lng=en&tf=2200000&tz=3&mode=4&country=213&getEmpty=true&gr=70 ";
+      "https://1xbet.com/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=50&lng=en&tf=2200000&tz=3&mode=4&country=213&getEmpty=true&gr=70";
   private readonly sourceName = "1xBet";
   private sourceId!: number;
+  private fetchFixture!: boolean;
+  private fetchOdd!: boolean;
 
   // 1) Market ID → Market Name
-  private readonly marketMapping: Record<number, string> = {
+  private readonly groupMapping: Record<number, string> = {
     1: "1X2",
     17: "Over / Under",
     19: "Both Teams to Score",
@@ -38,7 +40,7 @@ class Fetch1xBetFixturesWithOddsService {
   };
 
   private dbMarkets: Market[] = [];
-  private dbMarketTypes: MarketType[] = [];
+  private dbGroups: Group[] = [];
 
   async initialize() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -51,10 +53,14 @@ class Fetch1xBetFixturesWithOddsService {
     }
 
     this.dbMarkets = await this.getMarkets();
-    this.dbMarketTypes = await this.getMarketTypes();
+    this.dbGroups = await this.getGroups();
   }
 
-  async syncFixtures() {
+  async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+    await this.initialize();
+    this.fetchFixture = fetchFixture;
+    this.fetchOdd = fetchOdd;
+
     console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
     // Fetch active leagues linked to 1xBet
@@ -95,13 +101,15 @@ class Fetch1xBetFixturesWithOddsService {
     }
 
     for (const fixture of response.Value) {
-      const isFixtureProcessed = await this.processFixture(
-          fixture,
-          leagueId,
-          sourceLeagueId
-      );
+      if (this.fetchFixture) {
+        await this.processFixture(
+            fixture,
+            leagueId,
+            sourceLeagueId
+        );
+      }
 
-      if (isFixtureProcessed) {
+      if (this.fetchOdd) {
         await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
       } else {
         console.warn(
@@ -222,7 +230,7 @@ class Fetch1xBetFixturesWithOddsService {
 
     // Process each "marketObj" in E
     const filteredData = fixtureData.E.filter((match: MarketObj) =>
-        Object.keys(this.marketMapping).includes(String(match.G))
+        Object.keys(this.groupMapping).includes(String(match.G))
     );
 
     for (const marketObj of filteredData) {
@@ -230,14 +238,14 @@ class Fetch1xBetFixturesWithOddsService {
       const marketId = marketObj.G; // e.g. 7 => "Correct Score"
 
       // 1) Map G => Market Name
-      const marketName = this.marketMapping[marketId];
+      const groupName = this.groupMapping[marketId];
 
       // find market
-      const dbMarket = this.dbMarkets.find(
-          (market) => market.name === marketName
+      const dbGroup = this.dbGroups.find(
+          (market) => market.group_name === groupName
       );
-      if (!dbMarket) {
-        console.warn(`❌ No 'Market Found' : ${marketName}`);
+      if (!dbGroup) {
+        console.warn(`❌ No 'Group Found' : ${groupName}`);
         continue;
       }
 
@@ -246,20 +254,21 @@ class Fetch1xBetFixturesWithOddsService {
 
       const outcome = this.outcomeNameNewMapping[outcomeId];
 
-      const dbMarketType = this.dbMarketTypes.find(
+      const dbMarket = this.dbMarkets.find(
           (marketType) =>
-              marketType.name === outcome && marketType.market_id === dbMarket.id
+              marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
       );
-      if (!dbMarketType) {
-        console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+
+      if (!dbMarket) {
+        console.warn(`❌ No 'Market Type Found' : ${outcome}`);
         continue;
       }
 
       // If there's a single coefficient .C, store as an outcome
       await this.saveMarketOutcome(
-          dbMarketType.id,
+          dbGroup.group_id,
           Number(marketObj.C),
-          dbMarket.id,
+          dbMarket.market_id,
           fixture.id,
           sourceFixtureId
       );
@@ -269,26 +278,24 @@ class Fetch1xBetFixturesWithOddsService {
   }
 
   private async getMarkets(): Promise<Market[]> {
-    let row: Market[] = await db("markets");
-    return row;
+    return db("markets");
   }
 
-  private async getMarketTypes(): Promise<MarketType[]> {
-    let row: MarketType[] = await db("market_types");
-    return row;
+  private async getGroups(): Promise<Group[]> {
+    return db("groups");
   }
 
   private async saveMarketOutcome(
-      marketTypeId: number,
+      groupId: number,
       coefficient: number,
       marketId: number,
       fixtureId: number,
       externalSourceFixtureId: string
   ) {
-    await db("odds")
+    await db("fixture_odds")
         .insert({
           market_id: marketId,
-          market_type_id: marketTypeId,
+          group_id: groupId,
           coefficient,
           fixture_id: fixtureId,
           external_source_fixture_id: externalSourceFixtureId,
@@ -296,7 +303,7 @@ class Fetch1xBetFixturesWithOddsService {
         })
         .onConflict([
           "market_id",
-          "market_type_id",
+          "group_id",
           "fixture_id",
           "external_source_fixture_id",
           "source_id",

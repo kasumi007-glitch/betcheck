@@ -1,0 +1,454 @@
+{
+  "countries": {
+    "1. Division": {
+      "leagues": {}
+    },
+    "1. Liga": {
+      "leagues": {}
+    },
+    "1st Division": {
+      "leagues": {}
+    },
+    "2. Bundesliga": {
+      "leagues": {}
+    },
+    "2. Liga": {
+      "leagues": {}
+    },
+    "3. Liga": {
+      "leagues": {}
+    },
+    "3. Liga, East": {
+      "leagues": {}
+    },
+    "A-League": {
+      "leagues": {}
+    },
+    "A-League, Women": {
+      "leagues": {}
+    },
+    "Africa Cup of Nations": {
+      "leagues": {}
+    },
+    "Allsvenskan": {
+      "leagues": {}
+    },
+    "Amapaense": {
+      "leagues": {}
+    },
+    "Amazonense": {
+      "leagues": {}
+    },
+    "Baiano, Serie A": {
+      "leagues": {}
+    },
+    "Ballon dor": {
+      "leagues": {}
+    },
+    "Brasileiro Serie A": {
+      "leagues": {}
+    },
+    "Brasileiro Serie B": {
+      "leagues": {}
+    },
+    "Bundesliga": {
+      "leagues": {}
+    },
+    "Bundesliga, Women": {
+      "leagues": {}
+    },
+    "Campeonato Tocantinense": {
+      "leagues": {}
+    },
+    "Catarinense, Serie A": {
+      "leagues": {}
+    },
+    "Cearense, Serie A": {
+      "leagues": {}
+    },
+    "Cearense, Serie B": {
+      "leagues": {}
+    },
+    "Challenger Pro League": {
+      "leagues": {}
+    },
+    "Championship": {
+      "leagues": {}
+    },
+    "Chinese Super League": {
+      "leagues": {}
+    },
+    "Club Friendly Games": {
+      "leagues": {}
+    },
+    "CONCACAF Gold Cup": {
+      "leagues": {}
+    },
+    "CONCACAF Nations League": {
+      "leagues": {}
+    },
+    "CONMEBOL Libertadores": {
+      "leagues": {}
+    },
+    "CONMEBOL Sudamericana": {
+      "leagues": {}
+    },
+    "Copa Argentina": {
+      "leagues": {}
+    },
+    "Copa del Rey": {
+      "leagues": {}
+    },
+    "Copa do Nordeste": {
+      "leagues": {}
+    },
+    "Copa Verde": {
+      "leagues": {}
+    },
+    "Coppa Italia": {
+      "leagues": {}
+    },
+    "Coupe de France": {
+      "leagues": {}
+    },
+    "Damallsvenskan": {
+      "leagues": {}
+    },
+    "DBU Pokalen": {
+      "leagues": {}
+    },
+    "DFB Pokal": {
+      "leagues": {}
+    },
+    "Division de Honor, Apertura": {
+      "leagues": {}
+    },
+    "Eerste Divisie": {
+      "leagues": {}
+    },
+    "Ekstraklasa": {
+      "leagues": {}
+    },
+    "Eliteserien": {
+      "leagues": {}
+    },
+    "Eredivisie": {
+      "leagues": {}
+    },
+    "FA Cup": {
+      "leagues": {}
+    },
+    "FIFA Club World Cup": {
+      "leagues": {}
+    },
+    "FIFA World Cup Qualification OFC": {
+      "leagues": {}
+    },
+    "First Division": {
+      "leagues": {}
+    },
+    "Goiano": {
+      "leagues": {}
+    },
+    "Greece Cup": {
+      "leagues": {}
+    },
+    "HNL": {
+      "leagues": {}
+    },
+    "I Liga": {
+      "leagues": {}
+    },
+    "I-League": {
+      "leagues": {}
+    },
+    "II Liga": {
+      "leagues": {}
+    },
+    "III Liga, Group 3": {
+      "leagues": {}
+    },
+    "Int. Friendly Games": {
+      "leagues": {}
+    },
+    "J.League": {
+      "leagues": {}
+    },
+    "J.League Cup": {
+      "leagues": {}
+    },
+    "K-League 1": {
+      "leagues": {}
+    },
+    "Korea Cup": {
+      "leagues": {}
+    },
+    "Kvindeligaen, Women": {
+      "leagues": {}
+    },
+    "LaLiga": {
+      "leagues": {}
+    },
+    "LaLiga 2": {
+      "leagues": {}
+    },
+    "League 1": {
+      "leagues": {}
+    },
+    "League 2": {
+      "leagues": {}
+    },
+    "League One": {
+      "leagues": {}
+    },
+    "League Two": {
+      "leagues": {}
+    },
+    "Liga 1": {
+      "leagues": {}
+    },
+    "Liga De Ascenso, Clausura": {
+      "leagues": {}
+    },
+    "Liga de Expansion MX, Clausura": {
+      "leagues": {}
+    },
+    "Liga MX, Clausura": {
+      "leagues": {}
+    },
+    "Liga Portugal": {
+      "leagues": {}
+    },
+    "Liga Portugal 2": {
+      "leagues": {}
+    },
+    "Liga Prom": {
+      "leagues": {}
+    },
+    "LigaPro Primera A": {
+      "leagues": {}
+    },
+    "Ligue 1": {
+      "leagues": {}
+    },
+    "Ligue 2": {
+      "leagues": {}
+    },
+    "MLS": {
+      "leagues": {}
+    },
+    "National": {
+      "leagues": {}
+    },
+    "National League": {
+      "leagues": {}
+    },
+    "National League South": {
+      "leagues": {}
+    },
+    "National Womens Soccer League": {
+      "leagues": {}
+    },
+    "NB I": {
+      "leagues": {}
+    },
+    "Northern Nsw Npl": {
+      "leagues": {}
+    },
+    "NSW NPL 1": {
+      "leagues": {}
+    },
+    "OFB Cup": {
+      "leagues": {}
+    },
+    "Paranaense, 1. Divisao": {
+      "leagues": {}
+    },
+    "Parva Liga": {
+      "leagues": {}
+    },
+    "Paulista, Serie A1": {
+      "leagues": {}
+    },
+    "Paulista, Serie A2": {
+      "leagues": {}
+    },
+    "Pernambucano": {
+      "leagues": {}
+    },
+    "Premier Division": {
+      "leagues": {}
+    },
+    "Premier League": {
+      "leagues": {}
+    },
+    "Premiership": {
+      "leagues": {}
+    },
+    "Primera A, Apertura": {
+      "leagues": {}
+    },
+    "Primera B": {
+      "leagues": {}
+    },
+    "Primera Division": {
+      "leagues": {}
+    },
+    "Primera Division, Women": {
+      "leagues": {}
+    },
+    "Primera Federacion": {
+      "leagues": {}
+    },
+    "Primera LPF": {
+      "leagues": {}
+    },
+    "Primera LPF, Reserves": {
+      "leagues": {}
+    },
+    "Primera Nacional": {
+      "leagues": {}
+    },
+    "Pro League": {
+      "leagues": {}
+    },
+    "PrvaLiga": {
+      "leagues": {}
+    },
+    "Puchar Polski": {
+      "leagues": {}
+    },
+    "Puchar Polski, Women": {
+      "leagues": {}
+    },
+    "Regionalliga Bavaria": {
+      "leagues": {}
+    },
+    "Regionalliga North": {
+      "leagues": {}
+    },
+    "Romania Cup": {
+      "leagues": {}
+    },
+    "Russian Cup": {
+      "leagues": {}
+    },
+    "Saudi Pro League": {
+      "leagues": {}
+    },
+    "Segunda Division": {
+      "leagues": {}
+    },
+    "Segunda Federacion": {
+      "leagues": {}
+    },
+    "Serie A": {
+      "leagues": {}
+    },
+    "Serie B": {
+      "leagues": {}
+    },
+    "Serie C, Group A": {
+      "leagues": {}
+    },
+    "Serie C, Group B": {
+      "leagues": {}
+    },
+    "Serie C, Group C": {
+      "leagues": {}
+    },
+    "South Australia Npl": {
+      "leagues": {}
+    },
+    "Southern League Premier South": {
+      "leagues": {}
+    },
+    "Super League": {
+      "leagues": {}
+    },
+    "Super League 2": {
+      "leagues": {}
+    },
+    "Super League Women": {
+      "leagues": {}
+    },
+    "Super Lig": {
+      "leagues": {}
+    },
+    "Superettan": {
+      "leagues": {}
+    },
+    "Superliga": {
+      "leagues": {}
+    },
+    "Tasmania Npl": {
+      "leagues": {}
+    },
+    "Tercera Federacion, Group 13": {
+      "leagues": {}
+    },
+    "U19 European Championship, Qualification": {
+      "leagues": {}
+    },
+    "U20 Brasileiro Serie A": {
+      "leagues": {}
+    },
+    "U23 Liga MX": {
+      "leagues": {}
+    },
+    "U23 Liga Revelacao": {
+      "leagues": {}
+    },
+    "U23 Waff Championship": {
+      "leagues": {}
+    },
+    "UEFA Champions League": {
+      "leagues": {}
+    },
+    "UEFA Champions League Women": {
+      "leagues": {}
+    },
+    "UEFA Conference League": {
+      "leagues": {}
+    },
+    "UEFA Euro, Women": {
+      "leagues": {}
+    },
+    "UEFA Europa League": {
+      "leagues": {}
+    },
+    "UEFA Nations League": {
+      "leagues": {}
+    },
+    "US Open Cup": {
+      "leagues": {}
+    },
+    "USL Championship": {
+      "leagues": {}
+    },
+    "Veikkausliiga": {
+      "leagues": {}
+    },
+    "Victoria, NPL": {
+      "leagues": {}
+    },
+    "WK-League": {
+      "leagues": {}
+    },
+    "World Cup": {
+      "leagues": {}
+    },
+    "World Cup Qualification AFC": {
+      "leagues": {}
+    },
+    "World Cup Qualification UEFA": {
+      "leagues": {}
+    },
+    "World Cup Qualification, CONMEBOL": {
+      "leagues": {}
+    },
+    "World Cup, Qualification CAF": {
+      "leagues": {}
+    }
+  }
+}

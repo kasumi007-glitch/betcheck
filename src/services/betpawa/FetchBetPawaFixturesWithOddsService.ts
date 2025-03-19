@@ -1,6 +1,6 @@
 import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
+import Group from "../../models/Group";
 import {teamNameMappings} from "../teamNameMappings";
 import {EventResponse} from "../interfaces/BetPawa/EventResponse";
 import {ResponseData} from "../interfaces/BetPawa/ResponseData";
@@ -9,9 +9,11 @@ import {QueryObject} from "../interfaces/BetPawa/QueryObject";
 class FetchBetPawaFixturesWithOddsService {
     private readonly sourceName = "BetPawa";
     private sourceId!: number;
+    private fetchFixture!: boolean;
+    private fetchOdd!: boolean;
 
     // Map the source market ID → Market Name
-    private readonly marketMapping: Record<number, string> = {
+    private readonly groupMapping: Record<number, string> = {
         3743: "1X2",
         5000: "Over / Under",
         3795: "Both Teams to Score",
@@ -36,7 +38,7 @@ class FetchBetPawaFixturesWithOddsService {
     };
 
     private dbMarkets: Market[] = [];
-    private dbMarketTypes: MarketType[] = [];
+    private dbGroups: Group[] = [];
 
     async initialize() {
         const source = await db("sources").where("name", this.sourceName).first();
@@ -49,18 +51,22 @@ class FetchBetPawaFixturesWithOddsService {
         }
 
         this.dbMarkets = await this.getMarkets();
-        this.dbMarketTypes = await this.getMarketTypes();
+        this.dbGroups = await this.getGroups();
     }
 
-    async syncFixtures() {
-        console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
-        const marketTypeIds = Object.keys(this.marketMapping);
+    async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+        await this.initialize();
+        this.fetchFixture = fetchFixture;
+        this.fetchOdd = fetchOdd;
 
-        for (const marketTypeId of marketTypeIds) {
+        console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
+        const groupIds = Object.keys(this.groupMapping);
+
+        for (const groupId of groupIds) {
             // TODO: Remove/add test.
-            // if (marketTypeId == "3743") {
-            const marketName = this.marketMapping[Number(marketTypeId)];
-            const events = await this.fetchAllFixtures(marketName, marketTypeId);
+            // if (groupId == "3743") {
+            const groupName = this.groupMapping[Number(groupId)];
+            const events = await this.fetchAllFixtures(groupName, groupId);
 
             // Fetch active leagues linked to BetPawa
             const leagues = await db("source_league_matches")
@@ -188,12 +194,14 @@ class FetchBetPawaFixturesWithOddsService {
         leagueId: number,
         fixture: EventResponse
     ) {
-        const isFixtureProcessed = await this.processFixture(
-            fixture,
-            leagueId,
-            sourceLeagueId
-        );
-        if (isFixtureProcessed) {
+        if (this.fetchFixture) {
+            await this.processFixture(
+                fixture,
+                leagueId,
+                sourceLeagueId
+            );
+        }
+        if (this.fetchOdd) {
             await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
         } else {
             console.warn(
@@ -318,19 +326,19 @@ class FetchBetPawaFixturesWithOddsService {
             const marketId = marketObj.marketType.id; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
-            const marketName = this.marketMapping[Number(marketId)];
+            const groupName = this.groupMapping[marketId];
 
             // find market
-            const dbMarket = this.dbMarkets.find(
-                (market) => market.name === marketName
+            const dbGroup = this.dbGroups.find(
+                (market) => market.group_name === groupName
             );
-            if (!dbMarket) {
-                console.warn(`❌ No 'Market Found' : ${marketName}`);
+            if (!dbGroup) {
+                console.warn(`❌ No 'Group Found' : ${groupName}`);
                 continue;
             }
 
             if (!marketObj.prices?.length) {
-                console.warn(`❌ No 'Outcomes Found for' : ${marketName}`);
+                console.warn(`❌ No 'Outcomes Found for' : ${groupName}`);
                 continue;
             }
 
@@ -340,20 +348,21 @@ class FetchBetPawaFixturesWithOddsService {
 
                 const outcome = this.outcomeIdNewMapping[outcomeId];
 
-                const dbMarketType = this.dbMarketTypes.find(
+                const dbMarket = this.dbMarkets.find(
                     (marketType) =>
-                        marketType.name === outcome && marketType.market_id === dbMarket.id
+                        marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
                 );
-                if (!dbMarketType) {
-                    console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+
+                if (!dbMarket) {
+                    console.warn(`❌ No 'Market Found' : ${outcome}`);
                     continue;
                 }
 
                 // If there's a single coefficient .Value, store as an outcome
                 await this.saveMarketOutcome(
-                    dbMarketType.id,
+                    dbGroup.group_id,
                     outcomeData.price,
-                    dbMarket.id,
+                    dbMarket.market_id,
                     fixture.id,
                     sourceFixtureId
                 );
@@ -366,21 +375,21 @@ class FetchBetPawaFixturesWithOddsService {
         return db("markets");
     }
 
-    private async getMarketTypes(): Promise<MarketType[]> {
-        return db("market_types");
+    private async getGroups(): Promise<Group[]> {
+        return db("groups");
     }
 
     private async saveMarketOutcome(
-        marketTypeId: number,
+        groupId: number,
         coefficient: number,
         marketId: number,
         fixtureId: number,
         externalSourceFixtureId: string
     ) {
-        await db("odds")
+        await db("fixture_odds")
             .insert({
                 market_id: marketId,
-                market_type_id: marketTypeId,
+                group_id: groupId,
                 coefficient,
                 fixture_id: fixtureId,
                 external_source_fixture_id: externalSourceFixtureId,
@@ -388,7 +397,7 @@ class FetchBetPawaFixturesWithOddsService {
             })
             .onConflict([
                 "market_id",
-                "market_type_id",
+                "group_id",
                 "fixture_id",
                 "external_source_fixture_id",
                 "source_id",

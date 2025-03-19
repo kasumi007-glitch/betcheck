@@ -20,9 +20,11 @@ class FetchAkwaBetLeagueService {
     }
 
     async syncLeagues() {
+        await this.init();
+
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
         const response = await fetchFromApi(this.apiUrl);
-        console.log(response.Sports)
+
         if (!response?.Sports?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
             return;
@@ -97,26 +99,6 @@ class FetchAkwaBetLeagueService {
             console.log(
                 `✅ Matched league: ${league.name} (Source: ${league.name}) for ${country.name}`
             );
-
-            const sourceCountriesResult = await db("source_countries")
-                .insert({
-                    name: country.name,
-                    external_id: Number(countryId),
-                    source_id: Number(this.sourceId)
-                })
-                .onConflict(["external_id", "source_id"]) // Prevent  duplicates based on unique columns
-                .ignore() // Ignore existing records instead of inserting duplicates
-                .returning("*");
-
-            if (sourceCountriesResult.length > 0) {
-                console.log(
-                    `✅ Inserted new source country entries, Source: ${this.sourceId})`
-                );
-            } else {
-                console.warn(
-                    `⚠️ Ignored duplicate league entries, Source: ${this.sourceId})`
-                );
-            }
 
             const result = await db("source_league_matches")
                 .insert({

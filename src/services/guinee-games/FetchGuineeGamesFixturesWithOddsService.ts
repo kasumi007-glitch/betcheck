@@ -1,19 +1,20 @@
 import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
+import Group from "../../models/Group";
 import {fetchFromApi} from "../../utils/ApiClient";
 import {teamNameMappings} from "../teamNameMappings";
 
-//for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchGuineeGamesFixturesWithOddsService {
     private readonly apiUrlTemplate =
         "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=en&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
 
     private readonly sourceName = "GuineeGames";
     private sourceId!: number;
+    private fetchFixture!: boolean;
+    private fetchOdd!: boolean;
 
     // 1) Market ID → Market Name
-    private readonly marketMapping: Record<number, string> = {
+    private readonly groupMapping: Record<number, string> = {
         3: "1X2",
         29: "Over / Under", // labelled as "Nombre total de buts"
         7: "Both Teams to Score", // Labelled as "Les deux équipes marquent"
@@ -38,7 +39,7 @@ class FetchGuineeGamesFixturesWithOddsService {
     };
 
     private dbMarkets: Market[] = [];
-    private dbMarketTypes: MarketType[] = [];
+    private dbGroups: Group[] = [];
 
     async initialize() {
         const source = await db("sources").where("name", this.sourceName).first();
@@ -51,10 +52,14 @@ class FetchGuineeGamesFixturesWithOddsService {
         }
 
         this.dbMarkets = await this.getMarkets();
-        this.dbMarketTypes = await this.getMarketTypes();
+        this.dbGroups = await this.getGroups();
     }
 
-    async syncFixtures() {
+    async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+        await this.initialize();
+        this.fetchFixture = fetchFixture;
+        this.fetchOdd = fetchOdd;
+
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
         // Fetch active leagues linked to GuineeGames
@@ -68,7 +73,7 @@ class FetchGuineeGamesFixturesWithOddsService {
             .andWhere("leagues.is_active", true);
 
         for (const league of leagues) {
-            const sourceMarketIds = Object.keys(this.marketMapping);
+            const sourceMarketIds = Object.keys(this.groupMapping);
 
             for (const sourceMarketId of sourceMarketIds) {
                 await this.fetchAndProcessFixtures(
@@ -134,13 +139,15 @@ class FetchGuineeGamesFixturesWithOddsService {
                         console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
                         return;
                     }
-                    const isFixtureProcessed = await this.processFixture(
-                        fixture,
-                        leagueId,
-                        sourceLeagueId
-                    );
+                    if (this.fetchFixture) {
+                        await this.processFixture(
+                            fixture,
+                            leagueId,
+                            sourceLeagueId
+                        );
+                    }
 
-                    if (isFixtureProcessed) {
+                    if (this.fetchOdd) {
                        await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
                     } else {
                         console.warn(
@@ -273,19 +280,19 @@ class FetchGuineeGamesFixturesWithOddsService {
             const marketId = market.id; // e.g. 7 => "Correct Score" // market_id
 
             // Map to Market Name
-            const marketName = this.marketMapping[marketId];
+            const groupName = this.groupMapping[marketId];
 
-            // // find market
-            const dbMarket = this.dbMarkets.find(
-                (market) => market.name === marketName
+            // find market
+            const dbGroup = this.dbGroups.find(
+                (market) => market.group_name === groupName
             );
-            if (!dbMarket) {
-                console.warn(`❌ No 'Market Found' : ${marketName}`);
+            if (!dbGroup) {
+                console.warn(`❌ No 'Group Found' : ${groupName}`);
                 continue;
             }
 
             if (!market?.outcomes?.length) {
-                console.warn(`❌ No 'Odds Found' : ${marketName}`);
+                console.warn(`❌ No 'Odds Found' : ${groupName}`);
                 continue;
             }
 
@@ -297,20 +304,20 @@ class FetchGuineeGamesFixturesWithOddsService {
 
                 const outcome = this.outcomeIdNameMapping[outcomeId];
 
-                const dbMarketType = this.dbMarketTypes.find(
+                const dbMarket = this.dbMarkets.find(
                     (marketType) =>
-                        marketType.name === outcome && marketType.market_id === dbMarket.id
+                        marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
                 );
 
-                if (!dbMarketType) {
-                    console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+                if (!dbMarket) {
+                    console.warn(`❌ No 'Market Found' : ${outcome}`);
                     continue;
                 }
                 // If there's a single coefficient .value, store as an outcome
                 await this.saveMarketOutcome(
-                    dbMarketType.id,
+                    dbGroup.group_id,
                     Number(odd.value),
-                    dbMarket.id,
+                    dbMarket.market_id,
                     fixture.id,
                     sourceFixtureId
                 );
@@ -320,25 +327,25 @@ class FetchGuineeGamesFixturesWithOddsService {
         }
     }
 
+    private async getGroups(): Promise<Group[]> {
+        return db("groups");
+    }
+
     private async getMarkets(): Promise<Market[]> {
         return db("markets");
     }
 
-    private async getMarketTypes(): Promise<MarketType[]> {
-        return db("market_types");
-    }
-
     private async saveMarketOutcome(
-        marketTypeId: number,
+        groupId: number,
         coefficient: number,
         marketId: number,
         fixtureId: number,
         externalSourceFixtureId: string
     ) {
-        await db("odds")
+        await db("fixture_odds")
             .insert({
                 market_id: marketId,
-                market_type_id: marketTypeId,
+                group_id: groupId,
                 coefficient,
                 fixture_id: fixtureId,
                 external_source_fixture_id: externalSourceFixtureId,
@@ -346,7 +353,7 @@ class FetchGuineeGamesFixturesWithOddsService {
             })
             .onConflict([
                 "market_id",
-                "market_type_id",
+                "group_id",
                 "fixture_id",
                 "external_source_fixture_id",
                 "source_id",

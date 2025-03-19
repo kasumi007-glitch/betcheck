@@ -1,16 +1,20 @@
 import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
+import Group from "../../models/Group";
 import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
 import {teamNameMappings} from "../teamNameMappings";
+import fs from "fs";
 
-//for count get it from leagues "GC": 20, but must be multiple of 10
+const path = require("path");
+
 class FetchAkwaBetFixturesWithOddsService {
     private readonly sourceName = "AkwaBet";
     private sourceId!: number;
+    private fetchFixture!: boolean;
+    private fetchOdd!: boolean;
 
     // 1) Market ID → Market Name
-    private readonly marketMapping: Record<number, string> = {
+    private readonly groupMapping: Record<number, string> = {
         14: "1X2",
         2211: "Over / Under",
         20562: "Both Teams to Score",
@@ -35,7 +39,7 @@ class FetchAkwaBetFixturesWithOddsService {
     };
 
     private dbMarkets: Market[] = [];
-    private dbMarketTypes: MarketType[] = [];
+    private dbGroups: Group[] = [];
 
 // sport, category, tournament
     async initialize() {
@@ -49,16 +53,25 @@ class FetchAkwaBetFixturesWithOddsService {
         }
 
         this.dbMarkets = await this.getMarkets();
-        this.dbMarketTypes = await this.getMarketTypes();
+        this.dbGroups = await this.getGroups();
     }
 
-    async syncFixtures() {
+    async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+        await this.initialize();
+        this.fetchFixture = fetchFixture;
+        this.fetchOdd = fetchOdd;
+
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
-        const countries = await db("source_countries").where("source_id", this.sourceId);
+        const filePath = path.join(process.cwd(), "akwabet_leagues_fixtures.json");
+        const rawData = fs.readFileSync(filePath, "utf8");
+
+        const jsonData: CountriesData = JSON.parse(rawData);
+        const countries: Country[] = Object.values(jsonData.countries).map(({id, name}) => ({id, name}));
 
         for (const country of countries) {
+            const externalCountryId = String(country.id);
             // Todo: remove to load other countries (TEST)
-            // if (country.external_id == 236) {
+            // if (country.external_id == "236") {
 
             // Fetch active leagues linked to AkwaBet
             const leagues = await db("source_league_matches")
@@ -74,11 +87,10 @@ class FetchAkwaBetFixturesWithOddsService {
                 await this.fetchAndProcessFixtures(
                     league.source_league_id,
                     league.league_id,
-                    country.external_id
+                    externalCountryId
                 );
             }
             // }
-
         }
 
         console.log(`✅ Fixtures synced successfully from ${this.sourceName}!`);
@@ -113,18 +125,16 @@ class FetchAkwaBetFixturesWithOddsService {
             return;
         }
 
-        console.log(response?.Contents?.Events, 'events');
-
         for (const fixture of response?.Contents?.Events) {
-            console.log('here')
-            const isFixtureProcessed = await this.processFixture(
-                fixture,
-                leagueId,
-                sourceLeagueId
-            );
+            if (this.fetchFixture) {
+                await this.processFixture(
+                    fixture,
+                    leagueId,
+                    sourceLeagueId
+                );
+            }
 
-            if (isFixtureProcessed) {
-                console.log('testetetete')
+            if (this.fetchOdd) {
                 await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
             } else {
                 console.warn(
@@ -233,6 +243,11 @@ class FetchAkwaBetFixturesWithOddsService {
             .andWhere("leagues.external_id", leagueId)
             .first();
 
+        if (!fixture) {
+            console.warn(`❌ No Fixture found! Fixture: ${sourceFixtureId} league: ${leagueId}`);
+            return;
+        }
+
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
             return;
@@ -253,19 +268,19 @@ class FetchAkwaBetFixturesWithOddsService {
             const marketId = marketObj.MarketTypeId; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
-            const marketName = this.marketMapping[marketId];
+            const groupName = this.groupMapping[marketId];
 
             // find market
-            const dbMarket = this.dbMarkets.find(
-                (market) => market.name === marketName
+            const dbGroup = this.dbGroups.find(
+                (market) => market.group_name === groupName
             );
-            if (!dbMarket) {
-                console.warn(`❌ No 'Market Found' : ${marketName}`);
+            if (!dbGroup) {
+                console.warn(`❌ No 'Group Found' : ${groupName}`);
                 continue;
             }
 
             if (!marketObj.MarketFields?.length) {
-                console.warn(`❌ No 'Outcomes Found for' : ${marketName}`);
+                console.warn(`❌ No 'Outcomes Found for' : ${groupName}`);
                 continue;
             }
 
@@ -275,20 +290,21 @@ class FetchAkwaBetFixturesWithOddsService {
 
                 const outcome = this.outcomeNameNewMapping[outcomeName];
 
-                const dbMarketType = this.dbMarketTypes.find(
+                const dbMarket = this.dbMarkets.find(
                     (marketType) =>
-                        marketType.name === outcome && marketType.market_id === dbMarket.id
+                        marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
                 );
-                if (!dbMarketType) {
-                    console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+
+                if (!dbMarket) {
+                    console.warn(`❌ No 'Market Found' : ${outcome}`);
                     continue;
                 }
 
                 // If there's a single coefficient .Value, store as an outcome
                 await this.saveMarketOutcome(
-                    dbMarketType.id,
+                    dbGroup.group_id,
                     Number(outcomeData.Value),
-                    dbMarket.id,
+                    dbMarket.market_id,
                     fixture.id,
                     sourceFixtureId
                 );
@@ -297,27 +313,25 @@ class FetchAkwaBetFixturesWithOddsService {
         }
     }
 
-    private async getMarkets(): Promise<Market[]> {
-        let row: Market[] = await db("markets");
-        return row;
+    private async getGroups(): Promise<Group[]> {
+        return db("groups");
     }
 
-    private async getMarketTypes(): Promise<MarketType[]> {
-        let row: MarketType[] = await db("market_types");
-        return row;
+    private async getMarkets(): Promise<Market[]> {
+        return db("markets");
     }
 
     private async saveMarketOutcome(
-        marketTypeId: number,
+        groupId: number,
         coefficient: number,
         marketId: number,
         fixtureId: number,
         externalSourceFixtureId: string
     ) {
-        await db("odds")
+        await db("fixture_odds")
             .insert({
                 market_id: marketId,
-                market_type_id: marketTypeId,
+                group_id: groupId,
                 coefficient,
                 fixture_id: fixtureId,
                 external_source_fixture_id: externalSourceFixtureId,
@@ -325,7 +339,7 @@ class FetchAkwaBetFixturesWithOddsService {
             })
             .onConflict([
                 "market_id",
-                "market_type_id",
+                "group_id",
                 "fixture_id",
                 "external_source_fixture_id",
                 "source_id",
@@ -334,6 +348,15 @@ class FetchAkwaBetFixturesWithOddsService {
 
         console.log("Odds data inserted/updated successfully.");
     }
+}
+// TODO: Refactor them into separate files
+interface Country {
+    id: number;
+    name: string;
+}
+
+interface CountriesData {
+    countries: Record<string, Country>;
 }
 
 // Export and initialize

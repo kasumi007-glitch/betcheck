@@ -1,6 +1,5 @@
 import {db} from "../../infrastructure/database/Database";
 import {fetchFromApi} from "../../utils/ApiClient";
-import {leagueNameMappings} from "../leagueNameMappings";
 
 class FetchGuineeGamesLeagueService {
     private readonly apiUrl =
@@ -20,6 +19,8 @@ class FetchGuineeGamesLeagueService {
     }
 
     async syncLeagues() {
+        await this.init();
+
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
         const response = await fetchFromApi(this.apiUrl);
 
