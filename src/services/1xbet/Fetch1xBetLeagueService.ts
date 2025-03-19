@@ -21,6 +21,8 @@ class Fetch1xBetLeagueService {
     }
 
     async syncLeagues() {
+        await this.init();
+
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
         const response = await fetchFromApi(this.apiUrl);
 

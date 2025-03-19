@@ -15,7 +15,19 @@
             "Atletico Tucuman II",
             "Sarmiento II",
             "Boca Juniors II",
-            "Independiente Rivadavia II"
+            "Independiente Rivadavia II",
+            "Barracas Central II",
+            "Central Cordoba de Santiago del Estero II",
+            "Deportivo Riestra II",
+            "Rosario Central II",
+            "Godoy Cruz Antonio Tomba II",
+            "River Plate II",
+            "Newell's Old Boys II",
+            "Defensa y Justicia II",
+            "San Lorenzo II",
+            "Platense II",
+            "CA Independiente Avellaneda II",
+            "Velez Sarsfield II"
           ]
         },
         "119577": {
@@ -67,8 +79,6 @@
         "220557": {
           "name": "Argentina Championship. Women",
           "fixtures": [
-            "CA Huracan (Women)",
-            "San Luis FC (Women)",
             "Banfield (Women)",
             "San Lorenzo de Almagro (Women)",
             "Club de Gimnasia y Esgrima La Plata (Women)",
@@ -131,6 +141,13 @@
           "fixtures": [
             "Acassuso",
             "Club Atletico Brown"
+          ]
+        },
+        "969945": {
+          "name": "Argentina. Torneo Argentino A",
+          "fixtures": [
+            "Circulo Deportivo",
+            "Deportivo Santamarina"
           ]
         }
       }
@@ -875,8 +892,51 @@
     "Burkina Faso Cup": {
       "leagues": {}
     },
-    "Chile Championship. Women": {
-      "leagues": {}
+    "Chile": {
+      "leagues": {
+        "58345": {
+          "name": "Chile. Primera B",
+          "fixtures": [
+            "Cobreloa",
+            "Deportes Antofagasta",
+            "Universidad de Concepcion",
+            "Club de Deportes Santa Cruz",
+            "Union San Felipe",
+            "Deportes Recoleta",
+            "Deportes Magallanes",
+            "San Luis de Quillota"
+          ]
+        },
+        "86379": {
+          "name": "Chile Cup",
+          "fixtures": [
+            "Huachipato",
+            "O'Higgins",
+            "Union Espanola",
+            "Audax Italiano",
+            "San Luis de Quillota",
+            "Everton de Vina del Mar",
+            "Universidad Catolica Santiago",
+            "Union La Calera",
+            "Universidad de Chile",
+            "Santiago Morning",
+            "Union San Felipe",
+            "Colo-Colo"
+          ]
+        },
+        "2076448": {
+          "name": "Chile Championship. Women",
+          "fixtures": [
+            "Everton de Vina del Mar (Women)",
+            "Colo-Colo (Women)",
+            "Santiago Morning (Women)",
+            "Universidad de Concepcion (Women)",
+            "Universidad de Chile (Women)",
+            "Palestino (Women)",
+            "Deportes Recoleta (Women)"
+          ]
+        }
+      }
     },
     "Club Friendlies": {
       "leagues": {}
@@ -963,8 +1023,6 @@
         "2439511": {
           "name": "Croatia. 3. NL",
           "fixtures": [
-            "NK Neretva",
-            "NK Neretvanac Opuzen",
             "NK Trešnjevka",
             "Vrapce"
           ]
@@ -1323,6 +1381,17 @@
             "Scarborough Athletic"
           ]
         },
+        "1348973": {
+          "name": "England. Central League",
+          "fixtures": [
+            "Derby County II",
+            "Chesterfield II"
+          ]
+        },
+        "1553127": {
+          "name": "England. League Two. Special Bets",
+          "fixtures": []
+        },
         "1800014": {
           "name": "England. Southern Premier League. Central",
           "fixtures": [
@@ -1482,8 +1551,30 @@
     "Friendlies. National Teams": {
       "leagues": {}
     },
-    "Gambian Championship. 2nd Division": {
+    "Friendlies. National Teams. Special bets": {
       "leagues": {}
+    },
+    "Gambia": {
+      "leagues": {
+        "1692256": {
+          "name": "Gambian Championship. 1st Division",
+          "fixtures": [
+            "Falcons",
+            "Banjul United"
+          ]
+        },
+        "1900627": {
+          "name": "Gambian Championship. 2nd Division",
+          "fixtures": [
+            "Serekunda",
+            "Kanifing East",
+            "RS Tallinding",
+            "Baalor Sarr",
+            "Serekunda United",
+            "Gunjur United"
+          ]
+        }
+      }
     },
     "Germany": {
       "leagues": {
@@ -1680,13 +1771,6 @@
     },
     "India": {
       "leagues": {
-        "253537": {
-          "name": "India. I-League",
-          "fixtures": [
-            "Sreenidi Deccan",
-            "Inter Kashi"
-          ]
-        },
         "298121": {
           "name": "India. I-League. 2nd Division",
           "fixtures": [
@@ -1773,16 +1857,16 @@
           "fixtures": [
             "Bohemian Dublin (Women)",
             "Wexford Youths (Women)",
-            "Sligo Rovers (Women)",
-            "Waterford (Women)",
-            "Shelbourne (Women)",
             "DLR Waves (Women)",
+            "Shelbourne (Women)",
             "Peamount United (Women)",
             "Galway (Women)",
             "Shamrock Rovers (Women)",
             "Treaty United (Women)",
             "Athlone Town (Women)",
-            "Cork City (Women)"
+            "Cork City (Women)",
+            "Sligo Rovers (Women)",
+            "Waterford (Women)"
           ]
         }
       }
@@ -2194,11 +2278,43 @@
         }
       }
     },
-    "Nicaragua Championship": {
-      "leagues": {}
+    "Nicaragua": {
+      "leagues": {
+        "918823": {
+          "name": "Nicaragua Championship",
+          "fixtures": [
+            "Walter Ferretti",
+            "UNAN Managua"
+          ]
+        },
+        "2135258": {
+          "name": "Nicaragua Championship. Division 2",
+          "fixtures": [
+            "CD Junior Managua",
+            "Deportivo Masaya"
+          ]
+        }
+      }
     },
-    "Nigeria Cup": {
-      "leagues": {}
+    "Nigeria": {
+      "leagues": {
+        "1378567": {
+          "name": "Nigeria Cup",
+          "fixtures": [
+            "Akwa United",
+            "Kebbi United",
+            "Rivers United",
+            "Barau"
+          ]
+        },
+        "2000080": {
+          "name": "Nigerian Championship. Women",
+          "fixtures": [
+            "Adamawa Queens (Women)",
+            "Rivers Angels (Women)"
+          ]
+        }
+      }
     },
     "Northern Ireland": {
       "leagues": {
@@ -2275,20 +2391,6 @@
             "Rakow Czestochowa"
           ]
         },
-        "52245": {
-          "name": "Poland Championship. Liga 3",
-          "fixtures": [
-            "Pniowek Pawlowice Slaskie",
-            "Sleza Wroclaw"
-          ]
-        },
-        "1018363": {
-          "name": "Poland Cup. Women",
-          "fixtures": [
-            "UKS SMS Lodz (Women)",
-            "Rekord Bielsko-Biala (Women)"
-          ]
-        },
         "1023157": {
           "name": "Poland. IV liga",
           "fixtures": [
@@ -2354,9 +2456,6 @@
           ]
         }
       }
-    },
-    "Republic of North Macedonia Championship. Women": {
-      "leagues": {}
     },
     "Romania": {
       "leagues": {
@@ -2477,9 +2576,6 @@
         }
       }
     },
-    "Rwanda Cup. Women": {
-      "leagues": {}
-    },
     "Saudi Arabia Cup. Women": {
       "leagues": {}
     },
@@ -2560,69 +2656,20 @@
         }
       }
     },
+    "Senegal. League Cup": {
+      "leagues": {}
+    },
     "Serbia. SuperLiga": {
       "leagues": {}
     },
-    "Short Football D1": {
+    "Sierra Leone. Premier League": {
       "leagues": {}
     },
-    "Slovakia": {
-      "leagues": {
-        "41523": {
-          "name": "Slovakia. Liga 2",
-          "fixtures": [
-            "MSK Zilina II",
-            "Púchov",
-            "Pohronie",
-            "OFK Malzenice",
-            "1. Tatran Presov",
-            "MFK Stara Lubovna",
-            "Humenne",
-            "Petržalka",
-            "Povazska Bystrica",
-            "ViOn Zlate Moravce",
-            "Tatran Liptovsky Mikulas",
-            "MFK Zvolen",
-            "STK 1914 Samorin",
-            "Slovan Bratislava II"
-          ]
-        },
-        "61723": {
-          "name": "Slovakia. Liga 3",
-          "fixtures": [
-            "Spisske Podhradie",
-            "Filakovo"
-          ]
-        }
-      }
+    "Slovakia. Liga 2": {
+      "leagues": {}
     },
-    "South Africa": {
-      "leagues": {
-        "1918473": {
-          "name": "South Africa Championship. Women",
-          "fixtures": [
-            "Copper Belts (Women)",
-            "UCT (Women)",
-            "Durban (Women)",
-            "Ezemvelo (Women)",
-            "Tshwane University of Technology (Women)",
-            "TS Galaxy (Women)",
-            "University of Pretoria (Women)",
-            "Mamelodi Sundowns (Women)",
-            "Western Cape University (Women)",
-            "City Lads (Women)"
-          ]
-        },
-        "2076995": {
-          "name": "South Africa. Division 2",
-          "fixtures": [
-            "Highlands Park",
-            "Dube Continental",
-            "Tembisa Hollywood Thunder",
-            "Pele Pele"
-          ]
-        }
-      }
+    "South Africa Championship. Women": {
+      "leagues": {}
     },
     "South Korea": {
       "leagues": {
@@ -2834,6 +2881,52 @@
             "Guijuelo",
             "Marino de Luanco",
             "Rayo Cantabria"
+          ]
+        },
+        "2286175": {
+          "name": "Spain. Segunda Division RFEF. Group 4",
+          "fixtures": [
+            "Cadiz II",
+            "Villanovense",
+            "Juventud Torremolinos",
+            "Deportivo Linares",
+            "Aguilas",
+            "Xerez CD",
+            "Estepona",
+            "Granada II",
+            "Club Deportiva Minera",
+            "San Fernando CD",
+            "Don Benito",
+            "UD Almería II",
+            "UCAM Murcia",
+            "La Union",
+            "Xerez Deportivo",
+            "CA Antoniano",
+            "Orihuela",
+            "Real Balompedica Linense"
+          ]
+        },
+        "2286181": {
+          "name": "Spain. Segunda Division RFEF. Group 5",
+          "fixtures": [
+            "Guadalajara S.A.D.",
+            "UB Conquense",
+            "UD San Sebastián de los Reyes",
+            "Real Madrid III",
+            "CD Atletico Paso",
+            "CD Coria",
+            "CD Mostoles URJC",
+            "Getafe II",
+            "Colonia Moscardo",
+            "Navalcarnero",
+            "CP Cacereno",
+            "Club Deportivo Union Sur Yaiza",
+            "UD Melilla",
+            "Illescas",
+            "Union Adarve",
+            "Tenerife II",
+            "Talavera",
+            "Rayo Majadahonda"
           ]
         },
         "2286218": {
@@ -3221,8 +3314,7 @@
             "Chicago Fire",
             "Austin",
             "San Diego",
-            "New England Revolution",
-            "Inter Miami"
+            "New England Revolution"
           ]
         },
         "1032463": {

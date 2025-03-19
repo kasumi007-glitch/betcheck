@@ -158,7 +158,7 @@ const processData = async () => {
     // 1xBet
     // await fetch1xBetLeagueService.syncLeagues();
     // await fetch1xBetFixturesWithOddsService.syncFixtures(true, true);
-    await save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
+    // await save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // Paripesa
     // await fetchParipesaLeagueService.syncLeagues();

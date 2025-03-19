@@ -71,8 +71,7 @@ class FetchLineBetFixturesWithOddsService {
             "leagues.external_id as league_id"
         )
         .where("source_league_matches.source_id", this.sourceId)
-        .andWhere("leagues.is_active", true)
-        .andWhere("leagues.external_id", 39);
+        .andWhere("leagues.is_active", true);
 
     for (const league of leagues) {
       await this.fetchAndProcessFixtures(
@@ -211,6 +210,11 @@ class FetchLineBetFixturesWithOddsService {
         .andWhere("leagues.is_active", true)
         .andWhere("leagues.external_id", leagueId)
         .first();
+
+    if (!fixture) {
+      console.warn(`❌ No Fixture found! ----- in league ${leagueId}`);
+      return;
+    }
 
     if (!fixtureData) {
       console.warn(`❌ No Fixture found!`);
