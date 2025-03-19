@@ -26,6 +26,7 @@ class FetchSuperGoalLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching SUPERGOOAL leagues...");
 
     const token = await GetAccessTokenService.getAccessToken();

@@ -25,6 +25,7 @@ class FetchBetclicLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching Betclic countries...");
     const countryResponse = await fetchFromApi(this.countryApiUrl);
     if (!countryResponse?.supercategory_dto_collection?.length) {

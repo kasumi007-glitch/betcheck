@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
     "debug": "nodemon --inspect --exec ts-node src/index.ts",
+    "build": "tsc && copy package.json dist\\ && copy Dockerfile dist\\",
+    "start:prod": "node index.js",
     "lint": "eslint --fix src test",
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "jest",

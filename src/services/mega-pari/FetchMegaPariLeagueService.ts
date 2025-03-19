@@ -5,7 +5,7 @@ import { leagueNameMappings } from "../leagueNameMappings";
 class FetchMegaPariLeagueService {
   private readonly apiUrl =
     "https://megapari.com/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
 
   async init() {
@@ -20,6 +20,7 @@ class FetchMegaPariLeagueService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
     const response = await fetchFromApi(this.apiUrl);
 

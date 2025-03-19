@@ -7,7 +7,7 @@ class AddMegaPariOddService {
   private readonly apiUrlTemplate =
     "https://megapari.com/service-api/LineFeed/GetGameZip?id={fixtureId}&lng=en&isSubGames=true&GroupEvents=true&grMode=4&topGroups=&marketType=1";
 
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
 
   // 1) Market ID → Market Name

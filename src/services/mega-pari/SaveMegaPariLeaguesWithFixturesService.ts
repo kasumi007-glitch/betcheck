@@ -7,7 +7,7 @@ class SaveMegaPariLeaguesWithFixturesService {
     "https://megapari.com/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
   private readonly fixturesApiUrlTemplate =
     "https://megapari.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
 
   async init() {

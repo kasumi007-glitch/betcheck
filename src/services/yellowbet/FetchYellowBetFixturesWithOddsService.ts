@@ -39,7 +39,7 @@ class FetchYellowBetFixturesWithOddsService {
   // URL template with placeholder for the source league id
   private readonly apiUrlTemplate =
     "https://yellowbet.com.gn/services/evapi/event/GetEvents?betTypeIds=-1&take=100&statusId=0&eventTypeId=0&leagueIds={sourceLeagueId}";
-  private readonly sourceName = "YellowBet";
+  private readonly sourceName = "YELLOWBET";
   private sourceId!: number;
   private fetchFixture!: boolean;
   private fetchOdd!: boolean;

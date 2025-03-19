@@ -1,5 +1,4 @@
 import express from "express";
-import OddsRoutes from "./routes/odds.routes";
 import sequelize from "./config/database";
 import dotenv from "dotenv";
 import FetchGroupService from "./services/fetchAndDumpService";
@@ -44,55 +43,46 @@ import SaveOneBetLeaguesWithFixturesService from "./services/one-bet/SaveOneBetL
 import SavePremierBetLeaguesWithFixturesService from "./services/premierbet/SavePremierBetLeaguesWithFixturesService";
 import SaveSunubetLeaguesWithFixturesService from "./services/sunu-bet/SaveSunubetLeaguesWithFixturesService";
 import cron from "node-cron";
+import SaveBetsOddsService from "./services/SaveBetsOddsService";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(OddsRoutes);
 
 const processData = async () => {
   // await FetchGroupService.processData();
   // await FetchOddService.processOddsData();
   // await FetchMatchService.processData();
+  
   //PremierBet
   // await FetchPremierBetOddService.syncOdds();
-  // await FetchPremierBetLeagueService.init();
   // await FetchPremierBetLeagueService.syncLeagues(); //league
-  // await FetchPremierBetFixtureService.init();
-  await FetchPremierBetFixtureService.syncFixtures(); //fixture
-  // await AddPremierBetOddService.init();
-  // await AddPremierBetOddService.syncOdds();
+  // await FetchPremierBetFixtureService.syncFixtures(); //fixture
+  await AddPremierBetOddService.syncOdds(); //odds
   // await SavePremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
+
   //MegaPari
-  // await FetchMegaPariLeagueService.init();
-  // await FetchMegaPariLeagueService.syncLeagues();
-  // await fetchMegaPariFixturesService.initialize();
-  // await fetchMegaPariFixturesService.syncFixtures();
-  // await fetchMegaPariFixturesWithOddsService.initialize();
-  // await fetchMegaPariFixturesWithOddsService.syncFixtures(true, true);
+  // await FetchMegaPariLeagueService.syncLeagues(); //league
+  // await fetchMegaPariFixturesService.syncFixtures(); //fixture 0
+  // await fetchMegaPariFixturesWithOddsService.syncFixtures(true, true); //fixture 1 and odds
+
+  //additional of MegaPari
   // await SaveMegaPariLeaguesWithFixturesService.syncLeaguesAndFixtures();
   // await AddMegaPariOddService.initialize();
   // await AddMegaPariOddService.syncOdds();
   // ✅ Open Website with Proxy (Puppeteer)
   // await openWebsiteWithProxy();
   //YellowBet
-  // await FetchYellowBetLeagueService.init();
   // await FetchYellowBetLeagueService.syncLeagues();
-  // await FetchYellowBetFixturesWithOddsService.initialize();
-  // await FetchYellowBetFixturesWithOddsService.syncFixtures();
+  // await FetchYellowBetFixturesWithOddsService.syncFixtures(true, true);
   //Betclic
-  // await FetchBetclicLeaguesService.init();
   // await FetchBetclicLeaguesService.syncLeagues();
-  // await FetchBetclicFixturesService.init();
   // await FetchBetclicFixturesService.syncFixtures();
-  // await AddBetclicOddService.init();
   // await AddBetclicOddService.syncOdds();
   // await SaveBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //1WIN
-  // await Fetch1WinLeaguesWithFixturesService.init();
-  // await Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures();
-  // await Add1WinOddService.init();
+  // await Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(true, true);
   // await Add1WinOddService.syncOdds();
   // await Save1WinLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //Bet223
@@ -100,39 +90,40 @@ const processData = async () => {
   //BETMOMO
   // await BetMomoScraperService.scrape();
   //ONEBET
-  // await FetchOnebetLeaguesService.init();
   // await FetchOnebetLeaguesService.syncLeagues();
-  // await FetchOnebetFixturesService.init();
   // await FetchOnebetFixturesService.syncFixtures();
-  // await FetchOnebetOddsService.init();
   // await FetchOnebetOddsService.syncOdds();
   // await SaveOneBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //22BET
-  // await Fetch22betLeaguesService.init();
   // await Fetch22betLeaguesService.syncLeagues();
-  // await Fetch22betFixturesWithOddsService.initialize();
-  // await Fetch22betFixturesWithOddsService.syncFixtures();
+  // await Fetch22betFixturesWithOddsService.syncFixtures(true, true);
   // await Save22BetLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //SUNUBET
-  // await FetchSunubetLeaguesService.init();
   // await FetchSunubetLeaguesService.syncLeagues();
-  // await FetchSunubetFixturesService.init();
   // await FetchSunubetFixturesService.syncFixtures();
-  // await FetchSunubetOddService.init();
   // await FetchSunubetOddService.syncOdds();
   // await SaveSunubetLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //SUPERGOOAL
   // await GetAccessTokenService.getAccessToken()
-  // await FetchSuperGoalLeaguesService.init();
   // await FetchSuperGoalLeaguesService.syncLeagues();
-  // await FetchSuperGoalFixturesService.init();
   // await FetchSuperGoalFixturesService.syncFixtures();
-  // await FetchSuperGoalOddService.init();
   // await FetchSuperGoalOddService.syncOdds();
 };
 
 processData().catch((error) => {
   console.error("Error running FetchGroupService processData:", error);
 });
+
+const processOddData = async () => {
+  try {
+    await SaveBetsOddsService.saveOdds();
+  } catch (error) {
+    console.error("Error running SaveBetsOddsService saveOdds:", error);
+  }
+};
+
+// processOddData().catch((error) => {
+//   console.error("Error in processOddData:", error);
+// });
 
 export default app;

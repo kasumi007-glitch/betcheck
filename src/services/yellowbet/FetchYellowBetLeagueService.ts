@@ -28,7 +28,7 @@ interface NewApiResponse {
 class FetchYellowBetLeagueService {
   private readonly apiUrl =
     "https://yellowbet.com.gn/services/evapi/event/GetSportsTree?statusId=0&eventTypeId=0"; // replace with the correct URL
-  private readonly sourceName = "YellowBet";
+  private readonly sourceName = "YELLOWBET";
   private sourceId!: number;
 
   async init() {
@@ -43,6 +43,7 @@ class FetchYellowBetLeagueService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
     const response: NewApiResponse = await fetchFromApi(this.apiUrl);
 

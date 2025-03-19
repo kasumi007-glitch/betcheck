@@ -1,0 +1,214 @@
+[
+  {
+    "id": 101,
+    "name": "Hong Kong"
+  },
+  {
+    "id": 103,
+    "name": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 110,
+    "name": "Crimea"
+  },
+  {
+    "id": 124,
+    "name": "Electronic Leagues"
+  },
+  {
+    "id": 125,
+    "name": "Chinese Taipei"
+  },
+  {
+    "id": 126,
+    "name": "SRL"
+  },
+  {
+    "id": 133,
+    "name": "Sweden Amateur"
+  },
+  {
+    "id": 181,
+    "name": "South Africa"
+  },
+  {
+    "id": 187,
+    "name": "Faroe Islands"
+  },
+  {
+    "id": 191,
+    "name": "Azerbaijan"
+  },
+  {
+    "id": 193,
+    "name": "San Marino"
+  },
+  {
+    "id": 363,
+    "name": "El Salvador"
+  },
+  {
+    "id": 510,
+    "name": "New Zealand"
+  },
+  {
+    "id": 614,
+    "name": "DR Congo"
+  },
+  {
+    "id": 628,
+    "name": "Burkina Faso"
+  },
+  {
+    "id": 694,
+    "name": "Mozambique"
+  },
+  {
+    "id": 704,
+    "name": "Madagascar"
+  },
+  {
+    "id": 729,
+    "name": "Niger"
+  },
+  {
+    "id": 740,
+    "name": "Zanzibar"
+  },
+  {
+    "id": 749,
+    "name": "Solomon Islands"
+  },
+  {
+    "id": 870,
+    "name": "Dominican Republic"
+  },
+  {
+    "id": 873,
+    "name": "Sri Lanka"
+  },
+  {
+    "id": 886,
+    "name": "Hong Kong, China"
+  },
+  {
+    "id": 887,
+    "name": "Samoa"
+  },
+  {
+    "id": 914,
+    "name": "New Caledonia"
+  },
+  {
+    "id": 947,
+    "name": "Dominica"
+  },
+  {
+    "id": 969,
+    "name": "Short football"
+  },
+  {
+    "id": 989,
+    "name": "Cyberfootball"
+  },
+  {
+    "id": 1004,
+    "name": "Vanuatu"
+  },
+  {
+    "id": 1019,
+    "name": "Martinique"
+  },
+  {
+    "id": 1020,
+    "name": "St Lucia"
+  },
+  {
+    "id": 1021,
+    "name": "Comoros"
+  },
+  {
+    "id": 1055,
+    "name": "Seychelles"
+  },
+  {
+    "id": 1139,
+    "name": "Djibouti"
+  },
+  {
+    "id": 1381,
+    "name": "Antigua and Barbuda"
+  },
+  {
+    "id": 1385,
+    "name": "Turkiye Amateur"
+  },
+  {
+    "id": 1390,
+    "name": "Puerto-Rico"
+  },
+  {
+    "id": 1407,
+    "name": "Sierra Leone"
+  },
+  {
+    "id": 1480,
+    "name": "Trinidad & Tobago"
+  },
+  {
+    "id": 1521,
+    "name": "Trinidad and Tobago"
+  },
+  {
+    "id": 1528,
+    "name": "Saint Kitts and Nevis"
+  },
+  {
+    "id": 1532,
+    "name": "Guyana"
+  },
+  {
+    "id": 1534,
+    "name": "Russian Championship"
+  },
+  {
+    "id": 1536,
+    "name": "Brunei"
+  },
+  {
+    "id": 1584,
+    "name": "Saint Lucia"
+  },
+  {
+    "id": 1657,
+    "name": "Asia"
+  },
+  {
+    "id": 1658,
+    "name": "Australia & Oceania"
+  },
+  {
+    "id": 1659,
+    "name": "Africa"
+  },
+  {
+    "id": 1660,
+    "name": "North and Central America"
+  },
+  {
+    "id": 1661,
+    "name": "South America"
+  },
+  {
+    "id": 1662,
+    "name": "Europe"
+  },
+  {
+    "id": 1766,
+    "name": "Oceania"
+  },
+  {
+    "id": 1791,
+    "name": "Afghanistan"
+  }
+]

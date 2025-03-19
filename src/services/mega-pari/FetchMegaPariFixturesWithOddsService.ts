@@ -9,7 +9,7 @@ import { teamNameMappings } from "../teamNameMappings";
 class FetchMegaPariFixturesWithOddsService {
   private readonly apiUrlTemplate =
     "https://megapari.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
   private fetchFixture!: boolean;
   private fetchOdd!: boolean;

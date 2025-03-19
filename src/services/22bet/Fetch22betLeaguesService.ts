@@ -27,6 +27,7 @@ class Fetch22betLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching 22BET leagues...");
 
     // 1. Fetch the leagues data from the 22BET endpoint.

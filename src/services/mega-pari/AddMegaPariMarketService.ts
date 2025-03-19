@@ -2,7 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
 
 class AddMegaPariMarketService {
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
 
   private readonly apiUrl =

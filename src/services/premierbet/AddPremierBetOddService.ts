@@ -8,7 +8,7 @@ class AddPremierBetOddService {
   private readonly apiUrlTemplate =
     "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
 
-  private readonly sourceName = "PremierBet";
+  private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
 
   // 1) Market ID → Market Name
@@ -54,8 +54,9 @@ class AddPremierBetOddService {
         "source_matches.competition_id"
       )
       .where("fixtures.date", ">=", new Date())
-      .where("source_matches.source_id", this.sourceId)
-      .andWhere("leagues.is_active", true);
+      .andWhere("source_matches.source_id", this.sourceId)
+      .andWhere("leagues.is_active", true)
+      .andWhere("source_matches.source_competition_id", "1008226");
 
     for (const fixture of fixtures) {
       await this.fetchAndProcessOdds(fixture.id, fixture.source_fixture_id);

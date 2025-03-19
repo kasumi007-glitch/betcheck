@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { leagueNameMappings } from "../leagueNameMappings";
 import { teamNameMappings } from "../teamNameMappings";
+import fs from "fs";
 
 class Fetch1WinLeaguesWithFixturesService {
   // URL to get all categories (countries)
@@ -14,6 +15,7 @@ class Fetch1WinLeaguesWithFixturesService {
   private sourceId!: number;
   private fetchLeague!: boolean;
   private fetchFixture!: boolean;
+  private countryNameMappings: Record<string, string> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -24,6 +26,7 @@ class Fetch1WinLeaguesWithFixturesService {
     } else {
       this.sourceId = source.id;
     }
+    await this.loadCountryNameMappings();
   }
 
   async syncLeaguesAndFixtures(
@@ -42,13 +45,36 @@ class Fetch1WinLeaguesWithFixturesService {
 
     // Filter categories to only those with sportId 18
     const countries = categoriesResponse.categories.filter(
-      (cat: any) => cat.sportId === 18 && cat.name.trim() === "England"
+      (cat: any) => cat.sportId === 18
     );
+
+    // Process each country/category
+    const unmatchedCountries: any[] = [];
+
+    for (const country of countries) {
+      const categoryId = country.id;
+      const countryName = this.countryNameMappings[country.name.trim().toLowerCase()] ?? country.name.trim();
+      console.log(`🔍 Processing country: ${countryName}`);
+
+      // Find the country in our DB (by name)
+      const dbCountry = await db("countries")
+      .where("name", countryName)
+      .first();
+      if (!dbCountry) {
+      console.warn(`⚠️ No match found for country: ${country.name.trim()}`);
+      unmatchedCountries.push({ id: categoryId, name: countryName });
+      }
+    }
+
+    // Save unmatched countries to a JSON file in the service's directory
+    const filePath = __dirname + '/unmatchedCountries.json';
+    fs.writeFileSync(filePath, JSON.stringify(unmatchedCountries, null, 2));
 
     // Process each country/category
     for (const country of countries) {
       const categoryId = country.id;
-      const countryName = country.name.trim();
+      // const countryName = country.name.trim();
+      const countryName = this.countryNameMappings[country.name.trim().toLowerCase()] ?? country.name.trim();
       console.log(`🔍 Processing country: ${countryName}`);
 
       // Find the country in our DB (by name)
@@ -249,6 +275,16 @@ class Fetch1WinLeaguesWithFixturesService {
         `⚠️ Duplicate fixture ignored: ${homeTeam} vs ${awayTeam} (Fixture ID: ${fixture.id})`
       );
     }
+  }
+
+  private async loadCountryNameMappings() {
+    console.log("🔄 Loading country name mappings...");
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
+    this.countryNameMappings = mappings.reduce((acc, mapping) => {
+      acc[mapping.name.toLowerCase()] = mapping.mapped_name;
+      return acc;
+    }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
   }
 }
 

@@ -29,6 +29,7 @@ class FetchOnebetLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching ONEBET leagues based on ONEBET countries...");
 
     // 1. Fetch ONEBET countries from the API

@@ -24,6 +24,7 @@ class FetchSunubetLeaguesService {
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching Sunubet countries and leagues...");
     const countriesResponse = await httpClientFromApi(this.countriesApiUrl, {
       method: "GET",

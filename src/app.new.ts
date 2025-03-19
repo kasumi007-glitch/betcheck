@@ -1,7 +1,6 @@
 import express from "express";
 import cron from "node-cron";
 import dotenv from "dotenv";
-import OddsRoutes from "./routes/odds.routes";
 
 import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchMegaPariOddService from "./services/mega-pari/AddMegaPariOddServiceV2";
@@ -30,7 +29,6 @@ dotenv.config();
 
 const appp = express();
 appp.use(express.json());
-appp.use(OddsRoutes);
 
 // Read cron schedules from environment variables
 const SYNC_ODDS_CRON = process.env.SYNC_ODDS_CRON || "0 * * * *"; // Default: every hour

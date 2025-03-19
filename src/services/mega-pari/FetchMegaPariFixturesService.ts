@@ -4,7 +4,7 @@ import { fetchFromApi } from "../../utils/ApiClient";
 class FetchMegaPariFixturesService {
   private readonly apiUrlTemplate =
     "https://megapari.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-  private readonly sourceName = "MegaPari";
+  private readonly sourceName = "MEGAPARI";
   private sourceId!: number;
 
   private readonly teamNameMappings: Record<string, string> = {
@@ -56,6 +56,7 @@ class FetchMegaPariFixturesService {
   }
 
   async syncFixtures() {
+    await this.initialize();
     console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
     // Fetch active leagues linked to MegaPari
