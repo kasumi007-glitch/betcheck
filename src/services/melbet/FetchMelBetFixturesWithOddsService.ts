@@ -1,9 +1,9 @@
 import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
-import MarketType from "../../models/MarketType";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { MarketObj } from "../interfaces/MarketObj";
 import { teamNameMappings } from "../teamNameMappings";
+import Group from "../../models/Group";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchMelBetFixturesWithOddsService {
@@ -11,9 +11,11 @@ class FetchMelBetFixturesWithOddsService {
       "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=40&lng=en&mode=4&country=214&partner=8&getEmpty=true&virtualSports=true";
   private readonly sourceName = "MelBet";
   private sourceId!: number;
+  private fetchFixture!: boolean;
+  private fetchOdd!: boolean;
 
   // 1) Market ID → Market Name
-  private readonly marketMapping: Record<number, string> = {
+  private readonly groupMapping: Record<number, string> = {
     1: "1X2",
     17: "Over / Under",
     19: "Both Teams to Score",
@@ -37,8 +39,8 @@ class FetchMelBetFixturesWithOddsService {
     181: "No",
   };
 
+  private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
-  private dbMarketTypes: MarketType[] = [];
 
   async initialize() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -50,11 +52,15 @@ class FetchMelBetFixturesWithOddsService {
       this.sourceId = source.id;
     }
 
+    this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
-    this.dbMarketTypes = await this.getMarketTypes();
   }
 
-  async syncFixtures() {
+  async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
+    await this.initialize();
+    this.fetchFixture = fetchFixture;
+    this.fetchOdd = fetchOdd;
+
     console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
     // Fetch active leagues linked to MelBet
@@ -65,7 +71,8 @@ class FetchMelBetFixturesWithOddsService {
             "leagues.external_id as league_id"
         )
         .where("source_league_matches.source_id", this.sourceId)
-        .andWhere("leagues.is_active", true);
+        .andWhere("leagues.is_active", true)
+        .andWhere("leagues.external_id", 39);
 
     for (const league of leagues) {
       await this.fetchAndProcessFixtures(
@@ -93,13 +100,12 @@ class FetchMelBetFixturesWithOddsService {
     }
 
     for (const fixture of response.Value) {
-      const isFixtureProcessed = await this.processFixture(
-          fixture,
-          leagueId,
-          sourceLeagueId
-      );
+      // let isFixtureProcessed: boolean = false;
+      if (this.fetchFixture) {
+        await this.processFixture(fixture, leagueId, sourceLeagueId);
+      }
 
-      if (isFixtureProcessed) {
+      if (this.fetchOdd) {
         await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
       } else {
         console.warn(
@@ -120,7 +126,6 @@ class FetchMelBetFixturesWithOddsService {
       O2: awayTeamRaw,
       S: startTime,
     } = fixture;
-    console.log(fixture)
     const eventDate = new Date(startTime * 1000);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to start of day
@@ -220,22 +225,22 @@ class FetchMelBetFixturesWithOddsService {
 
     // Process each "marketObj" in E
     const filteredData = fixtureData.E.filter((match: MarketObj) =>
-        Object.keys(this.marketMapping).includes(String(match.G))
+        Object.keys(this.groupMapping).includes(String(match.G))
     );
 
     for (const marketObj of filteredData) {
       // G => the market ID
-      const marketId = marketObj.G; // e.g. 7 => "Correct Score"
+      const groupId = marketObj.G; // e.g. 7 => "Correct Score"
 
       // 1) Map G => Market Name
-      const marketName = this.marketMapping[marketId];
+      const groupName = this.groupMapping[groupId];
 
       // find market
-      const dbMarket = this.dbMarkets.find(
-          (market) => market.name === marketName
+      const dbGroup = this.dbGroups.find(
+          (market) => market.group_name === groupName
       );
-      if (!dbMarket) {
-        console.warn(`❌ No 'Market Found' : ${marketName}`);
+      if (!dbGroup) {
+        console.warn(`❌ No 'Group Found' : ${groupName}`);
         continue;
       }
 
@@ -244,20 +249,20 @@ class FetchMelBetFixturesWithOddsService {
 
       const outcome = this.outcomeNameNewMapping[outcomeId];
 
-      const dbMarketType = this.dbMarketTypes.find(
+      const dbMarket = this.dbMarkets.find(
           (marketType) =>
-              marketType.name === outcome && marketType.market_id === dbMarket.id
+              marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
       );
-      if (!dbMarketType) {
-        console.warn(`❌ No 'Market Type Found' : ${marketName}`);
+      if (!dbMarket) {
+        console.warn(`❌ No 'Market Found' : ${outcome}`);
         continue;
       }
 
       // If there's a single coefficient .C, store as an outcome
       await this.saveMarketOutcome(
-          dbMarketType.id,
+          dbGroup.group_id,
           Number(marketObj.C),
-          dbMarket.id,
+          dbMarket.market_id,
           fixture.id,
           sourceFixtureId
       );
@@ -266,35 +271,33 @@ class FetchMelBetFixturesWithOddsService {
     }
   }
 
-  private async getMarkets(): Promise<Market[]> {
-    let row: Market[] = await db("markets");
-    return row;
+  private async getGroups(): Promise<Group[]> {
+    return await db("groups");
   }
 
-  private async getMarketTypes(): Promise<MarketType[]> {
-    let row: MarketType[] = await db("market_types");
-    return row;
+  private async getMarkets(): Promise<Market[]> {
+    return await db("markets");
   }
 
   private async saveMarketOutcome(
-      marketTypeId: number,
+      groupId: number,
       coefficient: number,
       marketId: number,
       fixtureId: number,
       externalSourceFixtureId: string
   ) {
-    await db("odds")
+    await db("fixture_odds")
         .insert({
+          group_id: groupId,
           market_id: marketId,
-          market_type_id: marketTypeId,
           coefficient,
           fixture_id: fixtureId,
           external_source_fixture_id: externalSourceFixtureId,
           source_id: this.sourceId,
         })
         .onConflict([
+          "group_id",
           "market_id",
-          "market_type_id",
           "fixture_id",
           "external_source_fixture_id",
           "source_id",
