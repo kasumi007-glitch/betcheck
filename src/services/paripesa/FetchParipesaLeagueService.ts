@@ -4,7 +4,7 @@ import {leagueNameMappings} from "../leagueNameMappings";
 
 class FetchParipesaLeagueService {
     private readonly apiUrl =
-        "https://paripesa.top/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&country=214&partner=188&virtualSports=true&gr=764&groupChamps=true";
+        "https://paripesa.top/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
     private readonly sourceName = "Paripesa";
     private sourceId!: number;
 

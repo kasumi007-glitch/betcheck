@@ -4,7 +4,7 @@ import {leagueNameMappings} from "../leagueNameMappings";
 
 class FetchLineBetLeagueService {
     private readonly apiUrl =
-        "https://linebet.com/service-api/LineFeed/GetSportsShortZip?sports=1&champs=118587&lng=en&country=214&partner=189&virtualSports=true&gr=650&groupChamps=true";
+        "https://linebet.com/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
     private readonly sourceName = "LineBet";
     private sourceId!: number;
 

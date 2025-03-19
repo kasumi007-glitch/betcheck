@@ -8,7 +8,7 @@ import {teamNameMappings} from "../teamNameMappings";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchParipesaFixturesWithOddsService {
     private readonly apiUrlTemplate =
-        "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs=&{sourceLeagueId}count=40&lng=en&mode=4&country=214&partner=188&getEmpty=true&virtualSports=true";
+        "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
     private readonly sourceName = "Paripesa";
     private sourceId!: number;
     private fetchFixture!: boolean;

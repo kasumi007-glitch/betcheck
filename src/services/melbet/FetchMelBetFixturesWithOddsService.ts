@@ -8,7 +8,7 @@ import Group from "../../models/Group";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchMelBetFixturesWithOddsService {
   private readonly apiUrlTemplate =
-      "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=40&lng=en&mode=4&country=214&partner=8&getEmpty=true&virtualSports=true";
+      "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
   private readonly sourceName = "MelBet";
   private sourceId!: number;
   private fetchFixture!: boolean;

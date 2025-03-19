@@ -4,9 +4,9 @@ import fs from "fs";
 
 class Save1xBetLeaguesWithFixturesService {
   private readonly apiUrl =
-    "https://1xbet.com/LineFeed/GetSportsShortZip?sports=1&lng=en&tf=2200000&tz=3&country=213&virtualSports=true&gr=70&groupChamps=true";
+    "https://1xbet.com/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
   private readonly fixturesApiUrlTemplate =
-    "https://1xbet.com/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=50&lng=en&tf=2200000&tz=3&mode=4&country=213&getEmpty=true&gr=70";
+    "https://1xbet.com/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
   private readonly sourceName = "1xBet";
   private sourceId!: number;
 

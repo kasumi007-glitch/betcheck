@@ -4,7 +4,8 @@ import {leagueNameMappings} from "../leagueNameMappings";
 
 class FetchMelBetLeagueService {
     private readonly apiUrl =
-        "https://melbet.com/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&country=214&partner=8&virtualSports=true&gr=62&groupChamps=true";
+        "https://melbet.com/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
+
     private readonly sourceName = "MelBet";
     private sourceId!: number;
 

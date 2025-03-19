@@ -4,9 +4,9 @@ import fs from "fs";
 
 class SaveParipesaLeaguesWithFixturesService {
   private readonly apiUrl =
-    "https://paripesa.top/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&country=214&partner=188&virtualSports=true&gr=764&groupChamps=true";
+    "https://paripesa.top/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
   private readonly fixturesApiUrlTemplate =
-    "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs=&{sourceLeagueId}count=40&lng=en&mode=4&country=214&partner=188&getEmpty=true&virtualSports=true";
+    "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
   private readonly sourceName = "Paripesa";
   private sourceId!: number;
 

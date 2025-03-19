@@ -157,22 +157,22 @@ const processData = async () => {
 
     // 1xBet
     // await fetch1xBetLeagueService.syncLeagues();
-    // await fetch1xBetFixturesWithOddsService.syncFixtures();
-    // await save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
+    // await fetch1xBetFixturesWithOddsService.syncFixtures(true, true);
+    await save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // Paripesa
     // await fetchParipesaLeagueService.syncLeagues();
-    // await fetchParipesaFixturesWithOddsService.syncFixtures();
+    // await fetchParipesaFixturesWithOddsService.syncFixtures(true, true);
     // await saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // LineBet
     // await fetchLineBetLeagueService.syncLeagues();
-    // await fetchLineBetFixturesWithOddsService.initialize();
+    // await fetchLineBetFixturesWithOddsService.initialize(true, true);
     // await saveLineBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // MelBet
     // await fetchMelBetLeagueService.syncLeagues();
-    // await fetchMelBetFixturesWithOddsService.syncFixtures();
+    // await fetchMelBetFixturesWithOddsService.syncFixtures(true, true);
     // await saveMelBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // GeniusBet

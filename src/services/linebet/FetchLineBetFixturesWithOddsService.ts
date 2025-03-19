@@ -8,7 +8,7 @@ import { teamNameMappings } from "../teamNameMappings";
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchLineBetFixturesWithOddsService {
   private readonly apiUrlTemplate =
-      "https://linebet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=40&lng=en&mode=4&country=214&partner=189&getEmpty=true&virtualSports=true";
+      "https://linebet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
   private readonly sourceName = "LineBet";
   private sourceId!: number;
   private fetchFixture!: boolean;
