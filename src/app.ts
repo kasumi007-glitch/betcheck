@@ -67,6 +67,7 @@ import saveAkwaBetLeaguesWithFixturesService from "./services/akwabet/SaveAkwaBe
 import saveBetPawaLeaguesWithFixturesService from "./services/betpawa/SaveBetPawaLeaguesWithFixturesService";
 import save1xBetLeaguesWithFixturesService from "./services/1xbet/Save1xBetLeaguesWithFixturesService";
 import saveParipesaLeaguesWithFixturesService from "./services/paripesa/SaveParipesaLeaguesWithFixturesService";
+import saveLineBetLeaguesWithFixturesService from "./services/linebet/SaveLineBetLeaguesWithFixturesService";
 
 dotenv.config();
 
@@ -164,11 +165,9 @@ const processData = async () => {
     // await saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // LineBet
-    // await fetchLineBetLeagueService.init();
     // await fetchLineBetLeagueService.syncLeagues();
-    //
     // await fetchLineBetFixturesWithOddsService.initialize();
-    // await fetchLineBetFixturesWithOddsService.syncFixtures();
+    // await saveLineBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
     // MelBet
     // await fetchMelBetLeagueService.init();
