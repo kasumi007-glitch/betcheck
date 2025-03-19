@@ -1,0 +1,1140 @@
+{
+  "countries": {
+    "Algeria Championship U21. Division 1": {
+      "leagues": {}
+    },
+    "Argentina": {
+      "leagues": {
+        "67487": {
+          "name": "Argentina. Reserve League",
+          "fixtures": []
+        },
+        "119577": {
+          "name": "Copa Argentina",
+          "fixtures": []
+        },
+        "119599": {
+          "name": "Argentina. Primera Division",
+          "fixtures": []
+        },
+        "220557": {
+          "name": "Argentina Championship. Women",
+          "fixtures": []
+        },
+        "887299": {
+          "name": "Argentina. Primera B Nacional",
+          "fixtures": []
+        },
+        "955407": {
+          "name": "Argentina. Primera B Metropolitana",
+          "fixtures": []
+        },
+        "969945": {
+          "name": "Argentina. Torneo Argentino A",
+          "fixtures": []
+        }
+      }
+    },
+    "Australia": {
+      "leagues": {
+        "35401": {
+          "name": "Australia. T-League",
+          "fixtures": []
+        },
+        "40233": {
+          "name": "Australia. New South Wales Premier League",
+          "fixtures": []
+        },
+        "44787": {
+          "name": "Australia Championship. Women",
+          "fixtures": []
+        },
+        "104509": {
+          "name": "Australia. A League",
+          "fixtures": []
+        },
+        "149213": {
+          "name": "Australia Cup",
+          "fixtures": []
+        },
+        "232919": {
+          "name": "Australia. New South Wales Premier League. Women",
+          "fixtures": []
+        },
+        "980455": {
+          "name": "Australia. NPL. Western Australia",
+          "fixtures": []
+        },
+        "981017": {
+          "name": "Australia. NPL Northern NSW",
+          "fixtures": []
+        },
+        "981493": {
+          "name": "Australia. New South Wales Premier League U20",
+          "fixtures": []
+        },
+        "981585": {
+          "name": "Australia. New South Wales Premier League 2",
+          "fixtures": []
+        },
+        "985009": {
+          "name": "Australia. West Australia. Division 1",
+          "fixtures": []
+        },
+        "985101": {
+          "name": "Australia. Victoria Premier League 1",
+          "fixtures": []
+        },
+        "985603": {
+          "name": "Australia. NPL. Western Australia. Women",
+          "fixtures": []
+        },
+        "997925": {
+          "name": "Australia. NPL Victorian. Women",
+          "fixtures": []
+        },
+        "1027167": {
+          "name": "Australia. NPL South Australia",
+          "fixtures": []
+        },
+        "1151127": {
+          "name": "Australia. Victoria Premier League 2",
+          "fixtures": []
+        },
+        "1205475": {
+          "name": "Australia. NPL Northern Territory",
+          "fixtures": []
+        },
+        "1955054": {
+          "name": "Australia. NPL Queensland",
+          "fixtures": []
+        },
+        "1955055": {
+          "name": "Australia. Queensland Premier League",
+          "fixtures": []
+        },
+        "2201003": {
+          "name": "Australia. Queensland League 2 U23",
+          "fixtures": []
+        },
+        "2201396": {
+          "name": "Australia. Queensland Premier League 2",
+          "fixtures": []
+        },
+        "2542886": {
+          "name": "Australia Championship. Queensland Premier League U23",
+          "fixtures": []
+        },
+        "2570396": {
+          "name": "Australia. New South Wales Premier League 1",
+          "fixtures": []
+        },
+        "2656685": {
+          "name": "Australia. NPL Victorian U23",
+          "fixtures": []
+        },
+        "2656692": {
+          "name": "Australia. Victoria Premier League 1 U23",
+          "fixtures": []
+        },
+        "2664249": {
+          "name": "Australia. NPL Victorian",
+          "fixtures": []
+        },
+        "2829182": {
+          "name": "Australia. NPL. Western Australia U23",
+          "fixtures": []
+        }
+      }
+    },
+    "Austria": {
+      "leagues": {
+        "26031": {
+          "name": "Austria. Bundesliga",
+          "fixtures": []
+        },
+        "62841": {
+          "name": "Austria. ÖFB-Frauenliga. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Bangladesh. Ligue 2": {
+      "leagues": {}
+    },
+    "Belgium": {
+      "leagues": {
+        "28787": {
+          "name": "Belgium. Jupiler League",
+          "fixtures": []
+        },
+        "119961": {
+          "name": "Belgium Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Brazil": {
+      "leagues": {
+        "57265": {
+          "name": "Brazil. Campeonato Brasileiro. Serie B",
+          "fixtures": []
+        },
+        "57829": {
+          "name": "Brazil Championship. Women",
+          "fixtures": []
+        },
+        "59787": {
+          "name": "Brazil Championship U20",
+          "fixtures": []
+        },
+        "141597": {
+          "name": "Brazil. Copa do Nordeste",
+          "fixtures": []
+        },
+        "287087": {
+          "name": "Brazil. Campeonato Cearense",
+          "fixtures": []
+        },
+        "288025": {
+          "name": "Brazil. Campeonato Goiano",
+          "fixtures": []
+        },
+        "289029": {
+          "name": "Brazil. Campeonato Paulista",
+          "fixtures": []
+        },
+        "289267": {
+          "name": "Brazil. Campeonato Baiano",
+          "fixtures": []
+        },
+        "289271": {
+          "name": "Brazil. Campeonato Catarinense",
+          "fixtures": []
+        },
+        "289709": {
+          "name": "Brazil. Campeonato Pernambucano",
+          "fixtures": []
+        },
+        "307673": {
+          "name": "Brazil. Campeonato Paulista A2",
+          "fixtures": []
+        },
+        "963035": {
+          "name": "Brazil. Copa Verde",
+          "fixtures": []
+        },
+        "988675": {
+          "name": "Brazil. Campeonato Sergipano",
+          "fixtures": []
+        },
+        "1160865": {
+          "name": "Brazil. Campeonato Cearense. League 2",
+          "fixtures": []
+        },
+        "1163203": {
+          "name": "Brazil. Campeonato Paranaense",
+          "fixtures": []
+        },
+        "1268397": {
+          "name": "Brazil. Campeonato Brasileiro. Serie A",
+          "fixtures": []
+        },
+        "1273907": {
+          "name": "Brazil. Campeonato Amapaense",
+          "fixtures": []
+        },
+        "1319831": {
+          "name": "Brazil. Campeonato Amazonense",
+          "fixtures": []
+        },
+        "1734938": {
+          "name": "Brazil. Campeonato Tocantinense",
+          "fixtures": []
+        },
+        "2512174": {
+          "name": "Brazil. Rio Cup. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Bulgaria": {
+      "leagues": {
+        "30037": {
+          "name": "Bulgaria. A PFG",
+          "fixtures": []
+        },
+        "1075127": {
+          "name": "Bulgaria. B PFG",
+          "fixtures": []
+        }
+      }
+    },
+    "Burkina Faso Cup": {
+      "leagues": {}
+    },
+    "Chile": {
+      "leagues": {
+        "58345": {
+          "name": "Chile. Primera B",
+          "fixtures": []
+        },
+        "2076448": {
+          "name": "Chile Championship. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Club Friendlies": {
+      "leagues": {}
+    },
+    "Club World Cup": {
+      "leagues": {}
+    },
+    "Colombia": {
+      "leagues": {
+        "214147": {
+          "name": "Colombia. Categoria Primera A",
+          "fixtures": []
+        },
+        "214149": {
+          "name": "Colombia. Categoría Primera B",
+          "fixtures": []
+        }
+      }
+    },
+    "CONCACAF Gold Cup": {
+      "leagues": {}
+    },
+    "CONCACAF Nations League": {
+      "leagues": {}
+    },
+    "CONCACAF Nations League. Statistics play-off round": {
+      "leagues": {}
+    },
+    "CONCACAF Nations League. Team vs Player": {
+      "leagues": {}
+    },
+    "Copa Libertadores": {
+      "leagues": {}
+    },
+    "Copa Sudamericana": {
+      "leagues": {}
+    },
+    "Costa Rica. Segunda Division": {
+      "leagues": {}
+    },
+    "Croatia": {
+      "leagues": {
+        "183377": {
+          "name": "Croatia. 1. HNL U19",
+          "fixtures": []
+        },
+        "2439511": {
+          "name": "Croatia. 3. NL",
+          "fixtures": []
+        }
+      }
+    },
+    "Cyprus. First Division": {
+      "leagues": {}
+    },
+    "Czech Republic": {
+      "leagues": {
+        "27707": {
+          "name": "Czech Republic. Fortuna liga",
+          "fixtures": []
+        },
+        "30465": {
+          "name": "Czech Republic. 2 Liga",
+          "fixtures": []
+        }
+      }
+    },
+    "Denmark Championship U19": {
+      "leagues": {}
+    },
+    "Ecuador. Serie B": {
+      "leagues": {}
+    },
+    "Egypt. League Cup": {
+      "leagues": {}
+    },
+    "El Salvador": {
+      "leagues": {
+        "1133095": {
+          "name": "El Salvador. Reserve League",
+          "fixtures": []
+        },
+        "1846739": {
+          "name": "El Salvador. Division 2",
+          "fixtures": []
+        }
+      }
+    },
+    "England": {
+      "leagues": {
+        "13709": {
+          "name": "England. League One",
+          "fixtures": []
+        },
+        "24637": {
+          "name": "England. League Two",
+          "fixtures": []
+        },
+        "34711": {
+          "name": "England. Northern Premier League",
+          "fixtures": []
+        },
+        "88637": {
+          "name": "England. Premier League",
+          "fixtures": []
+        },
+        "105759": {
+          "name": "England. Championship",
+          "fixtures": []
+        },
+        "108319": {
+          "name": "England. FA Cup",
+          "fixtures": []
+        },
+        "305457": {
+          "name": "England. Isthmian League",
+          "fixtures": []
+        },
+        "305771": {
+          "name": "England. Isthmian League. 1st Division. North",
+          "fixtures": []
+        },
+        "306261": {
+          "name": "England. Isthmian League. 1st Division. South",
+          "fixtures": []
+        },
+        "316897": {
+          "name": "England. Superleague. Women",
+          "fixtures": []
+        },
+        "928187": {
+          "name": "England. Development League U21",
+          "fixtures": []
+        },
+        "1256219": {
+          "name": "England. National League South",
+          "fixtures": []
+        },
+        "1256221": {
+          "name": "England. National League",
+          "fixtures": []
+        },
+        "1286371": {
+          "name": "England. National League North",
+          "fixtures": []
+        },
+        "1348973": {
+          "name": "England. Central League",
+          "fixtures": []
+        },
+        "1553127": {
+          "name": "England. League Two. Special Bets",
+          "fixtures": []
+        },
+        "1800014": {
+          "name": "England. Southern Premier League. Central",
+          "fixtures": []
+        },
+        "1800476": {
+          "name": "England. Southern Premier League. South",
+          "fixtures": []
+        },
+        "2482162": {
+          "name": "England. National League. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Enhanced Daily Specials": {
+      "leagues": {}
+    },
+    "Estonia. Meistriliiga": {
+      "leagues": {}
+    },
+    "Ethiopia. Premier League. Women": {
+      "leagues": {}
+    },
+    "Faroe Islands. Women": {
+      "leagues": {}
+    },
+    "Finland. Veikkausliiga": {
+      "leagues": {}
+    },
+    "France": {
+      "leagues": {
+        "12821": {
+          "name": "France. Ligue 1",
+          "fixtures": []
+        },
+        "12829": {
+          "name": "France. Ligue 2",
+          "fixtures": []
+        },
+        "1692148": {
+          "name": "France. National",
+          "fixtures": []
+        }
+      }
+    },
+    "Friendlies": {
+      "leagues": {}
+    },
+    "Friendlies U21. National Teams": {
+      "leagues": {}
+    },
+    "Friendlies U22. National Teams": {
+      "leagues": {}
+    },
+    "Friendlies. National Teams": {
+      "leagues": {}
+    },
+    "Friendlies. National Teams. Special bets": {
+      "leagues": {}
+    },
+    "Gambia": {
+      "leagues": {
+        "1692256": {
+          "name": "Gambian Championship. 1st Division",
+          "fixtures": []
+        },
+        "1900627": {
+          "name": "Gambian Championship. 2nd Division",
+          "fixtures": []
+        }
+      }
+    },
+    "Germany": {
+      "leagues": {
+        "28351": {
+          "name": "Germany. Regionalliga North",
+          "fixtures": []
+        },
+        "40369": {
+          "name": "Germany. Oberliga Bayern",
+          "fixtures": []
+        },
+        "78495": {
+          "name": "Germany. Regionalliga Bayern",
+          "fixtures": []
+        },
+        "96463": {
+          "name": "Germany. Bundesliga",
+          "fixtures": []
+        },
+        "109313": {
+          "name": "Germany. 2. Bundesliga",
+          "fixtures": []
+        },
+        "119235": {
+          "name": "Germany DFB Pokal",
+          "fixtures": []
+        },
+        "1687260": {
+          "name": "Germany Bundesliga U19",
+          "fixtures": []
+        },
+        "2579233": {
+          "name": "Germany. 3. Liga",
+          "fixtures": []
+        }
+      }
+    },
+    "Ghana. Premier League": {
+      "leagues": {}
+    },
+    "Greece": {
+      "leagues": {
+        "8777": {
+          "name": "Greece. SuperLeague",
+          "fixtures": []
+        },
+        "119457": {
+          "name": "Greek Cup",
+          "fixtures": []
+        },
+        "2008375": {
+          "name": "Greece. SuperLeague 2",
+          "fixtures": []
+        }
+      }
+    },
+    "Guatemala. Primera Division de Ascenso": {
+      "leagues": {}
+    },
+    "Hungarian Cup. Women": {
+      "leagues": {}
+    },
+    "Iceland Championship U19": {
+      "leagues": {}
+    },
+    "India": {
+      "leagues": {
+        "253537": {
+          "name": "India. I-League",
+          "fixtures": []
+        },
+        "298121": {
+          "name": "India. I-League. 2nd Division",
+          "fixtures": []
+        },
+        "1416227": {
+          "name": "India Championship. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Iraq. Kurdistan Second Division": {
+      "leagues": {}
+    },
+    "Ireland": {
+      "leagues": {
+        "29975": {
+          "name": "Ireland. Division 1",
+          "fixtures": []
+        },
+        "119445": {
+          "name": "Ireland. Premier League",
+          "fixtures": []
+        },
+        "983817": {
+          "name": "Ireland. Leinster League",
+          "fixtures": []
+        },
+        "1216991": {
+          "name": "Ireland. Munster Senior League",
+          "fixtures": []
+        },
+        "2549540": {
+          "name": "Ireland. Premier Division. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Israel": {
+      "leagues": {
+        "27097": {
+          "name": "Israel. Liga Bet. South",
+          "fixtures": []
+        },
+        "27133": {
+          "name": "Israel. Liga Bet. North",
+          "fixtures": []
+        },
+        "27921": {
+          "name": "Israel. Liga Leumit",
+          "fixtures": []
+        },
+        "134535": {
+          "name": "Israel Championship. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Italy": {
+      "leagues": {
+        "7067": {
+          "name": "Italy. Serie B",
+          "fixtures": []
+        },
+        "110163": {
+          "name": "Italy. Serie A",
+          "fixtures": []
+        },
+        "127759": {
+          "name": "Coppa Italia",
+          "fixtures": []
+        },
+        "2616243": {
+          "name": "Italy. Serie C. Group C",
+          "fixtures": []
+        },
+        "2616244": {
+          "name": "Italy. Serie C. Group B",
+          "fixtures": []
+        },
+        "2616356": {
+          "name": "Italy. Serie C. Group A",
+          "fixtures": []
+        }
+      }
+    },
+    "Jamaica. National Premier League": {
+      "leagues": {}
+    },
+    "Japan": {
+      "leagues": {
+        "30005": {
+          "name": "Japan. J-League Division 2",
+          "fixtures": []
+        },
+        "118737": {
+          "name": "Japan. J-League",
+          "fixtures": []
+        },
+        "211739": {
+          "name": "Japan. Nabisco Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Mexico": {
+      "leagues": {
+        "2126323": {
+          "name": "Mexico. Liga de Expansion MX",
+          "fixtures": []
+        },
+        "2306111": {
+          "name": "Mexico. Liga MX",
+          "fixtures": []
+        },
+        "2306113": {
+          "name": "Mexico. Liga MX. Women",
+          "fixtures": []
+        },
+        "2567424": {
+          "name": "Mexico Championship U23",
+          "fixtures": []
+        },
+        "2729035": {
+          "name": "Mexico Championship U19. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "Morocco. Excellence Cup": {
+      "leagues": {}
+    },
+    "National Youth Teams Friendlies": {
+      "leagues": {}
+    },
+    "Nepal Championship. Division 2": {
+      "leagues": {}
+    },
+    "Netherlands": {
+      "leagues": {
+        "2018747": {
+          "name": "Netherlands. Eerste Divisie",
+          "fixtures": []
+        },
+        "2018750": {
+          "name": "Netherlands. Eredivisie",
+          "fixtures": []
+        }
+      }
+    },
+    "Nicaragua Championship": {
+      "leagues": {}
+    },
+    "Nigeria Cup": {
+      "leagues": {}
+    },
+    "Northern Ireland": {
+      "leagues": {
+        "11463": {
+          "name": "Northern Ireland. IFA Premiership",
+          "fixtures": []
+        },
+        "310027": {
+          "name": "Northern Ireland. Championship",
+          "fixtures": []
+        }
+      }
+    },
+    "Norway. Eliteserien": {
+      "leagues": {}
+    },
+    "Panama. Division 2": {
+      "leagues": {}
+    },
+    "Paraguay. Primera Division": {
+      "leagues": {}
+    },
+    "Peru. Primera Division": {
+      "leagues": {}
+    },
+    "Poland": {
+      "leagues": {
+        "27731": {
+          "name": "Poland. Ekstraklasa",
+          "fixtures": []
+        },
+        "52245": {
+          "name": "Poland Championship. Liga 3",
+          "fixtures": []
+        },
+        "1018363": {
+          "name": "Poland Cup. Women",
+          "fixtures": []
+        },
+        "1023157": {
+          "name": "Poland. IV liga",
+          "fixtures": []
+        }
+      }
+    },
+    "Portugal": {
+      "leagues": {
+        "17555": {
+          "name": "Portugal. Segunda Liga",
+          "fixtures": []
+        },
+        "118663": {
+          "name": "Portugal. Primeira Liga",
+          "fixtures": []
+        },
+        "2284663": {
+          "name": "Portugal. Liga 3",
+          "fixtures": []
+        }
+      }
+    },
+    "Republic of North Macedonia Championship. Women": {
+      "leagues": {}
+    },
+    "Romania": {
+      "leagues": {
+        "11121": {
+          "name": "Romania. Liga 1",
+          "fixtures": []
+        },
+        "33251": {
+          "name": "Romania. Liga 2",
+          "fixtures": []
+        },
+        "104345": {
+          "name": "Romanian Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Russia": {
+      "leagues": {
+        "30079": {
+          "name": "Russia. Premier League. Statistics Round",
+          "fixtures": []
+        },
+        "176125": {
+          "name": "Russian Cup",
+          "fixtures": []
+        },
+        "225733": {
+          "name": "Russia. Premier League",
+          "fixtures": []
+        },
+        "2421233": {
+          "name": "Russian Championship. League 1",
+          "fixtures": []
+        }
+      }
+    },
+    "Saudi Arabia Cup. Women": {
+      "leagues": {}
+    },
+    "Scotland": {
+      "leagues": {
+        "13521": {
+          "name": "Scotland. Premier League",
+          "fixtures": []
+        },
+        "281713": {
+          "name": "Scotland. Championship",
+          "fixtures": []
+        },
+        "281717": {
+          "name": "Scotland. League Two",
+          "fixtures": []
+        },
+        "281719": {
+          "name": "Scotland. League One",
+          "fixtures": []
+        },
+        "954011": {
+          "name": "Scotland. Highland League",
+          "fixtures": []
+        }
+      }
+    },
+    "Serbia. SuperLiga": {
+      "leagues": {}
+    },
+    "Short Football D1": {
+      "leagues": {}
+    },
+    "Sierra Leone. Premier League": {
+      "leagues": {}
+    },
+    "Slovakia": {
+      "leagues": {
+        "41523": {
+          "name": "Slovakia. Liga 2",
+          "fixtures": []
+        },
+        "61723": {
+          "name": "Slovakia. Liga 3",
+          "fixtures": []
+        }
+      }
+    },
+    "South Africa Championship. Women": {
+      "leagues": {}
+    },
+    "South Korea": {
+      "leagues": {
+        "30467": {
+          "name": "South Korea. K League 1",
+          "fixtures": []
+        },
+        "38937": {
+          "name": "South Korea. WK-League",
+          "fixtures": []
+        }
+      }
+    },
+    "Spain": {
+      "leagues": {
+        "27687": {
+          "name": "Spain. Segunda Division",
+          "fixtures": []
+        },
+        "119243": {
+          "name": "Spain Copa del Rey",
+          "fixtures": []
+        },
+        "123791": {
+          "name": "Copa Catalunya",
+          "fixtures": []
+        },
+        "127733": {
+          "name": "Spain. La Liga",
+          "fixtures": []
+        },
+        "915815": {
+          "name": "Spain. Regional League",
+          "fixtures": []
+        },
+        "2014817": {
+          "name": "Spain. Segunda Division. Statistics Round",
+          "fixtures": []
+        },
+        "2282697": {
+          "name": "Spain. Primera Division RFEF. Group 1",
+          "fixtures": []
+        },
+        "2282698": {
+          "name": "Spain. Primera Division RFEF. Group 2",
+          "fixtures": []
+        },
+        "2282701": {
+          "name": "Spain. Segunda Division RFEF. Group 2",
+          "fixtures": []
+        },
+        "2282707": {
+          "name": "Spain. Segunda Division RFEF. Group 1",
+          "fixtures": []
+        },
+        "2286175": {
+          "name": "Spain. Segunda Division RFEF. Group 4",
+          "fixtures": []
+        },
+        "2286181": {
+          "name": "Spain. Segunda Division RFEF. Group 5",
+          "fixtures": []
+        },
+        "2286218": {
+          "name": "Spain. Segunda Division RFEF. Group 3",
+          "fixtures": []
+        },
+        "2287838": {
+          "name": "Spain. Tercera Division RFEF. Group 13",
+          "fixtures": []
+        },
+        "2294413": {
+          "name": "Spain. Tercera Division RFEF. Group 15",
+          "fixtures": []
+        },
+        "2821356": {
+          "name": "Spain Cup. Team vs Player",
+          "fixtures": []
+        }
+      }
+    },
+    "Student League": {
+      "leagues": {}
+    },
+    "Sweden": {
+      "leagues": {
+        "42995": {
+          "name": "Sweden. Allsvenskan. Women",
+          "fixtures": []
+        },
+        "212425": {
+          "name": "Sweden. Allsvenskan",
+          "fixtures": []
+        },
+        "1371789": {
+          "name": "Sweden. Superettan",
+          "fixtures": []
+        }
+      }
+    },
+    "Switzerland": {
+      "leagues": {
+        "27695": {
+          "name": "Switzerland. SuperLeague",
+          "fixtures": []
+        },
+        "988183": {
+          "name": "Switzerland. 1. Liga Classic",
+          "fixtures": []
+        }
+      }
+    },
+    "Thailand. Thai Premier League": {
+      "leagues": {}
+    },
+    "Turkey": {
+      "leagues": {
+        "11113": {
+          "name": "Turkey. SuperLiga",
+          "fixtures": []
+        },
+        "59553": {
+          "name": "Turkey. TFF 2. Lig",
+          "fixtures": []
+        }
+      }
+    },
+    "UEFA Champions League": {
+      "leagues": {}
+    },
+    "UEFA Champions League. Women": {
+      "leagues": {}
+    },
+    "UEFA Champions League. Women. Special bets": {
+      "leagues": {}
+    },
+    "UEFA Conference League": {
+      "leagues": {}
+    },
+    "UEFA Europa League": {
+      "leagues": {}
+    },
+    "UEFA European U19 Championship Qualification": {
+      "leagues": {}
+    },
+    "UEFA Nations League": {
+      "leagues": {}
+    },
+    "UEFA Nations League. League A. Matchday statistics": {
+      "leagues": {}
+    },
+    "UEFA Nations League. Special Bets": {
+      "leagues": {}
+    },
+    "UEFA Nations League. Team vs Player": {
+      "leagues": {}
+    },
+    "Uganda Cup": {
+      "leagues": {}
+    },
+    "Ukraine": {
+      "leagues": {
+        "29949": {
+          "name": "Ukraine. Premier League",
+          "fixtures": []
+        },
+        "120009": {
+          "name": "Ukraine Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Uruguay": {
+      "leagues": {
+        "52183": {
+          "name": "Uruguay. Primera Division",
+          "fixtures": []
+        },
+        "2042463": {
+          "name": "Uruguay. Primera Division. Statistics Round",
+          "fixtures": []
+        }
+      }
+    },
+    "USA": {
+      "leagues": {
+        "57723": {
+          "name": "USA. USL",
+          "fixtures": []
+        },
+        "190409": {
+          "name": "USA. NWSL. Women",
+          "fixtures": []
+        },
+        "828065": {
+          "name": "USA. MLS",
+          "fixtures": []
+        },
+        "1032463": {
+          "name": "US Open Cup",
+          "fixtures": []
+        },
+        "1751282": {
+          "name": "USA. UPSL",
+          "fixtures": []
+        },
+        "1811512": {
+          "name": "USA. MLS. Player vs Team",
+          "fixtures": []
+        },
+        "2745875": {
+          "name": "USA. USL. SuperLiga. Women",
+          "fixtures": []
+        }
+      }
+    },
+    "WAFF Championship U23": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. AFC": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. Africa": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. Africa. Statistics Round": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. Europe": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. Europe. Team vs Player": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. South America. Special bets": {
+      "leagues": {}
+    },
+    "World Cup 2026 Qualification. South America. Team vs Player": {
+      "leagues": {}
+    },
+    "World Cup 2026. Qualification. Europe. Special bets": {
+      "leagues": {}
+    },
+    "World Cup 2026. Qualification. South America": {
+      "leagues": {}
+    },
+    "World Cup 2026. Qualification. South America. Statistics Round": {
+      "leagues": {}
+    },
+    "World Cup Qualification 2026. OFC": {
+      "leagues": {}
+    }
+  }
+}
