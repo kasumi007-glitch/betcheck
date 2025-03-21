@@ -1,14 +1,14 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClient";
 import { MarketObj } from "../interfaces/MarketObj";
 
 class AddBetclicOddService {
   // The URL template for fetching odds for a single fixture by its line id.
   private readonly apiUrlTemplate =
     "https://uodyc08.com/api/v1/lines/{lineId}.json";
-  private readonly sourceName = "Betclic";
+  private readonly sourceName = "BETCLIC";
   private sourceId!: number;
 
   // Instead of numeric IDs, we use the text key (from outcome_groups title)
@@ -62,7 +62,6 @@ class AddBetclicOddService {
       )
       .where("fixtures.date", ">=", new Date())
       .andWhere("leagues.is_active", true)
-      .andWhere("leagues.external_id", 39)
       .where("source_matches.source_id", this.sourceId);
 
     for (const fixture of fixtures) {
@@ -79,7 +78,7 @@ class AddBetclicOddService {
     // Here we assume the line id used to fetch odds is the same as the source_fixture_id
     const apiUrl = this.apiUrlTemplate.replace("{lineId}", sourceFixtureId);
     // Add the required headers here
-    const response = await fetchFromApi(apiUrl, {
+    const response = await httpClientFromApi(apiUrl, {
       headers: {
         "accept-language": "en-US,en;q=0.9",
         "x-client-device-id": "mieiqy0bt1fzsvlablv4",

@@ -34,8 +34,8 @@ class SaveBetsOddsService {
         "bookmakers.country_code",
         "sources.id as source_id",
         "sources.name as source_name"
-      )
-      .where("bookmakers.country_code", "ML");
+      );
+      //.where("bookmakers.country_code", "CI");
   }
 
   static createCountrySourceMap(bookmakersQuery: any[]) {

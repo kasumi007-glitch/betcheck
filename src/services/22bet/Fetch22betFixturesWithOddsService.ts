@@ -1,9 +1,9 @@
 // services/22bet/Fetch22betFixturesWithOddsService.ts
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClient";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { teamNameMappings } from "../teamNameMappings";
+// import { teamNameMappings } from "../teamNameMappings";
 
 // Base API URL template for 22BET fixtures & odds.
 // The placeholder {sourceLeagueId} will be replaced dynamically.
@@ -33,6 +33,7 @@ class Fetch22betFixturesWithOddsService {
 
   private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   // Initialize the source and load markets/market types from the DB.
   async initialize() {
@@ -45,6 +46,7 @@ class Fetch22betFixturesWithOddsService {
       this.sourceId = source.id;
     }
 
+    await this.loadTeamNameMappings();
     this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
   }
@@ -88,7 +90,7 @@ class Fetch22betFixturesWithOddsService {
       console.log(
         `🔍 Fetching fixtures for source_league_id: ${league.source_league_id} (internal league: ${league.league_external_id})`
       );
-      const response = await fetchFromApi(apiUrl);
+      const response = await httpClientFromApi(apiUrl);
       if (!response?.data) {
         console.warn(
           `⚠️ No data received from API for source_league_id: ${league.source_league_id}`
@@ -131,6 +133,8 @@ class Fetch22betFixturesWithOddsService {
     // Assume fixture.id is the external fixture ID.
     const sourceFixtureId = fixture.id.toString();
 
+    const leagueTeamMappings = this.teamNameMappings[leagueExternalId] || [];
+
     // Assuming fixture has properties competitor1Id and competitor2Id,
     // and the fixture also contains a relations object with a competitors array.
     const competitors = relations?.competitors || [];
@@ -147,8 +151,12 @@ class Fetch22betFixturesWithOddsService {
     const homeTeamName = homeCompetitor?.name || "";
     const awayTeamName = awayCompetitor?.name || "";
 
-    const homeTeam = teamNameMappings[homeTeamName] || homeTeamName;
-    const awayTeam = teamNameMappings[awayTeamName] || awayTeamName;
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamName)?.name ?? homeTeamName;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamName)?.name ?? awayTeamName;
+
+    // const homeTeam = teamNameMappings[homeTeamName] || homeTeamName;
+    // const awayTeam = teamNameMappings[awayTeamName] || awayTeamName;
 
     // Convert fixture time (assumes fixture.time is a valid date/time string)
     const eventDate = new Date(fixture.time);
@@ -366,6 +374,30 @@ class Fetch22betFixturesWithOddsService {
       `Odds for market_id ${marketId} saved/updated (coef: ${coefficient}).`
     );
   }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
+  }
+
 }
 
 export default new Fetch22betFixturesWithOddsService();

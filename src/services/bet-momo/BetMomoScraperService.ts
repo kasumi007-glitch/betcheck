@@ -1,8 +1,6 @@
 import { launchBrowser } from "../../utils/launchBrowserUtil";
 import { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
-import { teamNameMappings } from "../teamNameMappings";
-import { leagueNameMappings } from "../leagueNameMappings"; // import league name mappings
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 
@@ -48,6 +46,9 @@ class BetMomoScraperService {
   private dbMarkets: Market[] = [];
   private readonly sourceName = "BETMOMO";
   private sourceId!: number;
+  private countryNameMappings: Record<string, string> = {};
+  private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
   // ----- End Odds mapping configuration -----
 
   async init() {
@@ -59,6 +60,10 @@ class BetMomoScraperService {
     } else {
       this.sourceId = source.id;
     }
+
+    await this.loadCountryNameMappings();
+    await this.loadLeagueNameMappings();
+    await this.loadTeamNameMappings();
     this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
   }
@@ -73,7 +78,7 @@ class BetMomoScraperService {
 
   async scrape(): Promise<void> {
     await this.init(); // initialize DB and mappings
-    const { browser, page } = await launchBrowser();
+    const { browser, page } = await launchBrowser(true);
     await this.setupPage(page);
 
     // Process only active countries from DB
@@ -84,9 +89,11 @@ class BetMomoScraperService {
       const countryName = await this.getCountryName(page, country);
       if (!countryName) continue;
 
+      const mappedCountryName = this.countryNameMappings[countryName.trim()] ?? countryName.trim();
+
       // Check if the country is active in our DB
       const dbCountry = await db("countries")
-        .where("name", countryName)
+        .where("name", mappedCountryName)
         .andWhere("is_active", true)
         .first();
       if (!dbCountry) {
@@ -107,7 +114,15 @@ class BetMomoScraperService {
       const activeLeagues: { leagueName: string; dbLeague: any }[] = [];
       for (const leagueName of leagues) {
         // Apply league name mapping if available
-        const mappedLeagueName = leagueNameMappings[leagueName] || leagueName;
+        // const mappedLeagueName = leagueNameMappings[leagueName] || leagueName;
+
+        // Get all league mappings for this specific country
+        const countryLeagueMappings = this.leagueNameMappings[dbCountry.code] || [];
+
+        // Find the mapped league name if available
+        const mapping = countryLeagueMappings.find(m => m.mapped_name === leagueName);
+        const mappedLeagueName = mapping ? mapping.name : leagueName;
+
         const dbLeague = await db("leagues")
           .where("name", mappedLeagueName)
           .andWhere("country_code", dbCountry.code)
@@ -209,7 +224,7 @@ class BetMomoScraperService {
     countryContainer: JSHandle<Element>,
     countryName: string,
     leagueName: string,
-    leagueExternalId: string
+    leagueExternalId: number
   ): Promise<Match[]> {
     let matches: Match[] = [];
     console.log(`⚽ Processing active league: ${leagueName}`);
@@ -260,7 +275,7 @@ class BetMomoScraperService {
     matchHandles: ElementHandle<Element>[],
     country: string,
     league: string,
-    leagueExternalId: string
+    leagueExternalId: number
   ): Promise<Match[]> {
     let matches: Match[] = [];
     const today = new Date();
@@ -289,8 +304,14 @@ class BetMomoScraperService {
       // ----- Fixture matching logic -----
       const homeTeamRaw = basicInfo.teams[0];
       const awayTeamRaw = basicInfo.teams[1];
-      const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-      const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+      // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+      // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+      const leagueTeamMappings = this.teamNameMappings[leagueExternalId] || [];
+
+      // Apply team name mappings only from this league
+      const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+      const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
       // Parse the date (format: dd.mm.yyyy) and time (e.g. "23:00")
       const dateParts = basicInfo.date.split(".");
@@ -617,6 +638,63 @@ class BetMomoScraperService {
 
   private wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async loadCountryNameMappings() {
+    console.log("🔄 Loading country name mappings...");
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
+    this.countryNameMappings = mappings.reduce((acc, mapping) => {
+      acc[mapping.mapped_name] = mapping.name;
+      return acc;
+    }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
+  }
+
+  private async loadLeagueNameMappings() {
+    console.log("🔄 Loading filtered league name mappings by country...");
+
+    const mappings = await db("league_name_mappings as lm")
+      .join("leagues as l", "lm.league_id", "=", "l.external_id")
+      .join("countries as c", "l.country_code", "=", "c.code")
+      .where("c.is_active", true) // Ensure country is active
+      .select("lm.name", "lm.mapped_name", "l.country_code");
+
+    // Group league mappings by country and store as an array
+    this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.country_code]) {
+        acc[mapping.country_code] = []; // Initialize an empty array for each country
+      }
+      acc[mapping.country_code].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered league name mappings categorized by country loaded.");
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClient";
 import { leagueNameMappings } from "../leagueNameMappings";
 import { teamNameMappings } from "../teamNameMappings";
 import fs from "fs";
@@ -16,6 +16,8 @@ class Fetch1WinLeaguesWithFixturesService {
   private fetchLeague!: boolean;
   private fetchFixture!: boolean;
   private countryNameMappings: Record<string, string> = {};
+  private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -26,7 +28,10 @@ class Fetch1WinLeaguesWithFixturesService {
     } else {
       this.sourceId = source.id;
     }
+
     await this.loadCountryNameMappings();
+    await this.loadLeagueNameMappings();
+    await this.loadTeamNameMappings();
   }
 
   async syncLeaguesAndFixtures(
@@ -37,7 +42,7 @@ class Fetch1WinLeaguesWithFixturesService {
     this.fetchLeague = fetchLeague;
     this.fetchFixture = fetchFixture;
     console.log("🚀 Fetching 1WIN categories (countries)...");
-    const categoriesResponse = await fetchFromApi(this.categoriesApiUrl);
+    const categoriesResponse = await httpClientFromApi(this.categoriesApiUrl);
     if (!categoriesResponse?.categories?.length) {
       console.warn("⚠️ No categories received from 1WIN API.");
       return;
@@ -49,32 +54,32 @@ class Fetch1WinLeaguesWithFixturesService {
     );
 
     // Process each country/category
-    const unmatchedCountries: any[] = [];
+    // const unmatchedCountries: any[] = [];
 
-    for (const country of countries) {
-      const categoryId = country.id;
-      const countryName = this.countryNameMappings[country.name.trim().toLowerCase()] ?? country.name.trim();
-      console.log(`🔍 Processing country: ${countryName}`);
+    // for (const country of countries) {
+    //   const categoryId = country.id;
+    //   const countryName = this.countryNameMappings[country.name.trim().toLowerCase()] ?? country.name.trim();
+    //   console.log(`🔍 Processing country: ${countryName}`);
 
-      // Find the country in our DB (by name)
-      const dbCountry = await db("countries")
-      .where("name", countryName)
-      .first();
-      if (!dbCountry) {
-      console.warn(`⚠️ No match found for country: ${country.name.trim()}`);
-      unmatchedCountries.push({ id: categoryId, name: countryName });
-      }
-    }
+    //   // Find the country in our DB (by name)
+    //   const dbCountry = await db("countries")
+    //     .where("name", countryName)
+    //     .first();
+    //   if (!dbCountry) {
+    //     console.warn(`⚠️ No match found for country: ${country.name.trim()}`);
+    //     unmatchedCountries.push({ id: categoryId, name: countryName });
+    //   }
+    // }
 
     // Save unmatched countries to a JSON file in the service's directory
-    const filePath = __dirname + '/unmatchedCountries.json';
-    fs.writeFileSync(filePath, JSON.stringify(unmatchedCountries, null, 2));
+    // const filePath = __dirname + '/unmatchedCountries.json';
+    // fs.writeFileSync(filePath, JSON.stringify(unmatchedCountries, null, 2));
 
     // Process each country/category
     for (const country of countries) {
       const categoryId = country.id;
       // const countryName = country.name.trim();
-      const countryName = this.countryNameMappings[country.name.trim().toLowerCase()] ?? country.name.trim();
+      const countryName = this.countryNameMappings[country.name.trim()] ?? country.name.trim();
       console.log(`🔍 Processing country: ${countryName}`);
 
       // Find the country in our DB (by name)
@@ -92,7 +97,7 @@ class Fetch1WinLeaguesWithFixturesService {
         "{categoryId}",
         String(categoryId)
       );
-      const matchesResponse = await fetchFromApi(matchesUrl);
+      const matchesResponse = await httpClientFromApi(matchesUrl);
       if (!matchesResponse?.matches?.length) {
         console.warn(`⚠️ No matches received for country: ${countryName}`);
         continue;
@@ -107,8 +112,7 @@ class Fetch1WinLeaguesWithFixturesService {
       );
 
       if (this.fetchLeague) await this.processLeagues(dbCountry, leagueMatches);
-      if (this.fetchFixture)
-        await this.processFixtures(dbCountry, fixtureMatches);
+      if (this.fetchFixture) await this.processFixtures(dbCountry, fixtureMatches);
     }
 
     console.log("✅ 1WIN leagues and fixtures synced successfully!");
@@ -127,9 +131,17 @@ class Fetch1WinLeaguesWithFixturesService {
     const sourceLeagueName = league.homeTeamName.trim();
     const countryName = dbCountry.name;
 
-    // Optionally apply a name mapping
-    const mappedLeagueName =
-      leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+    // // Optionally apply a name mapping
+    // const mappedLeagueName =
+    //   leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+
+
+    // Get all league mappings for this specific country
+    const countryLeagueMappings = this.leagueNameMappings[dbCountry.code] || [];
+
+    // Find the mapped league name if available
+    const mapping = countryLeagueMappings.find(m => m.mapped_name === sourceLeagueName);
+    const mappedLeagueName = mapping ? mapping.name : sourceLeagueName;
 
     // Find the league in our DB (by name and country code)
     const dbLeague = await db("leagues")
@@ -181,8 +193,7 @@ class Fetch1WinLeaguesWithFixturesService {
       )
       .where("source_league_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true)
-      .andWhere("leagues.country_code", dbCountry.code)
-      .andWhere("leagues.external_id", 39);
+      .andWhere("leagues.country_code", dbCountry.code);
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for 1WIN in our database.");
@@ -195,13 +206,21 @@ class Fetch1WinLeaguesWithFixturesService {
     );
 
     for (const match of filteredFixtures) {
-      await this.processFixture(match, dbCountry);
+      await this.processFixture(match, dbCountry, leagues);
     }
   }
 
-  private async processFixture(match: any, dbCountry: any) {
+  private async processFixture(match: any, dbCountry: any, leagues: any[]) {
     // Use the match id as our source fixture id.
     const sourceFixtureId = match.id;
+    let leagueExternalId: number = 0;
+    try {
+
+      const leagueId = leagues.find(x => Number(x.source_league_id) === Number(match.tournamentId)).league_id;
+      leagueExternalId = Number(leagueId);
+    } catch (error) {
+      console.log(`🗓️ Skipping past fixture: ${match.externalId}`);
+    }
     // Convert dateOfMatch (in seconds) to a Date object.
     const eventDate = new Date(match.dateOfMatch * 1000);
     const today = new Date();
@@ -213,12 +232,21 @@ class Fetch1WinLeaguesWithFixturesService {
       return;
     }
 
-    // Process team names via mapping (trim to avoid extra spaces).
-    const homeTeam =
-      teamNameMappings[match.homeTeamName.trim()] || match.homeTeamName.trim();
-    const awayTeam =
-      teamNameMappings[match.awayTeamName?.trim() || ""] ||
-      match.awayTeamName?.trim();
+    // // Process team names via mapping (trim to avoid extra spaces).
+    // const homeTeam =
+    //   teamNameMappings[match.homeTeamName.trim()] || match.homeTeamName.trim();
+    // const awayTeam =
+    //   teamNameMappings[match.awayTeamName?.trim() || ""] ||
+    //   match.awayTeamName?.trim();
+
+    const leagueTeamMappings = this.teamNameMappings[leagueExternalId] || [];
+
+    const homeTeamName = match?.homeTeamName?.trim() || "";
+    const awayTeamName = match?.awayTeamName?.trim() || "";
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamName)?.name ?? homeTeamName;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamName)?.name ?? awayTeamName;
 
     // Update the fixture query to join the source_league_matches table.
     // This ensures we only find fixtures that belong to the league identified by match.tournamentId.
@@ -281,10 +309,57 @@ class Fetch1WinLeaguesWithFixturesService {
     console.log("🔄 Loading country name mappings...");
     const mappings = await db("country_name_mappings").select("name", "mapped_name");
     this.countryNameMappings = mappings.reduce((acc, mapping) => {
-      acc[mapping.name.toLowerCase()] = mapping.mapped_name;
+      acc[mapping.mapped_name] = mapping.name;
       return acc;
     }, {} as Record<string, string>);
     console.log("✅ Country name mappings loaded.");
+  }
+
+  private async loadLeagueNameMappings() {
+    console.log("🔄 Loading filtered league name mappings by country...");
+
+    const mappings = await db("league_name_mappings as lm")
+      .join("leagues as l", "lm.league_id", "=", "l.external_id")
+      .join("countries as c", "l.country_code", "=", "c.code")
+      .where("c.is_active", true) // Ensure country is active
+      .select("lm.name", "lm.mapped_name", "l.country_code");
+
+    // Group league mappings by country and store as an array
+    this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.country_code]) {
+        acc[mapping.country_code] = []; // Initialize an empty array for each country
+      }
+      acc[mapping.country_code].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered league name mappings categorized by country loaded.");
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

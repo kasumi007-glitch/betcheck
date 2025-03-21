@@ -8,6 +8,7 @@ class FetchFixturesService {
 
   private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -18,6 +19,7 @@ class FetchFixturesService {
     } else {
       this.sourceId = source.id;
     }
+    await this.loadTeamNameMappings();
   }
 
   async syncFixtures() {
@@ -33,7 +35,8 @@ class FetchFixturesService {
         "source_league_matches.source_country_name as country_name"
       )
       .where("source_league_matches.source_id", this.sourceId)
-      .andWhere("source_league_matches.source_league_id", "1008226");
+      .andWhere("leagues.is_active", true);
+      // .andWhere("source_league_matches.source_league_id", "1008226");
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for ONEBET in our database.");
@@ -77,10 +80,16 @@ class FetchFixturesService {
     const eventDate = new Date(startTime);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to start of day
-
+    
     // Replace event names with mappings if available
-    const homeTeam = teamNameMappings[eventNames[0]] || eventNames[0];
-    const awayTeam = teamNameMappings[eventNames[1]] || eventNames[1];
+    // const homeTeam = teamNameMappings[eventNames[0]] || eventNames[0];
+    // const awayTeam = teamNameMappings[eventNames[1]] || eventNames[1];
+
+    const leagueTeamMappings = this.teamNameMappings[league.league_id] || [];
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === eventNames[0])?.name ?? eventNames[0];
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === eventNames[1])?.name ?? eventNames[1];
 
     if (eventDate >= today) {
       let fixture = await db("fixtures")
@@ -148,6 +157,29 @@ class FetchFixturesService {
     } else {
       console.log(`🗓️ Skipping event with date ${eventDate} (before today)`);
     }
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

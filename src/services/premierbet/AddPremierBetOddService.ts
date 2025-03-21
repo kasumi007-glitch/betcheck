@@ -55,8 +55,8 @@ class AddPremierBetOddService {
       )
       .where("fixtures.date", ">=", new Date())
       .andWhere("source_matches.source_id", this.sourceId)
-      .andWhere("leagues.is_active", true)
-      .andWhere("source_matches.source_competition_id", "1008226");
+      .andWhere("leagues.is_active", true);
+      // .andWhere("source_matches.source_competition_id", "1008226");
 
     for (const fixture of fixtures) {
       await this.fetchAndProcessOdds(fixture.id, fixture.source_fixture_id);

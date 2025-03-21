@@ -11,6 +11,7 @@ class FetchSuperGoalLeaguesService {
   private sourceId!: number;
 
   private countryNameMappings: Record<string, string> = {};
+  private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -23,6 +24,7 @@ class FetchSuperGoalLeaguesService {
     }
 
     await this.loadCountryNameMappings();
+    await this.loadLeagueNameMappings();
   }
 
   async syncLeagues() {
@@ -49,11 +51,12 @@ class FetchSuperGoalLeaguesService {
     for (const region of response.payload) {
       const countryName = region.name; // e.g., "English"
       // Apply name mapping if needed.
-      const mappedCountryName = this.countryNameMappings[countryName.toLowerCase()] || countryName;
+      const mappedCountryName = this.countryNameMappings[countryName.trim()] ?? countryName.trim();
 
       // Look up country record in your DB (adjust lookup as needed)
       const dbCountry = await db("countries")
         .where("name", mappedCountryName)
+        .andWhere("is_active", true)
         .first();
       if (!dbCountry) {
         console.warn(`⚠️ No match found for country: ${mappedCountryName}`);
@@ -72,8 +75,16 @@ class FetchSuperGoalLeaguesService {
   private async processLeague(dbCountry: any, league: any) {
     const sourceLeagueId = league.leagueId;
     const sourceLeagueName = league.name;
-    const mappedLeagueName =
-      leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+    // const mappedLeagueName =
+    //   leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+
+
+    // Get all league mappings for this specific country
+    const countryLeagueMappings = this.leagueNameMappings[dbCountry.code] || [];
+
+    // Find the mapped league name if available
+    const mapping = countryLeagueMappings.find(m => m.mapped_name === sourceLeagueName);
+    const mappedLeagueName = mapping ? mapping.name : sourceLeagueName;
 
     // Optionally adjust name mapping if needed.
     const dbLeague = await db("leagues")
@@ -117,17 +128,36 @@ class FetchSuperGoalLeaguesService {
 
   private async loadCountryNameMappings() {
     console.log("🔄 Loading country name mappings...");
-    const mappings = await db("country_name_mappings").select(
-      "name",
-      "mapped_name"
-    );
-
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
     this.countryNameMappings = mappings.reduce((acc, mapping) => {
-      acc[mapping.mapped_name.toLowerCase()] = mapping.name; // Store in lowercase for case-insensitive lookup
+      acc[mapping.mapped_name] = mapping.name;
       return acc;
     }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
+  }
 
-    console.log("✅ Country name mappings loaded:", this.countryNameMappings);
+  private async loadLeagueNameMappings() {
+    console.log("🔄 Loading filtered league name mappings by country...");
+
+    const mappings = await db("league_name_mappings as lm")
+      .join("leagues as l", "lm.league_id", "=", "l.external_id")
+      .join("countries as c", "l.country_code", "=", "c.code")
+      .where("c.is_active", true) // Ensure country is active
+      .select("lm.name", "lm.mapped_name", "l.country_code");
+
+    // Group league mappings by country and store as an array
+    this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.country_code]) {
+        acc[mapping.country_code] = []; // Initialize an empty array for each country
+      }
+      acc[mapping.country_code].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered league name mappings categorized by country loaded.");
   }
 }
 

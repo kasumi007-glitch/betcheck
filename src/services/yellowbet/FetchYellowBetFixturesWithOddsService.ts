@@ -43,6 +43,7 @@ class FetchYellowBetFixturesWithOddsService {
   private sourceId!: number;
   private fetchFixture!: boolean;
   private fetchOdd!: boolean;
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   // 1) Market ID → Market Name
   private readonly groupMapping: Record<string, string> = {
@@ -76,6 +77,7 @@ class FetchYellowBetFixturesWithOddsService {
       this.sourceId = source.id;
     }
     // Load markets and market types from the database
+    await this.loadTeamNameMappings();
     this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
   }
@@ -94,8 +96,7 @@ class FetchYellowBetFixturesWithOddsService {
         "leagues.external_id as league_id"
       )
       .where("source_league_matches.source_id", this.sourceId)
-      .andWhere("leagues.is_active", true)
-      .andWhere("leagues.external_id", 39);
+      .andWhere("leagues.is_active", true);
 
     for (const league of leagues) {
       const sourceLeagueId = league.source_league_id.toString();
@@ -145,8 +146,14 @@ class FetchYellowBetFixturesWithOddsService {
     }
 
     // Map team names via your teamNameMappings if available
-    const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-    const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+    // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+    // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+    const leagueTeamMappings = this.teamNameMappings[internalLeagueId] || [];
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
     // Match fixture in the database
     const matchedFixture = await db("fixtures")
@@ -326,6 +333,29 @@ class FetchYellowBetFixturesWithOddsService {
       .merge(["coefficient"]);
 
     console.log("Odds data inserted/updated successfully.");
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

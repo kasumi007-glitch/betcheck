@@ -6,7 +6,7 @@ class SaveBetclicLeaguesWithFixturesService {
   private readonly countryApiUrl = "https://uodyc08.com/api/v3/user/left-menu/supercategories/1";
   private readonly leaguesApiUrlTemplate = "https://uodyc08.com/api/v1/allsports/subcategories/{countryId}";
   private readonly fixturesApiUrlTemplate = "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&lsubc={leagueId}&ss=all&l=20&ltr=0";
-  private readonly sourceName = "Betclic";
+  private readonly sourceName = "BETCLIC";
   private sourceId!: number;
 
   async init() {

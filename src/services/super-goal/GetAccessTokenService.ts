@@ -13,7 +13,7 @@ class GetAccessTokenService {
     let attempt = 0;
 
     while (attempt < this.maxRetries) {
-      const { browser, page } = await launchBrowser(false);
+      const { browser, page } = await launchBrowser(true);
       try {
         await this.setupPage(page);
 
