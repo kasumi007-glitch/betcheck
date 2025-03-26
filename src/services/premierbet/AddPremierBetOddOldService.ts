@@ -5,7 +5,7 @@ class AddPremierBetOddOldService {
   private readonly apiUrlTemplate =
     "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
 
-  private readonly sourceName = "PremierBet";
+  private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
 
   async init() {

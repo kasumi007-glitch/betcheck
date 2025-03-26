@@ -1,12 +1,22 @@
 {
     "compilerOptions": {
-        "target": "ES6",
-        "module": "CommonJS",
         "strict": true,
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "esModuleInterop": true
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "module": "commonjs", // Use ES modules
+        "target": "ES2020", // Target ES2020 or higher
+        "outDir": "./dist", // Output directory for compiled files
+        "rootDir": "./src", // Source directory
+        "sourceMap": true, // Generate source maps for debugging
+        "esModuleInterop": true, // Enable ES module interop
     },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "tests"]
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "tests"
+    ]
 }

@@ -1,0 +1,4384 @@
+{
+  "countries": {
+    "Albania": {
+      "leagues": {
+        "1007923": {
+          "name": "Kategoria Superiore",
+          "fixtures": [
+            "KF Egnatia Rrogozhine",
+            "KF Tirana",
+            "Vllaznia Shkoder",
+            "Skenderbeu Korce"
+          ]
+        },
+        "1007925": {
+          "name": "Kategoria e Pare",
+          "fixtures": [
+            "KF Lushnja",
+            "Flamurtari Vlore",
+            "KS Korabi Peshkopi",
+            "FK Kukesi"
+          ]
+        }
+      }
+    },
+    "Algeria": {
+      "leagues": {
+        "1009828": {
+          "name": "Ligue 1",
+          "fixtures": [
+            "ES Mostaganem",
+            "ES Setif",
+            "Paradou AC",
+            "CS Constantine",
+            "JS Saoura",
+            "US Biskra",
+            "JS Kabylie",
+            "MC Oran",
+            "ASO Chlef",
+            "Olympique Akbou",
+            "MC Alger",
+            "USM Khenchela",
+            "NC Magra",
+            "El Bayadh",
+            "CR Belouizdad",
+            "USM Alger"
+          ]
+        },
+        "1010482": {
+          "name": "Ligue 2",
+          "fixtures": [
+            "MC Saida",
+            "MCB Oued Sly",
+            "CA Batna",
+            "MO Constantine",
+            "Skaf Khemis Miliana",
+            "GC Mascara",
+            "RC Arbaa",
+            "SC Mecheria",
+            "Nrb Teleghma",
+            "Js Bordj Menaiel",
+            "AS Khroub",
+            "HB Chelghoum Laid",
+            "ASM Oran",
+            "RC Kouba",
+            "Ben Aknoun",
+            "JSM Tiaret",
+            "Olympique Magrane",
+            "USM EL Harrach",
+            "Bechar Djedid",
+            "Wa Mostaganem",
+            "Js El Biar",
+            "NA Hussein Dey",
+            "JS Djidjel",
+            "US Souf",
+            "MB Rouissat",
+            "USM Annaba"
+          ]
+        }
+      }
+    },
+    "Argentina": {
+      "leagues": {
+        "1009823": {
+          "name": "Primera Nacional",
+          "fixtures": [
+            "CA All Boys",
+            "CA San Miguel",
+            "CA Estudiantes",
+            "Agropecuario Argentino",
+            "CA Chaco For Ever",
+            "Nueva Chicago",
+            "Deportivo Moron",
+            "CA San Telmo",
+            "CSD Tristan Suarez",
+            "San Martin de Tucuman",
+            "Arsenal de Sarandi",
+            "Quilmes AC",
+            "CA Talleres de Remedios",
+            "Chacarita Juniors",
+            "Colon de Santa Fe",
+            "CA Central Norte Salta",
+            "Deportivo Madryn",
+            "Ferro Carril Oeste",
+            "CA Defensores Unidos",
+            "Gimnasia Y Esgrima De Jujuy",
+            "CA Colegiales",
+            "CA Racing de Cordoba",
+            "CA Alvarado",
+            "Club Almagro",
+            "Gimnasia Y Tiro de Salta",
+            "CA Guemes",
+            "CD Maipu",
+            "CA Patronato Parana",
+            "Estudiantes Rio Cuarto",
+            "CA Defensores de Belgrano",
+            "Mitre Santiago Del Estero",
+            "Club Almirante Brown",
+            "CA Atlanta",
+            "Club Atletico Los Andes",
+            "CA Temperley",
+            "Gimnasia Y Esgrima Mendoza"
+          ]
+        },
+        "1009848": {
+          "name": "Primera B",
+          "fixtures": [
+            "Villa Dalmine",
+            "Deportivo Merlo",
+            "CSCD Laferrere",
+            "CD Armenio",
+            "CA Acassuso",
+            "CD UAI Urquiza",
+            "CA Excursionistas",
+            "CS Italiano",
+            "CA Brown de Adrogue",
+            "Real Pilar FC",
+            "CSD Liniers",
+            "Club Comunicaciones",
+            "Argentino de Quilmes",
+            "CS Dock Sud",
+            "CA Fenix Pilar",
+            "CSD San Martin",
+            "Argentino de Merlo",
+            "CA Villa San Carlos"
+          ]
+        },
+        "1009881": {
+          "name": "Primera C",
+          "fixtures": [
+            "Deportivo Camioneros",
+            "CS Barracas",
+            "Juventud Unida San Miguel",
+            "CA General Lamadrid",
+            "Defensores de Cambaceres",
+            "CDM Leandro N. Alem",
+            "CA Claypole",
+            "CA Lugano"
+          ]
+        },
+        "1009885": {
+          "name": "Torneo Federal A",
+          "fixtures": [
+            "CSB Atenas",
+            "AC San Martin de Mendoza",
+            "Juventud Antoniana",
+            "CA Sarmiento de la Banda",
+            "CD Santamarina Tandil",
+            "Villa Mitre de Bahia Blanca",
+            "Club Ciudad de Bolivar",
+            "CA Huracan Las Heras"
+          ]
+        },
+        "1009887": {
+          "name": "Primera Division, Women",
+          "fixtures": [
+            "CA Talleres de Cordoba",
+            "Racing Club",
+            "CA River Plate (Arg)",
+            "CA Banfield"
+          ]
+        },
+        "1010227": {
+          "name": "Primera LPF",
+          "fixtures": [
+            "Argentinos Juniors",
+            "CA Aldosivi",
+            "CD Godoy Cruz",
+            "CA San Lorenzo de Almagro",
+            "Deportivo Riestra AFBC",
+            "CA River Plate (ARG)",
+            "CA Rosario Central",
+            "Gimnasia Y Esgrima La Plata",
+            "Estudiantes de La Plata",
+            "Newell's Old Boys",
+            "CA Huracan",
+            "Independiente Rivadavia",
+            "CA Sarmiento Junin",
+            "CA Talleres de Cordoba",
+            "CA Independiente Avellaneda",
+            "Racing Club Avellaneda",
+            "Boca Juniors",
+            "Defensa y Justicia",
+            "CA Belgrano de Cordoba",
+            "CA Barracas Central",
+            "CA Lanus",
+            "Instituto AC Cordoba",
+            "Union de Santa Fe",
+            "CA Banfield",
+            "CA Tigre",
+            "CA Central Cordoba SE",
+            "San Martin de San Juan",
+            "CA Platense",
+            "Atletico Tucuman",
+            "Velez Sarsfield"
+          ]
+        }
+      }
+    },
+    "Armenia": {
+      "leagues": {
+        "1008231": {
+          "name": "Premier League",
+          "fixtures": [
+            "FC Ararat-Armenia",
+            "FC Alashkert Yerevan"
+          ]
+        }
+      }
+    },
+    "Australia": {
+      "leagues": {
+        "1007562": {
+          "name": "South Australia Npl",
+          "fixtures": [
+            "Para Hills Knights SC",
+            "Modbury Jets SC",
+            "Campbelltown City SC",
+            "Playford City",
+            "North Eastern Metrostars SC",
+            "Adelaide Croatia Raiders SC",
+            "Adelaide City FC",
+            "West Torrens Birkalla",
+            "Adelaide Comets FC",
+            "Croydon FC"
+          ]
+        },
+        "1007565": {
+          "name": "Western Australia NPL",
+          "fixtures": [
+            "Perth Glory FC",
+            "Fremantle City",
+            "Perth SC",
+            "Balcatta",
+            "Armadale SC",
+            "Floreat Athena",
+            "Western Knights SC",
+            "Perth Redstar FC",
+            "Olympic Kingsway SC",
+            "Stirling Macedonia FC"
+          ]
+        },
+        "1007566": {
+          "name": "NSW NPL 1",
+          "fixtures": [
+            "MT Druitt Town Rangers",
+            "Central Coast Mariners Academy",
+            "NWS Spirit",
+            "Sydney United",
+            "APIA Leichhardt",
+            "St George Saints FC",
+            "Blacktown City FC",
+            "Sydney Olympic FC",
+            "St George City FA",
+            "Manly United FC",
+            "Sydney FC Youth",
+            "Marconi Stallions",
+            "Wollongong Wolves FC",
+            "Western Sydney Youth",
+            "Sutherland Sharks",
+            "Rockdale Ilinden FC"
+          ]
+        },
+        "1007567": {
+          "name": "Victoria, NPL",
+          "fixtures": [
+            "Avondale FC",
+            "Preston Lions FC",
+            "Altona Magic SC",
+            "Dandenong City SC",
+            "Dandenong Thunder",
+            "South Melbourne FC"
+          ]
+        },
+        "1007576": {
+          "name": "A-League",
+          "fixtures": [
+            "Western Sydney Wanderers",
+            "Melbourne Victory",
+            "Perth Glory FC",
+            "Brisbane Roar FC",
+            "Auckland FC",
+            "Central Coast Mariners",
+            "Newcastle United Jets",
+            "Western United FC",
+            "Sydney FC",
+            "Wellington Phoenix FC",
+            "Macarthur Fc",
+            "Melbourne City FC",
+            "Adelaide United FC"
+          ]
+        },
+        "1007610": {
+          "name": "Tasmania Npl",
+          "fixtures": [
+            "South Hobart FC",
+            "Kingborough Lions United FC",
+            "Devonport City SC",
+            "Riverside Olympic FC"
+          ]
+        },
+        "1007612": {
+          "name": "Northern Nsw Npl",
+          "fixtures": [
+            "Weston Workers FC",
+            "Maitland FC"
+          ]
+        },
+        "1009905": {
+          "name": "A-League, Women",
+          "fixtures": [
+            "Sydney FC",
+            "Wellington Phoenix",
+            "Melbourne City FC",
+            "Adelaide United FC",
+            "Brisbane Roar FC",
+            "Newcastle Jets"
+          ]
+        },
+        "1011031": {
+          "name": "Victoria Premier League 1",
+          "fixtures": [
+            "FC Melbourne Srbija",
+            "Moreland City FC",
+            "Manningham United Blues",
+            "Caroline Springs George Cross FC",
+            "Western United FC Youth",
+            "Northcote City",
+            "Melbourne City FC",
+            "Eastern Lions SC"
+          ]
+        },
+        "1011198": {
+          "name": "Victoria Npl, Women",
+          "fixtures": [
+            "Brunswick Juventus FC",
+            "Essendon Royals SC",
+            "Boroondara Eagles",
+            "Heidelberg United FC",
+            "FC Bulleen Lions",
+            "Box Hill United"
+          ]
+        }
+      }
+    },
+    "Austria": {
+      "leagues": {
+        "1007575": {
+          "name": "2. Liga",
+          "fixtures": [
+            "SV Ried",
+            "SV Lafnitz",
+            "Kapfenberger SV",
+            "ASK Voitsberg"
+          ]
+        },
+        "1007613": {
+          "name": "Regionalliga Ost",
+          "fixtures": [
+            "SR Donaufeld",
+            "SV Oberwart",
+            "SC Wiener Viktoria",
+            "Twl Elektra",
+            "ASV SIEGENDORF",
+            "FC Mauerwerk"
+          ]
+        },
+        "1007615": {
+          "name": "Regionalliga Centre",
+          "fixtures": [
+            "SK Treibach",
+            "SC Weiz",
+            "Vorwarts Steyr",
+            "DSV Leoben",
+            "Union Gurten",
+            "LASK AMATEURE OO",
+            "FC Gleisdorf 09",
+            "SV Wildon"
+          ]
+        },
+        "1008289": {
+          "name": "OFB Cup",
+          "fixtures": []
+        },
+        "1008309": {
+          "name": "Bundesliga, Women",
+          "fixtures": [
+            "USV Neulengbach",
+            "FK Austria Wien",
+            "SK Sturm Graz",
+            "FC Bergheim"
+          ]
+        },
+        "1008397": {
+          "name": "Bundesliga",
+          "fixtures": [
+            "FC Salzburg",
+            "Wolfsberger AC",
+            "SK Sturm Graz",
+            "LASK Linz",
+            "SK Austria Klagenfurt",
+            "SCR Altach",
+            "SK Rapid",
+            "Grazer AK 1902",
+            "Blau-Weiss Linz",
+            "TSV Hartberg",
+            "WSG Tirol",
+            "FK Austria Wien"
+          ]
+        },
+        "1014723": {
+          "name": "Regionalliga West",
+          "fixtures": [
+            "FC Lauterach",
+            "SVG Reichenau",
+            "Austria Salzburg",
+            "SK Bischofshofen",
+            "FC Pinzgau Saalfelden",
+            "SV Kuchl"
+          ]
+        }
+      }
+    },
+    "Azerbaijan": {
+      "leagues": {
+        "1007916": {
+          "name": "Premier League",
+          "fixtures": [
+            "FK Kapaz",
+            "Qarabag FK",
+            "Sabah Masazir",
+            "Zira FK"
+          ]
+        }
+      }
+    },
+    "Belarus": {
+      "leagues": {
+        "1007617": {
+          "name": "Vysshaya Liga",
+          "fixtures": [
+            "FC Gomel",
+            "FC Torpedo Belaz Zhodino",
+            "FC Neman Grodno",
+            "FC Molodechno",
+            "FC Vitebsk",
+            "Bate Borisov",
+            "FK Arsenal Dzerzhinsk",
+            "FC Brest",
+            "FC Slutsk",
+            "Maxline Vitebsk",
+            "FC Dinamo Minsk",
+            "FC Smorgon"
+          ]
+        }
+      }
+    },
+    "Belgium": {
+      "leagues": {
+        "1007853": {
+          "name": "Pro League",
+          "fixtures": [
+            "KRC Genk",
+            "Union Saint-Gilloise",
+            "Standard Liege",
+            "Royal Antwerp FC",
+            "K Beerschot VA",
+            "KVC Westerlo",
+            "Oud-Heverlee Leuven",
+            "St. Truidense VV",
+            "Yellow-Red KV Mechelen",
+            "FCV Dender EH",
+            "KAA Gent",
+            "KV Kortrijk",
+            "Club Brugge",
+            "Royal Charleroi SC",
+            "RSC Anderlecht",
+            "Cercle Brugge"
+          ]
+        },
+        "1007957": {
+          "name": "Challenger Pro League",
+          "fixtures": [
+            "RSC Anderlecht",
+            "RFC Seraing",
+            "Royal Francs Borains",
+            "SV Zulte Waregem",
+            "Lommel SK",
+            "Patro Eisden Maasmechelen",
+            "KSC Lokeren-Temse",
+            "RFC Liege"
+          ]
+        },
+        "1008334": {
+          "name": "Super League, Women",
+          "fixtures": [
+            "KVC Westerlo",
+            "Club Brugge YLA",
+            "RSC Anderlecht",
+            "SV Zulte Waregem",
+            "Oud-Heverlee Leuven",
+            "KRC Genk"
+          ]
+        },
+        "1020839": {
+          "name": "Nationale 1 VV",
+          "fixtures": [
+            "Yound Reds Antwerpen",
+            "KFC Merelbeke",
+            "Kvv Thes Sport Tessenderlo",
+            "Jeugd Oud Heverlee Leuven B",
+            "Hoogstraten VV",
+            "KFC Dessel Sport"
+          ]
+        },
+        "1020840": {
+          "name": "Nationale 1 ACFF",
+          "fixtures": [
+            "Union Saint-Gilloise B",
+            "Rus Binche",
+            "RFC Tournai",
+            "Ur Namur",
+            "Union Rochefortoise",
+            "Royal Olympic Charleroi Chatelet Farciennes",
+            "Royal Excelsior Virton",
+            "R AEC Mons"
+          ]
+        }
+      }
+    },
+    "Bosnia and Herzegovina": {
+      "leagues": {
+        "1007679": {
+          "name": "Premijer Liga",
+          "fixtures": [
+            "NK Gosk Gabela",
+            "FK Sloga Doboj",
+            "FK Sarajevo",
+            "FK Igman Konjic"
+          ]
+        },
+        "1007920": {
+          "name": "Prva Liga, Rep of Srpska",
+          "fixtures": [
+            "FK Drina Zvornik",
+            "FK Kozara Gradiska",
+            "FK Sutjeska Foca",
+            "FK Romanija Pale"
+          ]
+        }
+      }
+    },
+    "Brazil": {
+      "leagues": {
+        "1007594": {
+          "name": "Alagoano, Serie A",
+          "fixtures": [
+            "CR Brasil AL",
+            "AS Arapiraquense AL"
+          ]
+        },
+        "1007595": {
+          "name": "Paraibano",
+          "fixtures": [
+            "Botafogo FC PB",
+            "Treze FC PB"
+          ]
+        },
+        "1007596": {
+          "name": "Sergipano",
+          "fixtures": [
+            "AD Confianca SE",
+            "Falcon SE"
+          ]
+        },
+        "1007609": {
+          "name": "Copa do Nordeste",
+          "fixtures": []
+        },
+        "1007790": {
+          "name": "Brasileiro Serie A",
+          "fixtures": [
+            "SE Palmeiras SP",
+            "Botafogo FR RJ",
+            "Fortaleza EC CE",
+            "Fluminense FC RJ",
+            "Cruzeiro EC MG",
+            "Mirassol FC SP",
+            "EC Bahia BA",
+            "SC Corinthians SP",
+            "EC Juventude RS",
+            "EC Vitoria BA",
+            "Gremio FB Porto Alegrense RS",
+            "Atletico Mineiro MG",
+            "CR Flamengo RJ",
+            "SC Internacional RS",
+            "Sao Paulo FC SP",
+            "SC Recife PE",
+            "CR Vasco da Gama RJ",
+            "Santos FC SP",
+            "Red Bull Bragantino SP",
+            "Ceara SC CE"
+          ]
+        },
+        "1007847": {
+          "name": "Paulista, Serie A1",
+          "fixtures": [
+            "SE Palmeiras SP",
+            "SC Corinthians SP"
+          ]
+        },
+        "1007848": {
+          "name": "Baiano, Serie A",
+          "fixtures": [
+            "EC Bahia BA",
+            "EC Vitoria BA"
+          ]
+        },
+        "1007850": {
+          "name": "Catarinense, Serie A",
+          "fixtures": [
+            "Chapecoense SC",
+            "Avai FC SC"
+          ]
+        },
+        "1007851": {
+          "name": "Gaucho, Serie A1",
+          "fixtures": [
+            "EC Pelotas RS",
+            "EC Sao Jose RS",
+            "Gremio Esportivo Brasil",
+            "EC Avenida RS",
+            "SC Internacional RS",
+            "Gremio FB Porto Alegrense RS"
+          ]
+        },
+        "1007852": {
+          "name": "Mineiro, Modulo I",
+          "fixtures": [
+            "America FC MG",
+            "Atletico Mineiro MG",
+            "Athletic Club Sjdr MG",
+            "Uberlandia EC MG"
+          ]
+        },
+        "1007854": {
+          "name": "Pernambucano",
+          "fixtures": [
+            "Santa Cruz FC PE",
+            "SC Recife PE",
+            "Maguary PE",
+            "Retro FC PE"
+          ]
+        },
+        "1007855": {
+          "name": "Paranaense, 1. Divisao",
+          "fixtures": [
+            "Operario Ferroviario EC PR",
+            "Londrina EC PR",
+            "Maringa FC PR",
+            "CA Paranaense PR"
+          ]
+        },
+        "1007858": {
+          "name": "Brasileiro Serie B",
+          "fixtures": []
+        },
+        "1007975": {
+          "name": "Maranhense, Serie A",
+          "fixtures": [
+            "Maranhao AC MA",
+            "Sampaio Correa FC MA"
+          ]
+        },
+        "1008276": {
+          "name": "Copa do Brasil",
+          "fixtures": []
+        },
+        "1008286": {
+          "name": "Paulista, Serie A2",
+          "fixtures": [
+            "EC Santo Andre SP",
+            "EC Primavera SP",
+            "Sao Jose EC SP",
+            "EC Taubate SP",
+            "EC XV de Novembro Piracicaba SP",
+            "Capivariano FC SP",
+            "Ferroviaria Araraquara SP",
+            "Ituano FC SP"
+          ]
+        },
+        "1008359": {
+          "name": "Candango, Serie A",
+          "fixtures": [
+            "SE Gama DF",
+            "Brasiliense FC DF"
+          ]
+        },
+        "1008486": {
+          "name": "Amapaense",
+          "fixtures": [
+            "Ypiranga Clube AP",
+            "Oratorio RC AP"
+          ]
+        },
+        "1008576": {
+          "name": "Cearense, Serie A",
+          "fixtures": [
+            "Fortaleza EC CE",
+            "Ceara SC CE",
+            "Maracana EC CE",
+            "Ferroviario AC CE"
+          ]
+        },
+        "1008767": {
+          "name": "Paulista, Serie A3",
+          "fixtures": [
+            "EC Sao Bernardo SP",
+            "SE Itapirense SP",
+            "Desportivo Brasil SP",
+            "Uniao Suzano AC SP",
+            "Marilia AC SP",
+            "Rio Branco EC SP",
+            "Uniao Sao Joao EC SP",
+            "Rio Preto EC SP"
+          ]
+        },
+        "1008908": {
+          "name": "Carioca, Serie A",
+          "fixtures": [
+            "Sampaio Correa FE RJ",
+            "Madureira RJ",
+            "CR Flamengo RJ",
+            "Fluminense FC RJ"
+          ]
+        },
+        "1009011": {
+          "name": "U20 Brasileiro Serie A",
+          "fixtures": [
+            "EC Bahia BA",
+            "SC Corinthians SP"
+          ]
+        },
+        "1009552": {
+          "name": "Campeonato Capixaba",
+          "fixtures": [
+            "Rio Branco AC ES",
+            "Desportiva Ferroviaria ES"
+          ]
+        },
+        "1009744": {
+          "name": "Mato-Grossense, 1. Divisao",
+          "fixtures": [
+            "Cuiaba EC MT",
+            "CE Operario Varzea-Grandense MT"
+          ]
+        },
+        "1009755": {
+          "name": "Piauiense",
+          "fixtures": [
+            "Piaui PI",
+            "Parnahyba SC PI"
+          ]
+        },
+        "1010049": {
+          "name": "Goiano",
+          "fixtures": [
+            "Anapolis FC GO",
+            "AC Goianiense GO",
+            "Vila Nova FC GO",
+            "Goias EC GO"
+          ]
+        },
+        "1010116": {
+          "name": "Campeonato Tocantinense",
+          "fixtures": [
+            "Capital FC TO",
+            "Araguaina TO",
+            "Tocantinopolis EC TO",
+            "Batalhao FC TO"
+          ]
+        },
+        "1010150": {
+          "name": "Amazonense",
+          "fixtures": [
+            "Nacional FC AM",
+            "Sao Raimundo EC AM",
+            "Amazonas FC AM",
+            "Manauara EC AM"
+          ]
+        },
+        "1010611": {
+          "name": "Potiguar, 1. Divisao",
+          "fixtures": [
+            "America FC RN",
+            "Santa Cruz FC RN"
+          ]
+        },
+        "1011299": {
+          "name": "Roraimense",
+          "fixtures": [
+            "Atletico Roraima RR",
+            "Gremio Atletico Sampaio RR",
+            "Bare EC RR",
+            "Sao Raimundo EC RR"
+          ]
+        },
+        "1014881": {
+          "name": "Paulista, Serie A4 U23",
+          "fixtures": [
+            "Nacional AC SP",
+            "Vila Operaria CE Mariano SP",
+            "Colorado Caieiras FC SP",
+            "Uniao Barbarense SP",
+            "AE Aracatuba",
+            "CA Taquaritinga SP"
+          ]
+        },
+        "1017358": {
+          "name": "Supercopa, Women",
+          "fixtures": [
+            "Sao Paulo Fc Sp",
+            "SC Corinthians SP"
+          ]
+        }
+      }
+    },
+    "Bulgaria": {
+      "leagues": {
+        "1007455": {
+          "name": "Parva Liga",
+          "fixtures": [
+            "FK Hebar Pazardzhik",
+            "Lokomotive Sofia",
+            "PFC Ludogorets 1945 Razgrad",
+            "POFC Botev Vratsa",
+            "PFC CSKA Sofia",
+            "PFC Cherno More Varna",
+            "FK Spartak 1918 Varna",
+            "FK Septemvri Sofia",
+            "Botev Plovdiv",
+            "FC CSKA 1948",
+            "FC Arda Kardzhali",
+            "PFC Levski Sofia"
+          ]
+        },
+        "1007557": {
+          "name": "Vtora Liga",
+          "fixtures": [
+            "FC Pirin Blagoevgrad",
+            "PFC Spartak Pleven",
+            "FK CSKA 1948 II",
+            "FC Strumska Slava Radomir",
+            "PFC CSKA SOFIA II",
+            "OFC Nesebar",
+            "FC Fratria Varna",
+            "PFC Ludogorets Razgrad II",
+            "PFK Sportist Svoge",
+            "PFC Montana 1921",
+            "FC Lovech",
+            "PFC Minyor Pernik",
+            "Marek Dupnica",
+            "SFC Etar Veliko Tarnovo",
+            "FC Dunav Ruse",
+            "PFC Belasitsa Petrich",
+            "PFC Dobrudzha Dobrich",
+            "FC Yantra Gabrovo",
+            "Gorna Oryahovitsa",
+            "Pfk Botev Plovdiv II"
+          ]
+        }
+      }
+    },
+    "Cambodia": {
+      "leagues": {
+        "1007646": {
+          "name": "Cambodian Premier League",
+          "fixtures": [
+            "Life FC",
+            "Isi Dangkor Senchey FC"
+          ]
+        }
+      }
+    },
+    "Cameroon": {
+      "leagues": {
+        "1009685": {
+          "name": "Elite One",
+          "fixtures": [
+            "Pwd Bamenda",
+            "Fauve Azur de Yaounde"
+          ]
+        }
+      }
+    },
+    "Chile": {
+      "leagues": {
+        "1008304": {
+          "name": "Primera B",
+          "fixtures": [
+            "Union San Felipe",
+            "Deportes Copiapo",
+            "Universidad de Concepcion",
+            "San Luis de Quillota",
+            "CSD Rangers",
+            "CD Cobreloa Calama",
+            "San Marcos de Arica",
+            "Santiago Wanderers",
+            "CD Santa Cruz",
+            "Deportes Concepcion"
+          ]
+        },
+        "1008358": {
+          "name": "Primera Division",
+          "fixtures": [
+            "Audax Italiano",
+            "Universidad de Chile",
+            "Deportes Limache",
+            "Huachipato",
+            "CD Everton Vina del Mar",
+            "Coquimbo Unido",
+            "Deportes La Serena",
+            "Deportes Union La Calera",
+            "Cobresal",
+            "CD O´Higgins",
+            "CD Palestino",
+            "Nublense",
+            "Deportes Iquique",
+            "Union Espanola"
+          ]
+        },
+        "1020016": {
+          "name": "Primera Division, Women",
+          "fixtures": [
+            "Coquimbo Unido",
+            "Universidad de Concepcion",
+            "Union Espanola",
+            "Deportes Recoleta",
+            "Universidad Catolica",
+            "Santiago Wanderers"
+          ]
+        },
+        "1020027": {
+          "name": "Segunda Division",
+          "fixtures": [
+            "Real San Joaquin",
+            "Puerto Montt",
+            "Provincial Osorno",
+            "CD Trasandino de Los Andes"
+          ]
+        }
+      }
+    },
+    "China": {
+      "leagues": {
+        "1007487": {
+          "name": "Chinese Super League",
+          "fixtures": []
+        },
+        "1008852": {
+          "name": "China League 1",
+          "fixtures": [
+            "Chongqing Tonglianglong FC",
+            "Qingdao Red Lions",
+            "Nantong Zhiyun",
+            "Shanghai Jiading City Dev",
+            "Guandong GZ-Power FC",
+            "Yanbian Longding",
+            "Guangxi Pingguo",
+            "Liaoning Tieren FC"
+          ]
+        }
+      }
+    },
+    "Colombia": {
+      "leagues": {
+        "1008690": {
+          "name": "Primera A, Apertura",
+          "fixtures": [
+            "CA Bucaramanga",
+            "CS Deportivo Pereira",
+            "AD Pasto",
+            "CD La Equidad",
+            "Envigado FC",
+            "Atletico Nacional Medellin",
+            "Fortaleza FC",
+            "CD Tolima",
+            "America de Cali",
+            "Alianza FC Valledupar",
+            "CD Once Caldas",
+            "Independiente Santa Fe",
+            "Millonarios FC",
+            "Aguilas Doradas Rionegro",
+            "Union Magdalena",
+            "Boyaca Chico FC",
+            "Independiente Medellin",
+            "AD Cali",
+            "Llaneros FC",
+            "CD Junior FC"
+          ]
+        },
+        "1008910": {
+          "name": "Primera B",
+          "fixtures": [
+            "Cucuta Deportivo FC",
+            "Bogota FC",
+            "CD Atletico Huila",
+            "Orsomarso SC"
+          ]
+        }
+      }
+    },
+    "Costa Rica": {
+      "leagues": {
+        "1010099": {
+          "name": "Primera Division, Clausura",
+          "fixtures": [
+            "AD Guanacasteca",
+            "Santos de Guapiles",
+            "AD San Carlos",
+            "AD Municipal Santa Ana",
+            "Perez Zeledon",
+            "Puntarenas FC",
+            "CS Cartagines",
+            "Liga Deportiva Alajuelense",
+            "Deportivo Saprissa San Jose",
+            "Municipal Liberia",
+            "Sporting FC",
+            "CS Herediano"
+          ]
+        },
+        "1010157": {
+          "name": "Liga De Ascenso, Clausura",
+          "fixtures": [
+            "Futbol Consultants Desamparados",
+            "CS Uruguay de Coronado",
+            "Inter San Carlos",
+            "AD Cofutpa",
+            "CD Escorpiones Belen",
+            "AD Municipal Turrialba FC"
+          ]
+        }
+      }
+    },
+    "Croatia": {
+      "leagues": {
+        "1007619": {
+          "name": "HNL",
+          "fixtures": [
+            "HNK Sibenik",
+            "NK Istra 1961",
+            "GNK Dinamo Zagreb",
+            "NK Lokomotiva Zagreb",
+            "NK Osijek",
+            "NK Varazdin",
+            "HNK Rijeka",
+            "HNK Hajduk Split"
+          ]
+        },
+        "1007927": {
+          "name": "Prva NL",
+          "fixtures": [
+            "Orijent 1919 Rijeka",
+            "HNK Vukovar 1991",
+            "NK Dugopolje",
+            "NK Rudes Zagreb",
+            "NK Zrinski Osjecko 1664",
+            "NK BSK Bijelo Brdo",
+            "HNK Cibalia Vinkovci",
+            "NK Opatija",
+            "NK Croatia Zmijavci",
+            "NK Dubrava Zagreb"
+          ]
+        },
+        "1016952": {
+          "name": "Druga NL",
+          "fixtures": [
+            "NK Jadran Porec",
+            "NK Segesta",
+            "NK Trnje",
+            "NK Dugo Selo",
+            "NK Radnik Krizevci",
+            "NK Grobnican",
+            "NK Bjelovar",
+            "NK Jadran LP",
+            "NK Solin",
+            "NK Mladost Zdralovi"
+          ]
+        }
+      }
+    },
+    "Cyprus": {
+      "leagues": {
+        "1007620": {
+          "name": "1st Division",
+          "fixtures": [
+            "Karmiotissa FC",
+            "Enosis Neon Paralimni FC",
+            "Omonia Aradippou",
+            "AEL Limassol",
+            "Aris Limassol FC",
+            "APOEL Nikosia",
+            "Ethnikos Achnas FC",
+            "Nea Salamina Famagusta",
+            "Apollon Limassol",
+            "Pafos FC",
+            "AC Omonia Nicosia",
+            "AEK Larnaca"
+          ]
+        },
+        "1008413": {
+          "name": "2nd Division",
+          "fixtures": [
+            "Olympiakos Nicosia",
+            "AEZ Zakakiou",
+            "Asil Lysis",
+            "PAEEK Kyrenia",
+            "Halkanoras",
+            "Anagennisi Deryneia",
+            "MEAP Pera Choriou Nisou",
+            "Othellos Athienou",
+            "Akritas Chlorakas",
+            "Achyronas Onisilos"
+          ]
+        }
+      }
+    },
+    "Czechia": {
+      "leagues": {
+        "1007948": {
+          "name": "1. Liga, Women",
+          "fixtures": [
+            "FC Viktoria Plzen",
+            "Lokomotiva Brno Horni Herspice"
+          ]
+        },
+        "1007981": {
+          "name": "Msfl",
+          "fixtures": [
+            "FK Fotbal Trinec",
+            "FC Slovan Rosice",
+            "SK Hanacka Slavia Kromeriz",
+            "FC Hlucin",
+            "TJ Unie Hlubina",
+            "TJ Start Brno",
+            "CSK Uhersky Brod",
+            "FK Blansko",
+            "FK Hodonin",
+            "FK Frydek-Mistek"
+          ]
+        },
+        "1008218": {
+          "name": "1. Liga",
+          "fixtures": [
+            "FK Mlada Boleslav",
+            "Bohemians Prague 1905",
+            "FK Pardubice",
+            "Dukla Prague",
+            "FK Teplice",
+            "1. FC Slovacko Uherske Hradiste",
+            "FC Slovan Liberec",
+            "Sparta Prague",
+            "SK Sigma Olomouc",
+            "FC Hradec Kralove",
+            "SK Dynamo Ceske Budejovice",
+            "MFK Karvina",
+            "FC Viktoria Plzen",
+            "FC Banik Ostrava",
+            "Slavia Prague",
+            "FK Jablonec"
+          ]
+        },
+        "1008250": {
+          "name": "FNL",
+          "fixtures": [
+            "SFC Opava",
+            "SK Lisen Brno",
+            "FC Zbrojovka Brno",
+            "FC SILON Taborsko",
+            "FK Viktoria Zizkov",
+            "FC Zlin",
+            "SK Slavia Prague B",
+            "MFk Vyskov",
+            "FK Varnsdorf",
+            "Sparta Prague B",
+            "FC Banik Ostrava B",
+            "MFK Chrudim"
+          ]
+        },
+        "1008262": {
+          "name": "Cfl",
+          "fixtures": [
+            "FK Pardubice B",
+            "SK Zapy",
+            "FK Loko Prague",
+            "FK Mas Taborsko II",
+            "FK Jablonec B",
+            "FK Chlumec Nad Cidlinou",
+            "SK Dynamo Ceske Budejovice B",
+            "FK Pribram",
+            "Tj Slovan Velvary",
+            "Dukla Prague B",
+            "SK Kladno",
+            "Tj Jiskra Usti Nad Orlici",
+            "FK Arsenal Ceska Lipa",
+            "FK Usti nad Labem",
+            "Tj Jiskra Domazlice",
+            "SK Petrin Plzen",
+            "FC Chomutov",
+            "FK Motorlet Prague"
+          ]
+        },
+        "1018738": {
+          "name": "Divize B",
+          "fixtures": [
+            "FC Slavia Karlovy Vary",
+            "Tempo Prague"
+          ]
+        }
+      }
+    },
+    "Denmark": {
+      "leagues": {
+        "1007583": {
+          "name": "Kvindeligaen, Women",
+          "fixtures": [
+            "Broendby IF",
+            "HB Koege",
+            "AGF Aarhus",
+            "Dbk Fortuna Hjoerring"
+          ]
+        },
+        "1007857": {
+          "name": "Superliga",
+          "fixtures": [
+            "Broendby IF",
+            "Silkeborg IF",
+            "FC Midtjylland",
+            "Randers FC",
+            "Lyngby BK",
+            "FC Nordsjaelland",
+            "Vejle BK",
+            "AGF Aarhus",
+            "Viborg FF",
+            "FC Copenhagen",
+            "Soenderjyske",
+            "Aalborg BK"
+          ]
+        },
+        "1008264": {
+          "name": "2nd Division",
+          "fixtures": [
+            "Ishoej IF",
+            "Nykoebing FC",
+            "HIK Hellerup",
+            "Thisted FC",
+            "Middelfart BK",
+            "AB Gladsaxe",
+            "FC Helsingoer",
+            "Aarhus Fremad",
+            "BK Fremad Amager",
+            "Skive IK",
+            "Naestved BK",
+            "BK Frem"
+          ]
+        },
+        "1008506": {
+          "name": "DBU Pokalen",
+          "fixtures": []
+        },
+        "1012346": {
+          "name": "3rd Division",
+          "fixtures": [
+            "Holbaek B&I",
+            "Naesby BK",
+            "Odder IGF",
+            "BK Avarta",
+            "IF Lyseng",
+            "Vsk Aarhus",
+            "Bronshoj BK",
+            "Sundby BK",
+            "Holstebro BK",
+            "Brabrand IF",
+            "Young Boys FD Silkeborg",
+            "FA 2000"
+          ]
+        },
+        "1015490": {
+          "name": "Danmarksserien",
+          "fixtures": [
+            "Glostrup FK",
+            "Boldklubben 1908",
+            "GVI",
+            "Fredensborg BI",
+            "Vejgaard BK",
+            "Hobro IK 2",
+            "Asa Aarhus",
+            "Ringkoebing IF",
+            "BK Skjold",
+            "Taarnby FF"
+          ]
+        }
+      }
+    },
+    "Ecuador": {
+      "leagues": {
+        "1007693": {
+          "name": "LigaPro Primera A",
+          "fixtures": [
+            "Mushuc Runa SC",
+            "Vinotinto FC Ecuador",
+            "Libertad Loja",
+            "Orense SC",
+            "CD Universidad Catolica del Ecuador",
+            "Manta FC",
+            "Delfin SC",
+            "CD Cuenca",
+            "CSD Independiente del Valle",
+            "CSD Macara",
+            "CS Emelec",
+            "LDU Quito",
+            "CD Tecnico Universitario",
+            "Barcelona SC"
+          ]
+        }
+      }
+    },
+    "Egypt": {
+      "leagues": {
+        "1009154": {
+          "name": "Egypt Cup",
+          "fixtures": [
+            "Ceramica Cleopatra",
+            "El Gouna FC",
+            "Zamalek SC",
+            "Smouha SC",
+            "Pyramids FC",
+            "Enppi Club",
+            "Ghazl El Mahallah",
+            "National Bank of Egypt SC"
+          ]
+        }
+      }
+    },
+    "El Salvador": {
+      "leagues": {
+        "1010528": {
+          "name": "Primera Division, Clausura",
+          "fixtures": [
+            "CD Aguila San Miguel",
+            "CD. Cacahuatique",
+            "CD Luis Angel Firpo Usulutan",
+            "CD Platense Municipal Zacatecoluca",
+            "CD FAS Santa Ana",
+            "CD Dragon",
+            "CD Fuerte San Francisco Morazan",
+            "Once Deportivo de Ahuachapan",
+            "Alianza FC San Salvador",
+            "Municipal Limeno"
+          ]
+        },
+        "1014370": {
+          "name": "Primera Division, Reserves, Clausura",
+          "fixtures": [
+            "CD Aguila",
+            "CD Cacahuatique",
+            "CD Luis Angel Firpo",
+            "CD Platense",
+            "Municipal Limeno",
+            "Alianza FC"
+          ]
+        }
+      }
+    },
+    "England": {
+      "leagues": {
+        "1007622": {
+          "name": "National League South",
+          "fixtures": [
+            "Maidstone United FC",
+            "Chippenham Town FC",
+            "Farnborough FC",
+            "Welling United FC",
+            "Aveley FC",
+            "Eastbourne Borough",
+            "Bath City FC",
+            "Tonbridge Angels",
+            "Chelmsford City",
+            "Weston-super-Mare",
+            "Dorking Wanderers",
+            "Torquay United",
+            "Chesham United",
+            "St. Albans City",
+            "Salisbury FC",
+            "Hampton & Richmond Borough",
+            "Worthing FC",
+            "Hemel Hempstead Town",
+            "Enfield Town",
+            "Truro City",
+            "Hornchurch FC",
+            "Slough Town",
+            "Weymouth FC",
+            "Boreham Wood FC"
+          ]
+        },
+        "1007624": {
+          "name": "National League North",
+          "fixtures": [
+            "Alfreton Town FC",
+            "Oxford City",
+            "Curzon Ashton FC",
+            "Marine FC",
+            "Brackley Town FC",
+            "Buxton FC",
+            "King's Lynn Town",
+            "Spennymoor Town FC",
+            "Needham Market",
+            "Chorley FC",
+            "Peterborough Sports",
+            "Darlington FC",
+            "Rushall Olympic",
+            "Southport FC",
+            "South Shields",
+            "Kidderminster Harriers FC",
+            "Chester FC",
+            "Leamington FC",
+            "Farsley Celtic FC",
+            "Scunthorpe United",
+            "Scarborough Athletic",
+            "Hereford FC",
+            "Warrington Town",
+            "Radcliffe FC"
+          ]
+        },
+        "1008295": {
+          "name": "Super League Women",
+          "fixtures": [
+            "Crystal Palace",
+            "Aston Villa WFC",
+            "Tottenham Hotspur FC",
+            "Brighton and Hove Albion WFC"
+          ]
+        },
+        "1008620": {
+          "name": "Northern Premier League Premier",
+          "fixtures": [
+            "Ashton United FC",
+            "Stockton Town",
+            "Guiseley FC",
+            "Mickleover FC",
+            "Ilkeston Town FC",
+            "Lancaster City",
+            "Prescot Cables",
+            "Hebburn Town",
+            "Whitby Town",
+            "Basford United",
+            "Workington AFC",
+            "Gainsborough Trinity",
+            "Worksop Town",
+            "Hyde United FC",
+            "Bamber Bridge",
+            "Matlock Town",
+            "Blyth Spartans AFC",
+            "Warrington Rylands 1906 FC",
+            "Morpeth Town",
+            "Macclesfield FC"
+          ]
+        },
+        "1008621": {
+          "name": "Isthmian League, Pr. Div",
+          "fixtures": [
+            "Hendon",
+            "Billericay Town",
+            "Wingate & Finchley",
+            "Hashtag United",
+            "Bowers & Pitsea FC",
+            "Horsham FC",
+            "Canvey Island",
+            "Lewes FC",
+            "Carshalton Athletic FC",
+            "Cray Wanderers",
+            "Chatham Town",
+            "Bognor Regis Town FC",
+            "Chichester City FC",
+            "Potters Bar Town FC",
+            "Cray Valley Paper Mills FC",
+            "Dover Athletic FC",
+            "Dartford FC",
+            "Hastings United FC",
+            "Dulwich Hamlet",
+            "Cheshunt FC",
+            "Folkestone Invicta",
+            "Whitehawk FC"
+          ]
+        },
+        "1008626": {
+          "name": "Southern League Premier Central",
+          "fixtures": [
+            "Stourbridge FC",
+            "Bishop's Stortford",
+            "AFC Telford United",
+            "AFC Sudbury",
+            "Banbury United",
+            "Royston Town",
+            "Biggleswade Town",
+            "Spalding United",
+            "Harborough Town FC",
+            "Stratford Town",
+            "Hitchin Town",
+            "Halesowen Town FC",
+            "Leiston FC",
+            "Barwell FC",
+            "Lowestoft Town",
+            "Kettering Town",
+            "Redditch United",
+            "Bedford Town Football Club",
+            "St. Ives Town",
+            "Bromsgrove Sporting",
+            "Stamford AFC",
+            "Alvechurch"
+          ]
+        },
+        "1008627": {
+          "name": "Southern League Premier South",
+          "fixtures": [
+            "Frome Town FC",
+            "Havant & Waterlooville",
+            "Gosport Borough",
+            "Merthyr Town",
+            "Swindon Supermarine",
+            "Wimborne Town",
+            "AFC Totton",
+            "Bracknell Town FC",
+            "Chertsey Town FC",
+            "Dorchester Town",
+            "Plymouth Parkway",
+            "Hungerford Town FC",
+            "Winchester City FC",
+            "Tiverton Town",
+            "Walton and Hersham FC",
+            "Poole Town",
+            "Sholing FC",
+            "Basingstoke Town FC",
+            "Marlow FC",
+            "Taunton Town",
+            "Gloucester City",
+            "Hanwell Town FC"
+          ]
+        },
+        "1008860": {
+          "name": "U21 Professional Development League",
+          "fixtures": [
+            "Cardiff City",
+            "Colchester United"
+          ]
+        },
+        "1010114": {
+          "name": "FA Womens League Cup",
+          "fixtures": [
+            "Chelsea FC",
+            "Manchester City WFC"
+          ]
+        }
+      }
+    },
+    "Estonia": {
+      "leagues": {
+        "1007626": {
+          "name": "Premium Liiga",
+          "fixtures": [
+            "Parnu JK Vaprus",
+            "FCI Levadia Tallinn",
+            "JK Tallinna Kalev",
+            "Flora Tallinn",
+            "JK Narva Trans",
+            "Paide Linnameeskond",
+            "FC Kuressaare",
+            "Harju JK Laagri",
+            "Nomme Kalju FC",
+            "Tartu JK Tammeka"
+          ]
+        },
+        "1014537": {
+          "name": "Esiliiga B",
+          "fixtures": [
+            "Tallinna JK Legion",
+            "Laanemaa JK Haapsalu"
+          ]
+        }
+      }
+    },
+    "Faroe Islands": {
+      "leagues": {
+        "1007901": {
+          "name": "1st deild",
+          "fixtures": [
+            "B36 Torshavn II",
+            "IF Fuglafjordur"
+          ]
+        }
+      }
+    },
+    "Finland": {
+      "leagues": {
+        "1014159": {
+          "name": "Liigacup",
+          "fixtures": [
+            "HJK Helsinki",
+            "Kuopion Palloseura"
+          ]
+        }
+      }
+    },
+    "France": {
+      "leagues": {
+        "1007633": {
+          "name": "Ligue 2",
+          "fixtures": [
+            "USL Dunkerque",
+            "FC Metz",
+            "Stade Lavallois MFC",
+            "Paris FC",
+            "FC Lorient",
+            "SC Bastia"
+          ]
+        },
+        "1007843": {
+          "name": "Ligue 1",
+          "fixtures": [
+            "FC Nantes",
+            "Lille OSC",
+            "Angers SCO",
+            "AS Monaco",
+            "RC Lens",
+            "Stade Rennes",
+            "Olympique Lyon",
+            "Le Havre AC",
+            "Montpellier HSC",
+            "AS Saint-Etienne",
+            "Strasbourg Alsace",
+            "Toulouse FC",
+            "Stade Brest 29",
+            "Stade Reims",
+            "Paris Saint-Germain",
+            "Olympique Marseille",
+            "OGC Nice",
+            "AJ Auxerre"
+          ]
+        },
+        "1008300": {
+          "name": "Premiere Ligue, Women",
+          "fixtures": [
+            "Olympique Lyon",
+            "Stade De Reims",
+            "FC Nantes",
+            "RC Strasbourg",
+            "FC Fleury",
+            "Dijon FCO",
+            "Paris Saint-Germain",
+            "Paris FC"
+          ]
+        },
+        "1008347": {
+          "name": "U19 National",
+          "fixtures": [
+            "Angers SCO",
+            "FC Lorient",
+            "Stade Lavallois Mayenne",
+            "Stade Rennais FC"
+          ]
+        },
+        "1009307": {
+          "name": "Coupe de France",
+          "fixtures": []
+        }
+      }
+    },
+    "Georgia": {
+      "leagues": {
+        "1007915": {
+          "name": "Erovnuli Liga",
+          "fixtures": [
+            "FC Iberia 1999",
+            "FC Dinamo Batumi",
+            "FC Telavi",
+            "FC Dinamo Tbilisi",
+            "FC Torpedo Kutaisi",
+            "FC Dila Gori"
+          ]
+        }
+      }
+    },
+    "Germany": {
+      "leagues": {
+        "1007673": {
+          "name": "DFB Pokal",
+          "fixtures": [
+            "Arminia Bielefeld",
+            "Bayer Leverkusen",
+            "VfB Stuttgart",
+            "RB Leipzig"
+          ]
+        },
+        "1008240": {
+          "name": "Bundesliga",
+          "fixtures": [
+            "Werder Bremen",
+            "Borussia Monchengladbach",
+            "FC Augsburg",
+            "VfL Wolfsburg",
+            "FSV Mainz",
+            "SC Freiburg",
+            "Union Berlin",
+            "Bayern Munich",
+            "RB Leipzig",
+            "Borussia Dortmund",
+            "VfL Bochum",
+            "Eintracht Frankfurt",
+            "1. FC Heidenheim",
+            "Holstein Kiel",
+            "VfB Stuttgart",
+            "Bayer Leverkusen",
+            "FC St. Pauli",
+            "TSG Hoffenheim"
+          ]
+        },
+        "1008396": {
+          "name": "2. Bundesliga",
+          "fixtures": [
+            "SC Paderborn 07",
+            "1 FC Kaiserslautern",
+            "Fortuna Dusseldorf",
+            "Jahn Regensburg",
+            "SV 07 Elversberg",
+            "SC Preussen 06 Munster",
+            "1. FC Cologne",
+            "SV Darmstadt 98",
+            "Karlsruher SC",
+            "SSV Ulm 1846",
+            "1 FC Nuremberg",
+            "Greuther Furth",
+            "Eintracht Braunschweig",
+            "Hertha BSC"
+          ]
+        },
+        "1008399": {
+          "name": "3. Liga",
+          "fixtures": [
+            "Rot-Weiss Essen",
+            "Dynamo Dresden",
+            "VfL 1899 Osnabruck",
+            "Arminia Bielefeld",
+            "Hannover 96 II",
+            "SV Wehen Wiesbaden",
+            "Borussia Dortmund II",
+            "FC Viktoria Cologne",
+            "SC Verl",
+            "FC Ingolstadt 04",
+            "TSV 1860 Munich",
+            "SpVgg Unterhaching",
+            "SV Sandhausen",
+            "Energie Cottbus",
+            "Erzgebirge Aue",
+            "SV Waldhof Mannheim 07",
+            "Alemannia Aachen",
+            "Hansa Rostock"
+          ]
+        }
+      }
+    },
+    "Germany Amateur": {
+      "leagues": {
+        "1007553": {
+          "name": "Regionalliga Southwest",
+          "fixtures": [
+            "TSV Steinbach Haiger",
+            "Stuttgarter Kickers",
+            "FC 08 Villingen",
+            "FC 08 Homburg-Saar",
+            "Offenbacher FC Kickers 1901",
+            "Eintracht Trier",
+            "SGV Freiberg",
+            "Bahlinger SC",
+            "FSV Frankfurt 1899",
+            "SG Barockstadt Fulda-Lehnerz",
+            "FC Giessen",
+            "Eintracht Frankfurt II",
+            "FC Astoria Walldorf",
+            "KSV Hessen Kassel",
+            "1. Goppinger SV",
+            "FSV Mainz II",
+            "TSG Hoffenheim II",
+            "SC Freiburg II"
+          ]
+        },
+        "1007554": {
+          "name": "Regionalliga Northeast",
+          "fixtures": [
+            "BFC Dynamo",
+            "VFC Plauen",
+            "FSV Zwickau",
+            "FC Viktoria 1889 Berlin",
+            "SV Babelsberg",
+            "1. FC Lokomotive Leipzig",
+            "Greifswalder FC",
+            "FSV Luckenwalde",
+            "FC Hertha 03 Zehlendorf",
+            "Chemnitzer FC",
+            "FC Carl Zeiss Jena",
+            "FC Eilenburg",
+            "ZFC Meuselwitz",
+            "VSG Altglienicke"
+          ]
+        },
+        "1008337": {
+          "name": "Women Bundesliga",
+          "fixtures": [
+            "FC Carl Zeiss Jena",
+            "RB Leipzig",
+            "TSG Hoffenheim",
+            "1 FC Cologne"
+          ]
+        },
+        "1008400": {
+          "name": "Regionalliga West",
+          "fixtures": [
+            "Wuppertaler SV",
+            "SV Rodinghausen",
+            "Borussia Monchengladbach II",
+            "1. FC Bocholt",
+            "RW Oberhausen",
+            "SC Paderborn 07 II",
+            "1. FC Cologne II",
+            "1. FC Duren",
+            "SV Eintracht Hohkeppel",
+            "Krefelder FC Uerdingen 05",
+            "VfL Sportfreunde Lotte 1929",
+            "SC Wiedenbruck",
+            "FC Gutersloh 2000",
+            "Fortuna Cologne"
+          ]
+        },
+        "1008510": {
+          "name": "Regionalliga North",
+          "fixtures": [
+            "Hamburger SV II",
+            "Blau-Weiss Lohne",
+            "VfB Lubeck",
+            "SV Meppen 1912",
+            "SSV Jeddeloh II",
+            "TSV Havelse",
+            "SV Todesfelde",
+            "SV Werder Bremen II",
+            "Holstein Kiel II",
+            "Kickers Emden",
+            "Bremer SV 1906",
+            "Eintracht Norderstedt"
+          ]
+        },
+        "1009014": {
+          "name": "Regionalliga Bavaria",
+          "fixtures": [
+            "1 FC Nuremberg II",
+            "TSV Aubstadt",
+            "SpVgg Ansbach",
+            "SpVgg Hankofen-Hailing",
+            "FV Illertissen",
+            "Greuther Furth II",
+            "Schwaben Augsburg",
+            "Eintracht Bamberg",
+            "Turkgucu Munich",
+            "1. FC Schweinfurt 05",
+            "Viktoria Aschaffenburg",
+            "DJK Vilzing"
+          ]
+        }
+      }
+    },
+    "Gibraltar": {
+      "leagues": {
+        "1009413": {
+          "name": "National League",
+          "fixtures": [
+            "FCB Magpies",
+            "Mons Calpe SC"
+          ]
+        }
+      }
+    },
+    "Greece": {
+      "leagues": {
+        "1007849": {
+          "name": "Greece Cup",
+          "fixtures": []
+        },
+        "1008324": {
+          "name": "Super League",
+          "fixtures": [
+            "OFI Crete",
+            "Atromitos Athinon",
+            "Athens Kallithea FC",
+            "Volos NPS",
+            "Asteras Tripolis",
+            "Aris Thessaloniki",
+            "Panaitolikos Agrinio",
+            "APO Levadiakos FC"
+          ]
+        },
+        "1009561": {
+          "name": "Super League 2",
+          "fixtures": [
+            "Diagoras Rhodes",
+            "PAOK Thessaloniki B",
+            "Ethnikos Keramidiou",
+            "AO Kavala 1965",
+            "POT Iraklis",
+            "PAS Giannina",
+            "Panionios Athens",
+            "AO Egaleo 1931 PAE",
+            "PAE PS Kalamata",
+            "GS Ilioupoli",
+            "Panargiakos FC",
+            "Asteras Tripolis B",
+            "AEK Athens B",
+            "Panachaiki 1891 FC"
+          ]
+        },
+        "1022387": {
+          "name": "Gamma Ethniki",
+          "fixtures": [
+            "Thermaikos Thermis",
+            "Panthrakikos FC Komotini",
+            "Poseidonas Michanionas",
+            "AE Evosmou",
+            "Anagennisi Arta",
+            "AO Trikala 1963",
+            "PO Atsaleniou",
+            "Marko",
+            "Iraklis Ammoudias",
+            "Po Alexandroupolis",
+            "PAOK Kristonis",
+            "Apollon Kalamarias",
+            "Chaidari AO",
+            "Ilisiakos FC"
+          ]
+        }
+      }
+    },
+    "Guatemala": {
+      "leagues": {
+        "1010573": {
+          "name": "Liga Nacional. Clausura",
+          "fixtures": [
+            "CSD Xelaju MC",
+            "CD Malacateco",
+            "Antigua GFC",
+            "Deportivo Mixco"
+          ]
+        }
+      }
+    },
+    "Hong Kong, China": {
+      "leagues": {
+        "1008965": {
+          "name": "Premier League",
+          "fixtures": [
+            "North District FC",
+            "Hong Kong FC",
+            "Kitchee",
+            "Lee Man FC"
+          ]
+        }
+      }
+    },
+    "Hungary": {
+      "leagues": {
+        "1007475": {
+          "name": "NB II",
+          "fixtures": [
+            "Bvsc-Zuglo",
+            "Bekescsaba 1912 Elore",
+            "Kazincbarcikai SC",
+            "FC Tatabanya",
+            "Mezokovesd Zsory SE",
+            "Budapest Honved FC",
+            "Kozarmisleny SE",
+            "Budafoki Mte",
+            "FC Ajka",
+            "Vasas FC",
+            "Gyirmot FC Gyor",
+            "Szentlorinc SE",
+            "Soroksar SC",
+            "Kisvarda FC",
+            "Aqvital FC Csakvar",
+            "Szeged-Csanad Grosics Akademia"
+          ]
+        },
+        "1007639": {
+          "name": "NB I",
+          "fixtures": [
+            "Fehervar FC Szekesfehervar",
+            "Diosgyori VTK",
+            "Ferencvarosi Budapest",
+            "Kecskemeti TE",
+            "MTK Budapest",
+            "Nyiregyhaza Spartacus FC",
+            "Puskas Akademia FC Felcsut",
+            "Zalaegerszeg TE"
+          ]
+        }
+      }
+    },
+    "Indonesia": {
+      "leagues": {
+        "1007545": {
+          "name": "Liga 1",
+          "fixtures": [
+            "PSIS Semarang",
+            "Madura United"
+          ]
+        }
+      }
+    },
+    "International": {
+      "leagues": {
+        "1007691": {
+          "name": "UEFA Nations League",
+          "fixtures": [
+            "Turkiye",
+            "Hungary",
+            "Netherlands",
+            "Spain",
+            "Denmark",
+            "Portugal",
+            "Ukraine",
+            "Belgium",
+            "Austria",
+            "Serbia",
+            "Croatia",
+            "France",
+            "Greece",
+            "Scotland",
+            "Italy",
+            "Germany"
+          ]
+        },
+        "1007753": {
+          "name": "World Cup Qualification, CONMEBOL",
+          "fixtures": [
+            "Paraguay",
+            "Chile",
+            "Brazil",
+            "Colombia",
+            "Peru",
+            "Bolivia",
+            "Ecuador",
+            "Venezuela",
+            "Uruguay",
+            "Argentina"
+          ]
+        },
+        "1007952": {
+          "name": "Int. Friendly Games",
+          "fixtures": [
+            "Russia",
+            "Zambia"
+          ]
+        },
+        "1008424": {
+          "name": "World Cup",
+          "fixtures": []
+        },
+        "1009936": {
+          "name": "World Cup Qualification UEFA",
+          "fixtures": [
+            "Cyprus",
+            "San Marino",
+            "Andorra",
+            "Latvia",
+            "England",
+            "Albania",
+            "Malta",
+            "Finland",
+            "Poland",
+            "Lithuania",
+            "Romania",
+            "Bosnia & Herzegovina",
+            "Liechtenstein",
+            "North Macedonia",
+            "Montenegro",
+            "Gibraltar",
+            "Moldova",
+            "Norway",
+            "Wales",
+            "Kazakhstan",
+            "Czechia",
+            "Faroe Islands",
+            "Israel",
+            "Estonia"
+          ]
+        },
+        "1011589": {
+          "name": "CONCACAF Nations League",
+          "fixtures": [
+            "USA",
+            "Panama",
+            "Canada",
+            "Mexico"
+          ]
+        },
+        "1012616": {
+          "name": "Africa Cup of Nations",
+          "fixtures": []
+        },
+        "1013499": {
+          "name": "UEFA Euro, Women",
+          "fixtures": []
+        },
+        "1014913": {
+          "name": "Ballon dor",
+          "fixtures": []
+        }
+      }
+    },
+    "International Clubs": {
+      "leagues": {
+        "1007456": {
+          "name": "Club Friendly Games",
+          "fixtures": [
+            "Fredrikstad FK",
+            "Stroemsgodset IF"
+          ]
+        },
+        "1007856": {
+          "name": "CONMEBOL Libertadores",
+          "fixtures": []
+        },
+        "1007906": {
+          "name": "UEFA Europa League",
+          "fixtures": [
+            "Bodoe/Glimt",
+            "Lazio Rome",
+            "Glasgow Rangers",
+            "Athletic Bilbao",
+            "Olympique Lyon",
+            "Manchester United",
+            "Tottenham Hotspur",
+            "Eintracht Frankfurt"
+          ]
+        },
+        "1007912": {
+          "name": "UEFA Champions League Women",
+          "fixtures": []
+        },
+        "1007913": {
+          "name": "UEFA Champions League",
+          "fixtures": [
+            "Arsenal FC",
+            "Real Madrid",
+            "Bayern Munich",
+            "Inter Milano",
+            "Paris Saint-Germain",
+            "Aston Villa",
+            "FC Barcelona",
+            "Borussia Dortmund"
+          ]
+        },
+        "1009472": {
+          "name": "CONMEBOL Sudamericana",
+          "fixtures": []
+        },
+        "1010136": {
+          "name": "FIFA Club World Cup",
+          "fixtures": []
+        },
+        "1011919": {
+          "name": "UEFA Conference League",
+          "fixtures": [
+            "Real Betis Seville",
+            "Jagiellonia Bialystok",
+            "NK Celje",
+            "ACF Fiorentina",
+            "Djurgardens IF",
+            "SK Rapid"
+          ]
+        }
+      }
+    },
+    "Iraq": {
+      "leagues": {
+        "1009557": {
+          "name": "Stars League",
+          "fixtures": [
+            "AL Talaba",
+            "Newroz SC"
+          ]
+        }
+      }
+    },
+    "Ireland": {
+      "leagues": {
+        "1007460": {
+          "name": "Premier Division",
+          "fixtures": [
+            "Sligo Rovers FC",
+            "Derry City FC",
+            "Bohemians Dublin FC",
+            "Galway United FC"
+          ]
+        },
+        "1007650": {
+          "name": "First Division",
+          "fixtures": [
+            "Longford Town FC",
+            "Kerry FC"
+          ]
+        },
+        "1011659": {
+          "name": "Premier Division, Women",
+          "fixtures": [
+            "DLR Waves",
+            "Treaty United",
+            "Bohemian Fc",
+            "Galway United Wfc",
+            "Shamrock Rovers FC",
+            "Athlone Town Fc",
+            "Cork City Wfc",
+            "Sligo Rovers",
+            "Wexford Youths AFC",
+            "Peamount United Dublin"
+          ]
+        }
+      }
+    },
+    "Israel": {
+      "leagues": {
+        "1007928": {
+          "name": "National League",
+          "fixtures": [
+            "Hapoel Rishon Lezion FC",
+            "Hapoel Nof Hagalil FC",
+            "Hapoel Kfar Saba FC",
+            "FC Kafr Qasim",
+            "Maccabi Herzliya",
+            "Hapoel Acre FC"
+          ]
+        },
+        "1008350": {
+          "name": "Premier League",
+          "fixtures": [
+            "Hapoel Be`er Sheva FC",
+            "Maccabi Netanya FC",
+            "Hapoel Ironi Kiryat Shmona FC",
+            "Maccabi Petah Tikva FC",
+            "Ironi Tiberias",
+            "Hapoel Hadera FC",
+            "Maccabi Tel Aviv FC",
+            "Hapoel Haifa FC",
+            "Hapoel Jerusalem FC",
+            "Bnei Sakhnin FC",
+            "Maccabi Bney Reine",
+            "MS Ashdod",
+            "Maccabi Haifa FC",
+            "Beitar Jerusalem FC"
+          ]
+        },
+        "1009868": {
+          "name": "Liga Alef",
+          "fixtures": [
+            "FC Tzeirey Tira",
+            "SC Hapoel Lod"
+          ]
+        }
+      }
+    },
+    "Italy": {
+      "leagues": {
+        "1007479": {
+          "name": "Serie B",
+          "fixtures": [
+            "Cesena FC",
+            "Spezia Calcio",
+            "AS Cittadella",
+            "Sassuolo Calcio",
+            "Frosinone Calcio",
+            "Brescia Calcio",
+            "Juve Stabia",
+            "Modena FC",
+            "Pisa SC",
+            "Mantova 1911",
+            "SSC Bari",
+            "US Salernitana",
+            "Reggiana 1919",
+            "Sampdoria Genoa",
+            "FC Sudtirol Bolzano",
+            "Carrarese Calcio",
+            "US Catanzaro",
+            "Cosenza Calcio"
+          ]
+        },
+        "1007684": {
+          "name": "Serie A",
+          "fixtures": [
+            "AC Monza",
+            "Parma Calcio",
+            "Udinese Calcio",
+            "Hellas Verona",
+            "AC Milan",
+            "Como 1907",
+            "Torino FC",
+            "Empoli FC",
+            "Venezia FC",
+            "SSC Napoli",
+            "Bologna FC",
+            "Lazio Rome",
+            "AS Roma",
+            "Cagliari Calcio",
+            "ACF Fiorentina",
+            "Juventus Turin",
+            "Atalanta BC",
+            "Inter Milano",
+            "Genoa CFC",
+            "US Lecce"
+          ]
+        },
+        "1008331": {
+          "name": "Serie A, Women",
+          "fixtures": [
+            "Sampdoria Genoa",
+            "SSD Napoli",
+            "Juventus Turin",
+            "ACF Fiorentina"
+          ]
+        },
+        "1008829": {
+          "name": "Coppa Italia",
+          "fixtures": [
+            "Empoli FC",
+            "Bologna FC",
+            "AC Milan",
+            "Inter Milano"
+          ]
+        },
+        "1008895": {
+          "name": "Primavera 1",
+          "fixtures": [
+            "Udinese Calcio",
+            "Torino FC",
+            "Hellas Verona",
+            "SS Lazio",
+            "AC Monza",
+            "Cesena FC",
+            "Sampdoria Genoa",
+            "US Cremonese",
+            "AS Roma",
+            "AC Milan",
+            "Atalanta BC",
+            "US Lecce",
+            "Juventus Turin",
+            "Genoa CFC",
+            "Sassuolo Calcio",
+            "Bologna FC",
+            "Inter Milano",
+            "Cagliari Calcio"
+          ]
+        },
+        "1008939": {
+          "name": "Serie C, Group B",
+          "fixtures": [
+            "Ascoli Calcio 1898",
+            "SS Arezzo",
+            "Lucchese Libertas 1905",
+            "Campobasso FC",
+            "Rimini FC 1912",
+            "AS Gubbio",
+            "AC Carpi",
+            "Asd Pineto Calcio",
+            "Milan Futuro",
+            "US Citta Di Pontedera",
+            "Delfino Pescara",
+            "Vis Pesaro 1898",
+            "Perugia Calcio Spa",
+            "Legnago Salus",
+            "US Pianese",
+            "SEF Torres Sassari",
+            "Spal Ferrara",
+            "Ternana Calcio",
+            "Virtus Entella",
+            "Usd Sestri Levante 1919"
+          ]
+        },
+        "1009021": {
+          "name": "Serie D, Group E",
+          "fixtures": [
+            "Siena 1904",
+            "ASD Terranuova Traiana"
+          ]
+        },
+        "1009089": {
+          "name": "Primavera 2",
+          "fixtures": [
+            "Ascoli Calcio 1898 FC",
+            "Palermo FC",
+            "US Salernitana",
+            "Pisa Calcio",
+            "FC Crotone",
+            "Frosinone Calcio",
+            "Cosenza Calcio",
+            "SSC Napoli",
+            "AS Cittadella",
+            "AC Feralpisalo",
+            "US Avellino",
+            "Benevento Calcio",
+            "Virtus Entella",
+            "Brescia Calcio",
+            "LR Vicenza",
+            "Parma Calcio 1913",
+            "Spezia Calcio",
+            "SS Monopoli",
+            "Spal",
+            "Venezia FC",
+            "Como 1907",
+            "Modena",
+            "US Albinoleffe",
+            "AC Renate"
+          ]
+        }
+      }
+    },
+    "Japan": {
+      "leagues": {
+        "1007467": {
+          "name": "J.League",
+          "fixtures": [
+            "Avispa Fukuoka",
+            "FC Tokyo",
+            "Tokyo Verdy",
+            "Nagoya Grampus",
+            "Machida Zelvia",
+            "Albirex Niigata",
+            "Yokohama FC",
+            "Cerezo Osaka",
+            "Shimizu S-Pulse",
+            "Kyoto Sanga FC",
+            "Yokohama F Marinos",
+            "Gamba Osaka",
+            "Sanfrecce Hiroshima",
+            "Kashiwa Reysol",
+            "Fagiano Okayama",
+            "Kawasaki Frontale",
+            "Kashima Antlers",
+            "Urawa Red Diamonds",
+            "Shonan Bellmare",
+            "Vissel Kobe"
+          ]
+        },
+        "1007665": {
+          "name": "J3 League",
+          "fixtures": [
+            "Kochi United SC",
+            "Kagoshima United",
+            "Giravanz Kitakyushu",
+            "Vanraure Hachinohe FC",
+            "SC Sagamihara",
+            "Nara Club",
+            "Kamatamare Sanuki",
+            "FC Ryukyu",
+            "Thespakusatsu",
+            "Gainare Tottori",
+            "Tochigi SC",
+            "FC Osaka",
+            "Fukushima United FC",
+            "Azul Claro Numazu",
+            "Matsumoto Yamaga FC",
+            "AC Nagano Parceiro",
+            "Tochigi City FC",
+            "Tegevajaro Miyazaki"
+          ]
+        },
+        "1007708": {
+          "name": "Nadeshiko League, Div. 1, Women",
+          "fixtures": [
+            "Okayama Yunogo Belle",
+            "Sfida Setagaya FC"
+          ]
+        },
+        "1007863": {
+          "name": "J.League 2",
+          "fixtures": [
+            "Blaublitz Akita",
+            "Hokkaido Consadole Sapporo",
+            "Jubilo Iwata",
+            "Ventforet Kofu",
+            "Fujieda MYFC",
+            "Iwaki FC",
+            "Sagan Tosu",
+            "Omiya Ardija",
+            "V-Varen Nagasaki",
+            "Tokushima Vortis",
+            "Roasso Kumamoto",
+            "Montedio Yamagata",
+            "Mito Hollyhock",
+            "Vegalta Sendai",
+            "FC Imabari",
+            "Kataller Toyama",
+            "Renofa Yamaguchi",
+            "Oita Trinita",
+            "JEF United Chiba",
+            "Ehime FC"
+          ]
+        },
+        "1011511": {
+          "name": "Japan Football League",
+          "fixtures": [
+            "Honda FC",
+            "Verspah Oita",
+            "Maruyasu Okazaki",
+            "YSCC Yokohama"
+          ]
+        },
+        "1012010": {
+          "name": "We League, Women",
+          "fixtures": [
+            "Omiya Ardija Ventus",
+            "Urawa Red Diamonds",
+            "Sanfrecce Hiroshima Regina",
+            "Cerezo Osaka Sakai Ladies"
+          ]
+        }
+      }
+    },
+    "Kenya": {
+      "leagues": {
+        "1009843": {
+          "name": "Premier League",
+          "fixtures": [
+            "Kariobangi Sharks",
+            "Mathare United FC",
+            "KENYA POLICE FC",
+            "Muranga Seal",
+            "Ulinzi Stars FC",
+            "Kenya Commercial Bank",
+            "Gor Mahia FC",
+            "Bandari FC"
+          ]
+        }
+      }
+    },
+    "Kosovo": {
+      "leagues": {
+        "1008606": {
+          "name": "Superliga",
+          "fixtures": [
+            "KF Dukagjini",
+            "KF Drita"
+          ]
+        }
+      }
+    },
+    "Latvia": {
+      "leagues": {
+        "1007654": {
+          "name": "Virsliga",
+          "fixtures": [
+            "FS Jelgava",
+            "Riga FC",
+            "BFC Daugavpils",
+            "FK Rigas Futbola Skola",
+            "FK Metta / Lu",
+            "FK Tukums 2000/TSS",
+            "FK Auda Riga",
+            "SK Super Nova",
+            "FK Liepaja",
+            "Grobinas SC/LFS"
+          ]
+        }
+      }
+    },
+    "Lebanon": {
+      "leagues": {
+        "1009205": {
+          "name": "Premier League",
+          "fixtures": [
+            "Shabab Baalbak",
+            "AL Tadamon Sour",
+            "Shabab AL Sahel",
+            "Nejmeh SC"
+          ]
+        }
+      }
+    },
+    "Lithuania": {
+      "leagues": {
+        "1007656": {
+          "name": "A Lyga",
+          "fixtures": [
+            "FC Hegelmann Kaunas",
+            "FA Siauliai",
+            "Vilnius FK Zalgiris",
+            "FK Banga Gargzdai",
+            "FK Panevezys",
+            "FK Suduva Marijampole",
+            "FK Riteriai",
+            "FK Kauno Zalgiris"
+          ]
+        },
+        "1007903": {
+          "name": "1 Lyga",
+          "fixtures": [
+            "FK Minija 2017",
+            "Fc Neptunas Klaipeda",
+            "FK Jonava",
+            "Baltijos Futbolo Akademija"
+          ]
+        }
+      }
+    },
+    "Luxembourg": {
+      "leagues": {
+        "1007926": {
+          "name": "Promotion d'Honneur",
+          "fixtures": [
+            "FC Schifflange 95",
+            "Atert Bissen"
+          ]
+        }
+      }
+    },
+    "Malaysia": {
+      "leagues": {
+        "1007542": {
+          "name": "Super League",
+          "fixtures": [
+            "PDRM FA",
+            "Negeri Sembilan"
+          ]
+        }
+      }
+    },
+    "Mali": {
+      "leagues": {
+        "1019289": {
+          "name": "Ligue 1",
+          "fixtures": [
+            "AS Police",
+            "Onze Createurs"
+          ]
+        }
+      }
+    },
+    "Mexico": {
+      "leagues": {
+        "1010073": {
+          "name": "Liga MX, Clausura",
+          "fixtures": [
+            "Club Necaxa",
+            "Club Leon",
+            "Queretaro FC",
+            "Mazatlan FC",
+            "Club Puebla",
+            "Deportivo Toluca FC",
+            "Tigres UANL",
+            "Club Santos Laguna",
+            "FC Juarez",
+            "CD Guadalajara",
+            "CF Cruz Azul",
+            "Atletico San Luis",
+            "Atlas FC",
+            "CF America",
+            "Pumas UNAM",
+            "CF Monterrey",
+            "CF Pachuca",
+            "Club Tijuana de Caliente"
+          ]
+        },
+        "1010115": {
+          "name": "Liga Mx, Women, Clausura",
+          "fixtures": [
+            "Mazatlan FC",
+            "Atletico San Luis",
+            "CF Tigres UANL",
+            "Club Santos Laguna"
+          ]
+        },
+        "1010149": {
+          "name": "Liga De Expansion Mx, Clausura",
+          "fixtures": [
+            "CD Mineros de Zacatecas",
+            "CF Correcaminos UAT",
+            "Atletico Morelia",
+            "Club Atletico La Paz",
+            "Tlaxcala FC",
+            "Cancun FC",
+            "Jaiba Brava",
+            "Club Celaya FC",
+            "CSD Dorados Sinaloa",
+            "Tepatitlan FC",
+            "Leones Negros UDEG",
+            "Alebrijes de Oaxaca FC"
+          ]
+        },
+        "1018484": {
+          "name": "U23 Liga MX",
+          "fixtures": [
+            "Tigres UANL",
+            "Club Santos Laguna",
+            "Atlas FC",
+            "Club America",
+            "Cruz Azul",
+            "Atletico San Luis"
+          ]
+        },
+        "1018572": {
+          "name": "Liga Premier Serie A",
+          "fixtures": [
+            "Halcones FC",
+            "Gavilanes de Matamoros",
+            "Faraones de Texcoco",
+            "Deportiva Venados",
+            "Alacranes de Durango",
+            "Real Apodaca FC",
+            "UA Zacatecas",
+            "Los Cabos United"
+          ]
+        },
+        "1018573": {
+          "name": "Liga Premier Serie B",
+          "fixtures": [
+            "Canoneros Marina",
+            "CD Ayense AC",
+            "Pachuca Premier",
+            "Santiago FC",
+            "Ciervos FC",
+            "CF Petroleros De Poza Rica",
+            "Cdm FC",
+            "CD Real Zamora"
+          ]
+        }
+      }
+    },
+    "Morocco": {
+      "leagues": {
+        "1007652": {
+          "name": "Botola Pro D2",
+          "fixtures": [
+            "US Yacoub Mansour",
+            "Chabab Ben Guerir",
+            "Rapide Oued Zem",
+            "Chabab Atlas Khenifra",
+            "Raja Beni Mellal",
+            "Wydad Fes"
+          ]
+        },
+        "1007962": {
+          "name": "Botola Pro D1",
+          "fixtures": [
+            "AS Far Rabat",
+            "Maghreb AS de Fes",
+            "Olympique Club de Safi",
+            "Renaissance Zemamra",
+            "Rs Berkane",
+            "Union Touarga",
+            "FUS Rabat",
+            "Jeunesse Sportive Soualem",
+            "Ittihad Tanger",
+            "Wydad AC"
+          ]
+        }
+      }
+    },
+    "Netherlands": {
+      "leagues": {
+        "1007570": {
+          "name": "Eerste Divisie",
+          "fixtures": [
+            "FC Volendam",
+            "SC Cambuur",
+            "TOP Oss",
+            "De Graafschap",
+            "FC Den Bosch",
+            "Jong Ajax Amsterdam"
+          ]
+        },
+        "1007846": {
+          "name": "Eredivisie",
+          "fixtures": [
+            "FC Utrecht",
+            "NEC Nijmegen",
+            "Sparta Rotterdam",
+            "PEC Zwolle",
+            "RKC Waalwijk",
+            "PSV Eindhoven",
+            "SC Heerenveen",
+            "Heracles Almelo",
+            "Go Ahead Eagles",
+            "Willem II Tilburg",
+            "FC Groningen",
+            "Fortuna Sittard",
+            "FC Twente Enschede",
+            "Feyenoord Rotterdam",
+            "Ajax Amsterdam",
+            "AZ Alkmaar",
+            "NAC Breda",
+            "Almere City FC"
+          ]
+        },
+        "1008348": {
+          "name": "Tweede Divisie",
+          "fixtures": [
+            "VV Katwijk",
+            "K.v.v. Quick Boys",
+            "Koninklijke HFC",
+            "Jong Sparta Rotterdam",
+            "Excelsior Maassluis",
+            "Jong Almere City FC",
+            "ACV Assen",
+            "VV Noordwijk",
+            "HHC Hardenberg",
+            "GVVV Veenendaal",
+            "BVV Barendrecht",
+            "SV Spakenburg",
+            "ADO 20 Heemskerk",
+            "SSV Scheveningen",
+            "Amsterdamsche FC",
+            "Rijnsburgse Boys",
+            "De Treffers Groesbeek",
+            "Rkav Volendam"
+          ]
+        },
+        "1014313": {
+          "name": "KNVB beker, Women",
+          "fixtures": [
+            "FC Twente Enschede",
+            "ADO Den Haag"
+          ]
+        }
+      }
+    },
+    "New Zealand": {
+      "leagues": {
+        "1009567": {
+          "name": "National League",
+          "fixtures": [
+            "Auckland City FC",
+            "Tauranga City AFC"
+          ]
+        }
+      }
+    },
+    "Nigeria": {
+      "leagues": {
+        "1010071": {
+          "name": "Premier League",
+          "fixtures": [
+            "Enugu Rangers International FC",
+            "Kwara United"
+          ]
+        }
+      }
+    },
+    "Northern Ireland": {
+      "leagues": {
+        "1009090": {
+          "name": "Premiership",
+          "fixtures": [
+            "Crusaders FC",
+            "Loughgall FC",
+            "Ballymena United",
+            "Cliftonville FC",
+            "Carrick Rangers",
+            "Glentoran FC",
+            "Linfield FC",
+            "Glenavon FC",
+            "Larne FC",
+            "Coleraine FC",
+            "Portadown FC",
+            "Dungannon Swifts"
+          ]
+        },
+        "1009617": {
+          "name": "Championship",
+          "fixtures": [
+            "Annagh United FC",
+            "Ballinamallard United",
+            "Harland And Wolff Welders",
+            "Ards FC"
+          ]
+        }
+      }
+    },
+    "Norway": {
+      "leagues": {
+        "1007464": {
+          "name": "1st Division",
+          "fixtures": []
+        },
+        "1007465": {
+          "name": "Eliteserien",
+          "fixtures": [
+            "Stroemsgodset IF",
+            "Rosenborg BK",
+            "Fredrikstad FK",
+            "SK Brann"
+          ]
+        }
+      }
+    },
+    "Panama": {
+      "leagues": {
+        "1010572": {
+          "name": "Liga Panamena, Apertura",
+          "fixtures": [
+            "AF Sporting San Miguelito",
+            "San Francisco FC",
+            "CA Independiente de La Chorrera",
+            "Tauro FC",
+            "CD Plaza Amador Panama City",
+            "Umecit",
+            "Herrera FC",
+            "Potros del Este",
+            "Veraguas United FC",
+            "CD Arabe Unido"
+          ]
+        },
+        "1011108": {
+          "name": "Liga Prom",
+          "fixtures": [
+            "La Familia FC",
+            "San Francisco FC B",
+            "San Martin FC",
+            "Arabe Unido B"
+          ]
+        }
+      }
+    },
+    "Paraguay": {
+      "leagues": {
+        "1007733": {
+          "name": "Division de Honor, Apertura",
+          "fixtures": [
+            "Club Guarani Asuncion",
+            "CA Tembetary Ypane",
+            "Libertad Asuncion",
+            "Club Olimpia",
+            "Cerro Porteno",
+            "Sportivo Ameliano",
+            "CD Recoleta",
+            "Sportivo Luqueno",
+            "Nacional Asuncion",
+            "Sportivo Trinidense"
+          ]
+        }
+      }
+    },
+    "Peru": {
+      "leagues": {
+        "1007864": {
+          "name": "Liga 1",
+          "fixtures": [
+            "Los Chankas CYC",
+            "CS Cienciano",
+            "Comerciantes Unidos",
+            "Atletico Grau",
+            "Ayacucho FC",
+            "FBC Melgar",
+            "Universitario de Deportes",
+            "Sport Huancayo",
+            "Asociacion Deportiva Tarma",
+            "Alianza Lima"
+          ]
+        }
+      }
+    },
+    "Poland": {
+      "leagues": {
+        "1007658": {
+          "name": "Ekstraklasa",
+          "fixtures": [
+            "FKS Stal Mielec",
+            "WKS Slask Wroclaw",
+            "Gornik Zabrze",
+            "LKP Motor Lublin",
+            "Widzew Lodz",
+            "GKS Katowice",
+            "Zaglebie Lubin",
+            "Korona Kielce",
+            "RKS Rakow Czestochowa",
+            "Legia Warszawa",
+            "Jagiellonia Bialystok",
+            "KKS Lech Poznan"
+          ]
+        },
+        "1007682": {
+          "name": "I Liga",
+          "fixtures": [
+            "Bruk-Bet Termalica Nieciecza",
+            "GKS Tychy",
+            "Ruch Chorzow",
+            "Wisla Plock",
+            "Warta Poznan",
+            "Polonia Warszawa",
+            "Pogon Siedlce",
+            "ZKS Stal Stalowa Wola",
+            "Gornik Leczna",
+            "MKS Arka Gdynia",
+            "MKP Kotwica Kolobrzeg",
+            "MKS Znicz Pruszkow"
+          ]
+        },
+        "1007712": {
+          "name": "Iii Liga, Group 1",
+          "fixtures": [
+            "Swit Nowy Dwor Mazowiecki",
+            "Lechia Tomaszow Mazowiecki",
+            "Jagiellonia II Bialystok",
+            "GKS Belchatow",
+            "TS Sokol Aleksandrow Lodzki",
+            "Wigry Suwalki",
+            "MKS Polonia Lidzbark Warminski",
+            "GKS Wikielec",
+            "Victoria Sulejowek",
+            "LKS 1926 Lomza"
+          ]
+        },
+        "1007713": {
+          "name": "Iii Liga, Group 2",
+          "fixtures": [
+            "Sks Unia Swarzedz",
+            "Blekitni Stargard",
+            "Sokol Kleczew",
+            "Polonia Sroda Wielkopolska",
+            "LKS Wybrzeze Rewalskie Rewal",
+            "MKS Flota Swinoujscie",
+            "Kss Kotwica Kornik",
+            "Pogon Nowe Skalmierzyce",
+            "MKS Notec Czarnkow",
+            "Cartusia Kartuzy",
+            "Vineta Wolin",
+            "Pogon Szczecin II",
+            "Elana Torun",
+            "Gedania Gdansk",
+            "WDA Swiecie",
+            "Lech II Poznan"
+          ]
+        },
+        "1007714": {
+          "name": "Iii Liga, Group 3",
+          "fixtures": [
+            "Slask II Wroclaw",
+            "Karkonosze Jelenia Gora",
+            "KS Stilon Gorzow Wlkp",
+            "KS Gornik Polkowice",
+            "Podlesianka Katowice",
+            "Gornik Zabrze II",
+            "GKS Pniowek Pawlowice",
+            "Lks Goczalkowice-zdroj",
+            "BTP Stal Brzeg",
+            "KS Lechia Zielona Gora",
+            "MKS Polonia Slubice",
+            "Warta Gorzow Wielkopolski",
+            "MKS Kluczbork",
+            "Unia Turza Slaska",
+            "Odra Bytom Odrzanski",
+            "Mkp Carina Gubin"
+          ]
+        },
+        "1007715": {
+          "name": "Iii Liga, Group 4",
+          "fixtures": [
+            "Wisla II Krakow",
+            "Korona II Kielce SA",
+            "Podhale Nowy Targ",
+            "Siarka Tarnobrzeg",
+            "Avia Swidnik",
+            "Pogon Sokol Lubaczow",
+            "MKS Czarni Polaniec",
+            "Sandecja Nowy Sacz",
+            "KS Wisloka Debica",
+            "ZKS Unia Tarnow"
+          ]
+        },
+        "1007743": {
+          "name": "Puchar Polski",
+          "fixtures": []
+        },
+        "1007883": {
+          "name": "II Liga",
+          "fixtures": [
+            "KS Hutnik Krakow SSA",
+            "Wieczysta Krakow",
+            "Zaglebie Lubin II",
+            "Olimpia Grudziadz",
+            "Pogon Grodzisk Mazowiecki",
+            "SKRA Czestochowa",
+            "LKS Lodz II",
+            "Zaglebie Sosnowiec"
+          ]
+        },
+        "1008258": {
+          "name": "Ekstraliga, Women",
+          "fixtures": [
+            "WKS Slask Wroclaw",
+            "Rekord Bielsko-Biala"
+          ]
+        },
+        "1015837": {
+          "name": "CLJ",
+          "fixtures": [
+            "Arka Gdynia",
+            "Zaglebie Lubin",
+            "Pogon Szczecin",
+            "Warta Poznan"
+          ]
+        }
+      }
+    },
+    "Portugal": {
+      "leagues": {
+        "1008425": {
+          "name": "Liga Portugal",
+          "fixtures": [
+            "Gil Vicente Barcelos",
+            "Santa Clara Azores",
+            "SC Farense",
+            "SC Braga",
+            "FC Porto",
+            "Avs Futebol Sad",
+            "Sporting Lisbon",
+            "FC Famalicao",
+            "FC Arouca",
+            "Estoril Praia",
+            "Nacional da Madeira",
+            "Casa Pia Lisbon",
+            "Rio Ave FC",
+            "SL Benfica",
+            "Vitoria SC Guimaraes",
+            "Estrela Amadora",
+            "Moreirense FC",
+            "Boavista Porto"
+          ]
+        },
+        "1008609": {
+          "name": "Liga Portugal 2",
+          "fixtures": [
+            "FC Alverca SAD",
+            "SCU Torreense",
+            "Academico de Viseu FC",
+            "FC Penafiel",
+            "Maritimo Madeira",
+            "Fc Felgueiras 1932",
+            "GD Chaves",
+            "UD Oliveirense",
+            "CD Tondela",
+            "Sl Benfica B",
+            "UD Leiria",
+            "CD Mafra",
+            "FC Porto B",
+            "Leixoes SC",
+            "FC Vizela",
+            "FC Pacos Ferreira"
+          ]
+        },
+        "1008765": {
+          "name": "Campeonato de Portugal",
+          "fixtures": [
+            "Pevidem Sc",
+            "AD Limianos",
+            "CF Estrela Sad B",
+            "Amora FC",
+            "Ac Marinhense",
+            "CD Alcains"
+          ]
+        },
+        "1008969": {
+          "name": "Campeonato Nacional, Women",
+          "fixtures": [
+            "Clube de Albergaria",
+            "Cs Maritimo Madeira",
+            "FC Famalicao",
+            "Estoril Praia"
+          ]
+        },
+        "1012413": {
+          "name": "Liga Portugal 3",
+          "fixtures": [
+            "Sporting Lisbon B",
+            "AD Fafe",
+            "SC Lusitania Angra",
+            "SC Covilha",
+            "Ad Sanjoanense",
+            "Lank FC Vilaverdense",
+            "SC Sao Joao de Ver",
+            "SC Braga B",
+            "Atletico Clube de Portugal",
+            "Lusitania FC Lourosa",
+            "Anadia FC",
+            "CD Trofense",
+            "CF Os Belenenses",
+            "Amarante FC",
+            "Varzim SC",
+            "1 Dezembro",
+            "FC Oliveira do Hospital",
+            "Academica de Coimbra",
+            "UD Santarem",
+            "Caldas SC"
+          ]
+        }
+      }
+    },
+    "Qatar": {
+      "leagues": {
+        "1009749": {
+          "name": "2. Division",
+          "fixtures": [
+            "Al-Sailiya SC",
+            "AL Bidda SC",
+            "AL Waab",
+            "Lusail SC"
+          ]
+        }
+      }
+    },
+    "Republic of Korea": {
+      "leagues": {
+        "1007461": {
+          "name": "K-League 2",
+          "fixtures": [
+            "Incheon United FC",
+            "Seoul E-Land FC",
+            "Hwaseong FC",
+            "Chungbuk Cheongju FC",
+            "Gimpo FC",
+            "Seongnam Ilhwa",
+            "Suwon Bluewings",
+            "Chungnam Asan Fc",
+            "Busan I Park",
+            "Cheonan City FC",
+            "Gyeongnam FC",
+            "Jeonnam Dragons",
+            "Bucheon FC 1995",
+            "Ansan Greeners FC"
+          ]
+        },
+        "1007591": {
+          "name": "K3 League",
+          "fixtures": [
+            "Changwon City FC",
+            "Siheung Citizen FC",
+            "Ulsan Citizen FC",
+            "Gimhae FC",
+            "Yangpyeong FC",
+            "Paju Citizen FC",
+            "Yeoju FC",
+            "FC Mokpo",
+            "Daejeon Korail FC",
+            "Gyeongju FC",
+            "Jeonbuk FC II",
+            "Gangneung Citizen FC"
+          ]
+        },
+        "1007866": {
+          "name": "K-League 1",
+          "fixtures": [
+            "Jeju SK FC",
+            "Daejeon Citizen FC",
+            "Gangwon FC",
+            "FC Seoul",
+            "Daegu FC",
+            "FC Anyang",
+            "Suwon FC",
+            "Ulsan HD FC",
+            "Jeonbuk FC",
+            "FC Pohang Steelers",
+            "Gimcheon Sangmu FC",
+            "Gwangju FC"
+          ]
+        }
+      }
+    },
+    "Romania": {
+      "leagues": {
+        "1007593": {
+          "name": "Superliga",
+          "fixtures": [
+            "FC Farul Constanta",
+            "CSM Politehnica Iasi",
+            "FC CFR 1907 Cluj",
+            "FC Dinamo Bucuresti 1948",
+            "AFC Hermannstadt",
+            "FC Unirea 2004 Slobozia",
+            "FC Uta Arad",
+            "ASC Otelul Galati",
+            "Fotbal Club FCSB",
+            "Rapid Bucuresti 1923",
+            "ACS Sepsi OSK Sfantu Gheorghe",
+            "FC Gloria Buzau"
+          ]
+        },
+        "1007891": {
+          "name": "Liga 2",
+          "fixtures": [
+            "ACS Champions FC Arges",
+            "CSC Dumbravita",
+            "Metaloglobus Bucuresti",
+            "FC U Craiova 1948",
+            "AFC Chindia Targoviste",
+            "CS Corvinul 1921 Hunedoara",
+            "SC FC Voluntari",
+            "AFK Csikszereda Miercurea Ciuc",
+            "CS Unirea Ungheni 2018",
+            "CS Concordia Chiajna",
+            "CSM Ceahlaul Piatra Neamt",
+            "FC Bihor Oradea",
+            "AFC Metalul Buzau",
+            "ACSM Resita"
+          ]
+        },
+        "1008779": {
+          "name": "Romania Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Russia": {
+      "leagues": {
+        "1007577": {
+          "name": "Superleague, Women",
+          "fixtures": [
+            "Zhfk Yenisey Krasnoyarsk",
+            "CSKA Moscow",
+            "ZFK Krasnodar",
+            "FC Dinamo Moscow",
+            "Fk Rostov",
+            "Lokomotiv Moscow",
+            "Fc Zenit Saint Petersburg",
+            "Ryazan VDV",
+            "Chertanovo Moscow",
+            "Spartak Moscow",
+            "Fk Rubin Kazan",
+            "Zhfk Krylya Sovetov Samara"
+          ]
+        },
+        "1007659": {
+          "name": "Premier League",
+          "fixtures": [
+            "FC Orenburg",
+            "FC Fakel Voronezh",
+            "FK Khimki",
+            "RFK Akhmat Grozny",
+            "FC Dynamo-Makhachkala",
+            "PFK Krylia Sovetov Samara",
+            "Lokomotiv Moscow",
+            "FK Dinamo Moscow",
+            "FK Akron Tolyatti",
+            "CSKA Moscow",
+            "FK Rubin Kazan",
+            "FC Pari Nizhny Novgorod",
+            "FK Rostov",
+            "FK Krasnodar",
+            "FK Spartak Moscow",
+            "FK Zenit Saint Petersburg"
+          ]
+        },
+        "1007660": {
+          "name": "1. Liga",
+          "fixtures": [
+            "FK Ufa",
+            "FC Yenisey Krasnoyarsk",
+            "FC Shinnik Yaroslavl",
+            "Fc Kamaz Naberezhnye Chelny",
+            "FC Neftekhimik Nizhnekamsk",
+            "Torpedo Moscow",
+            "FC Ska-Khabarovsk",
+            "FK Sochi",
+            "FK Ural Yekaterinburg",
+            "FC Chernomorets Novorossiysk",
+            "SK Rotor Volgograd",
+            "FC Sokol Saratov",
+            "FC Tyumen",
+            "FC Baltika Kaliningrad",
+            "Rodina Moscow",
+            "Fc Alania Vladikavkaz",
+            "PFK Arsenal Tula",
+            "Chayka Peschanokopskoye"
+          ]
+        },
+        "1008853": {
+          "name": "Russian Cup",
+          "fixtures": []
+        }
+      }
+    },
+    "Rwanda": {
+      "leagues": {
+        "1009882": {
+          "name": "Premier League",
+          "fixtures": [
+            "Marines FC Gisenyi",
+            "Amagaju",
+            "Bugesera FC",
+            "Police FC Rwanda",
+            "Musanze FC",
+            "SC Kiyovu",
+            "Mukura VS",
+            "Rutsiro Fc"
+          ]
+        }
+      }
+    },
+    "San Marino": {
+      "leagues": {
+        "1008776": {
+          "name": "Campionato Sammarinese",
+          "fixtures": [
+            "SS San Giovanni",
+            "Cosmos Serravalle",
+            "FC Fiorentino",
+            "AC Libertas",
+            "AC Juvenes/Dogana",
+            "SC Faetano"
+          ]
+        }
+      }
+    },
+    "Saudi Arabia": {
+      "leagues": {
+        "1007683": {
+          "name": "Division 1",
+          "fixtures": [
+            "Al-Arabi SC (SA)",
+            "Ohod Medina",
+            "AL Zulfi",
+            "Al-Hazm",
+            "Al Bukiryah",
+            "Al-Faisaly FC"
+          ]
+        },
+        "1007963": {
+          "name": "Saudi Pro League",
+          "fixtures": [
+            "Al-Ittifaq FC",
+            "Al-Fayha FC",
+            "Al-Taawoun FC",
+            "Al Hilal SFC",
+            "Al-Akhdoud Club",
+            "Al Ahli Saudi FC"
+          ]
+        }
+      }
+    },
+    "Scotland": {
+      "leagues": {
+        "1007845": {
+          "name": "Premiership",
+          "fixtures": [
+            "Kilmarnock FC",
+            "Hibernian FC",
+            "Motherwell FC",
+            "St Mirren FC",
+            "St. Johnstone FC",
+            "Aberdeen FC",
+            "Heart of Midlothian FC",
+            "Ross County FC",
+            "Celtic Glasgow",
+            "Glasgow Rangers",
+            "Dundee United",
+            "Dundee FC"
+          ]
+        },
+        "1008329": {
+          "name": "Championship",
+          "fixtures": [
+            "Queens Park FC",
+            "Falkirk FC",
+            "Airdrieonians FC",
+            "Livingston FC",
+            "Hamilton Academical FC",
+            "Greenock Morton FC",
+            "Partick Thistle FC",
+            "Ayr United FC"
+          ]
+        },
+        "1008330": {
+          "name": "League 1",
+          "fixtures": [
+            "Arbroath FC",
+            "Dumbarton FC",
+            "Inverness Caledonian Thistle FC",
+            "Annan Athletic FC",
+            "Montrose FC",
+            "Cove Rangers FC",
+            "Queen of The South FC",
+            "Alloa Athletic FC",
+            "Stenhousemuir FC",
+            "Kelty Hearts FC"
+          ]
+        },
+        "1008332": {
+          "name": "League 2",
+          "fixtures": [
+            "Bonnyrigg Rose",
+            "Stirling Albion FC",
+            "East Fife FC",
+            "Stranraer FC",
+            "Elgin City FC",
+            "Clyde FC",
+            "Forfar Athletic FC",
+            "Spartans FC",
+            "Peterhead FC",
+            "Edinburgh City FC"
+          ]
+        }
+      }
+    },
+    "Senegal": {
+      "leagues": {
+        "1010139": {
+          "name": "Ligue 1",
+          "fixtures": [
+            "Dakar Sacre Coeur",
+            "Teungueth FC"
+          ]
+        }
+      }
+    },
+    "Serbia": {
+      "leagues": {
+        "1007462": {
+          "name": "Superliga",
+          "fixtures": [
+            "FK Tekstilac Odzaci",
+            "FK IMT Novi Beograd",
+            "FK TSC Backa Topola",
+            "FK Napredak Krusevac",
+            "FK Crvena Zvezda Belgrade",
+            "FK Spartak Subotica",
+            "OFK Belgrade",
+            "FK Vojvodina Novi Sad",
+            "FK Cukaricki Belgrade",
+            "FK Partizan Belgrade",
+            "FK Mladost Lucani",
+            "FK Radnicki Nis",
+            "FK Novi Pazar",
+            "FK Zeleznicar Pancevo"
+          ]
+        }
+      }
+    },
+    "Singapore": {
+      "leagues": {
+        "1007896": {
+          "name": "Premier League",
+          "fixtures": []
+        },
+        "1016456": {
+          "name": "Singapore Cup",
+          "fixtures": [
+            "Brunei DPMM FC",
+            "Hougang United FC",
+            "Tanjong Pagar United",
+            "Geylang International FC"
+          ]
+        }
+      }
+    },
+    "Slovakia": {
+      "leagues": {
+        "1007667": {
+          "name": "Superliga",
+          "fixtures": [
+            "MFK Zemplin Michalovce",
+            "MFK Ruzomberok",
+            "MFK Skalica",
+            "AS Trencin",
+            "DAC 1904 Dunajska Streda",
+            "MSK Zilina",
+            "SK Slovan Bratislava",
+            "FC Spartak Trnava",
+            "KFC Komarno",
+            "MFk Dukla Banska Bystrica",
+            "FK Zeleziarne Podbrezova",
+            "FK Kosice"
+          ]
+        },
+        "1007681": {
+          "name": "2. Liga",
+          "fixtures": [
+            "MFK Stara Lubovna",
+            "FC STK 1914 Samorin",
+            "MSK Puchov",
+            "MFK Tatran Liptovsky Mikulas",
+            "MFK Zvolen",
+            "MSK Povazska Bystrica",
+            "FC Petrzalka",
+            "1. FC Tatran Presov",
+            "MSK Zilina B",
+            "OFK Dynamo Malzenice"
+          ]
+        },
+        "1008325": {
+          "name": "1. League Women",
+          "fixtures": [
+            "FC Petrzalka 1898",
+            "FC Spartak Trnava",
+            "AS Trencin",
+            "MFK Dukla Banska Bystrica"
+          ]
+        },
+        "1018516": {
+          "name": "3. Liga, West",
+          "fixtures": [
+            "FK Inter Bratislava",
+            "FK Slovan Duslo Sala",
+            "SKF Sered",
+            "OFK Banik Lehota Pod Vtacnikom",
+            "RSC Hamsik Academy Banska Bystrica",
+            "Tatran Krasno Nad Kysucou"
+          ]
+        },
+        "1018562": {
+          "name": "3. Liga, East",
+          "fixtures": [
+            "FK Poprad",
+            "SK Odeva Lipany",
+            "Lok. Kosice",
+            "Spisska Nova Ves",
+            "MFK Dolny Kubin",
+            "MSK Tesla Stropkov",
+            "MSK Novohrad Lucenec",
+            "FTC Filakovo",
+            "MSK Namestovo",
+            "MFK Vranov Nad Toplou"
+          ]
+        }
+      }
+    },
+    "Slovenia": {
+      "leagues": {
+        "1007668": {
+          "name": "PrvaLiga",
+          "fixtures": [
+            "Mura Murska Sobota",
+            "Primorje Ajdovscina",
+            "NK Radomlje",
+            "Olimpija Ljubljana",
+            "NK Maribor",
+            "NK Koper"
+          ]
+        },
+        "1008405": {
+          "name": "2. Liga",
+          "fixtures": [
+            "Aluminij Kidricevo",
+            "NK Bilje",
+            "NK Dekani",
+            "NK Tolmin",
+            "Nd Dravinja",
+            "Krka Novo Mesto",
+            "ND Beltinci",
+            "NK Bistrica",
+            "Nk Brinje Grosuplje",
+            "Triglav Kranj"
+          ]
+        }
+      }
+    },
+    "South Africa": {
+      "leagues": {
+        "1007844": {
+          "name": "Premiership",
+          "fixtures": [
+            "Magesi FC",
+            "Lamontville Golden Arrows",
+            "Cape Town City FC",
+            "Marumo Gallants FC",
+            "Chippa United FC",
+            "Polokwane City",
+            "Richards Bay FC",
+            "Kaizer Chiefs",
+            "Orlando Pirates FC",
+            "Mamelodi Sundowns",
+            "Sekhukhune United",
+            "Stellenbosch FC"
+          ]
+        },
+        "1008259": {
+          "name": "Championship",
+          "fixtures": [
+            "Casric Stars FC",
+            "Milford FC",
+            "Venda FC",
+            "Jdr Stars",
+            "Kruger United",
+            "Upington City FC",
+            "Hungry Lion",
+            "Black Leopards",
+            "Pretoria University FC",
+            "Orbit College FC"
+          ]
+        }
+      }
+    },
+    "Spain": {
+      "leagues": {
+        "1009356": {
+          "name": "Tercera Federacion, Group 1",
+          "fixtures": [
+            "UD Ourense",
+            "Villalonga",
+            "SD Sarriana",
+            "Alondras CF"
+          ]
+        },
+        "1009358": {
+          "name": "Tercera Federacion, Group 3",
+          "fixtures": [
+            "SD Atletico Albericia",
+            "CD Cayon"
+          ]
+        },
+        "1009359": {
+          "name": "Tercera Federacion, Group 4",
+          "fixtures": [
+            "SD Deusto",
+            "CD Padura",
+            "Scd Durango",
+            "Touring Ke",
+            "CD Derio",
+            "UD Aretxabaleta"
+          ]
+        },
+        "1009361": {
+          "name": "Tercera Federacion, Group 6",
+          "fixtures": [
+            "UD Rayo Ibense",
+            "Patacona CF",
+            "CD Castellon B",
+            "UD Castellonense",
+            "CD Soneja",
+            "UD Vall de Uxo"
+          ]
+        },
+        "1009362": {
+          "name": "Tercera Federacion, Group 7",
+          "fixtures": [
+            "Mexico FC",
+            "Ad Parla"
+          ]
+        },
+        "1009366": {
+          "name": "Tercera Federacion, Group 9",
+          "fixtures": [
+            "Cp Mijas-Las Lagunas",
+            "Udc Torredonjimeno"
+          ]
+        },
+        "1009367": {
+          "name": "Tercera Federacion, Group 12",
+          "fixtures": [
+            "CF Union Viera",
+            "UD Villa Santa Brigida",
+            "CF Panaderia Pulido",
+            "CD Marino",
+            "UD Ibarra",
+            "UD Lanzarote"
+          ]
+        },
+        "1009379": {
+          "name": "Tercera Federacion, Group 11",
+          "fixtures": [
+            "CD Campos",
+            "CD Migjorn",
+            "UD Collerense",
+            "UE Porreres",
+            "UD Poblense",
+            "CD Binissalem"
+          ]
+        },
+        "1009380": {
+          "name": "Tercera Federacion, Group 13",
+          "fixtures": [
+            "Ucam Murcia II",
+            "El Palmar CF-Estrella Grana",
+            "Aguilas FC B",
+            "Union Molinense CF 2020",
+            "CF Santomera",
+            "CD Plus Ultra"
+          ]
+        },
+        "1009381": {
+          "name": "Tercera Federacion, Group 14",
+          "fixtures": [
+            "AD Llerenense",
+            "CF Trujillo"
+          ]
+        },
+        "1009382": {
+          "name": "Tercera Federacion, Group 15",
+          "fixtures": [
+            "CD Ardoi FE",
+            "CD Cortes Navarre",
+            "UD Mutilvera",
+            "Udc Chantrea"
+          ]
+        },
+        "1009383": {
+          "name": "Tercera Federacion, Group 16",
+          "fixtures": [
+            "CD Agoncillo",
+            "SD Oyonesa"
+          ]
+        },
+        "1009390": {
+          "name": "Tercera Federacion, Group 8",
+          "fixtures": [
+            "CD Laguna de Duero",
+            "Palencia CF",
+            "Cd Mirandes B",
+            "CA Bembibre",
+            "Cultural Deportiva Leonesa B",
+            "Atletico Astorga FC",
+            "CD Virgen Del Camino",
+            "CD Becerril"
+          ]
+        },
+        "1009391": {
+          "name": "Tercera Federacion, Group 18",
+          "fixtures": [
+            "CD Marchamalo",
+            "CD Cazalegas"
+          ]
+        }
+      }
+    },
+    "Sweden": {
+      "leagues": {
+        "1007463": {
+          "name": "Damallsvenskan",
+          "fixtures": []
+        },
+        "1007466": {
+          "name": "Allsvenskan",
+          "fixtures": [
+            "Djurgardens IF",
+            "Malmo FF",
+            "Hacken Gothenburg",
+            "IF Brommapojkarna"
+          ]
+        },
+        "1007468": {
+          "name": "Superettan",
+          "fixtures": []
+        },
+        "1007946": {
+          "name": "Svenska Cup",
+          "fixtures": [
+            "Hacken Gothenburg",
+            "IFK Norrkoping FK",
+            "Malmo FF",
+            "IFK Goteborg"
+          ]
+        },
+        "1009147": {
+          "name": "Svenska Cup Women",
+          "fixtures": [
+            "Hacken Gothenburg",
+            "Djurgardens IF DFF",
+            "Vittsjo GIK",
+            "Umea IK"
+          ]
+        }
+      }
+    },
+    "Switzerland": {
+      "leagues": {
+        "1007454": {
+          "name": "Super League",
+          "fixtures": [
+            "FC St. Gallen 1879",
+            "Lausanne-Sport",
+            "Servette Geneva",
+            "Yverdon-Sport",
+            "FC Zurich",
+            "FC Luzern",
+            "Grasshopper Club Zurich",
+            "FC Sion",
+            "FC Lugano",
+            "FC Winterthur",
+            "FC Basel 1893",
+            "Young Boys Bern"
+          ]
+        },
+        "1007556": {
+          "name": "Promotion League",
+          "fixtures": [
+            "FC Lugano U21",
+            "FC Zurich",
+            "FC Bavois",
+            "FC Paradiso",
+            "SC Cham",
+            "SR Delemont"
+          ]
+        },
+        "1007672": {
+          "name": "Challenge League",
+          "fixtures": [
+            "Stade Lausanne Ouchy",
+            "FC Schaffhausen",
+            "FC Wil 1900",
+            "FC Aarau",
+            "Neuchatel Xamax",
+            "FC Stade Nyonnais",
+            "FC Vaduz",
+            "AC Bellinzona"
+          ]
+        }
+      }
+    },
+    "Thailand": {
+      "leagues": {
+        "1007549": {
+          "name": "Thai League 1",
+          "fixtures": [
+            "Khon Kaen United FC",
+            "Nongbua Pitchaya FC",
+            "Nakhon Pathom United FC",
+            "Uthai Thani FC",
+            "Sukhothai FC",
+            "Ratchaburi FC",
+            "Chiangrai United",
+            "Rayong FC",
+            "Prachuap FC",
+            "Muang Thong United",
+            "Port FC",
+            "Bangkok United FC",
+            "Buriram United",
+            "Nakhon Ratchasima FC"
+          ]
+        },
+        "1007643": {
+          "name": "Thai League 2",
+          "fixtures": [
+            "Bangkok FC",
+            "Chanthaburi",
+            "Mahasarakham United FC",
+            "Kasetsart FC",
+            "Sisaket United FC",
+            "Police Tero FC",
+            "Chiangmai United",
+            "Kanchanaburi Power FC",
+            "Chonburi FC",
+            "Nakhon SI United",
+            "Ayutthaya United FC",
+            "Pattaya Dolphins United",
+            "Chainat Hornbill FC",
+            "Trat FC"
+          ]
+        }
+      }
+    },
+    "Trinidad and Tobago": {
+      "leagues": {
+        "1018100": {
+          "name": "TT Premier League",
+          "fixtures": [
+            "Caledonia AIA",
+            "La Horquetta Rangers FC",
+            "Defence Force FC",
+            "Police FC"
+          ]
+        }
+      }
+    },
+    "Tunisia": {
+      "leagues": {
+        "1008671": {
+          "name": "Ligue 2",
+          "fixtures": [
+            "AS Oued Ellil",
+            "AS Megrine",
+            "ES Jerba Midoun",
+            "CS Redeyef"
+          ]
+        }
+      }
+    },
+    "Turkey": {
+      "leagues": {
+        "1007965": {
+          "name": "2. Lig",
+          "fixtures": [
+            "1461 Trabzon FK",
+            "Karakopru Belediye SK",
+            "Karacabey Belediyespor",
+            "Yeni Mersin Idmanyurdu",
+            "Kepez Spor Futbol AS",
+            "Ankaraspor",
+            "1928 Bucaspor",
+            "Karaman FK",
+            "Serik Belediyespor",
+            "Belediye Derincespor",
+            "Arnavutkoy Belediyesi Genclik Ve Spor",
+            "68 Aksaray Belediyespor",
+            "Ankara Demirspor",
+            "Elazigspor",
+            "Sariyer SK",
+            "Fethiyespor",
+            "Altinordu FK",
+            "Batman Petrolspor",
+            "Iskenderunspor AS",
+            "Kirklarelispor",
+            "Adana 01 FK",
+            "Altay Izmir",
+            "Isparta 32 Sporu",
+            "24 Erzincanspor",
+            "Inegolspor",
+            "Kastamonuspor",
+            "Diyarbekirspor AS",
+            "Nazilli Belediyespor",
+            "Erbaaspor",
+            "Menemenspor AS",
+            "Somaspor",
+            "Van Spor FK",
+            "Giresunspor",
+            "Beyoglu Yeni Carsi"
+          ]
+        },
+        "1007966": {
+          "name": "1. Lig",
+          "fixtures": [
+            "Manisa Futbol Kulubu",
+            "Pendikspor",
+            "Umraniyespor",
+            "Boluspor",
+            "MKE Ankaragucu",
+            "Igdir FK",
+            "Sakaryaspor",
+            "Yeni Malatyaspor",
+            "Istanbulspor AS",
+            "Genclerbirligi SK",
+            "Corum FK",
+            "Ankara Keciorengucu",
+            "Amed Sportif Faaliyetler",
+            "Erzurumspor FK",
+            "Fatih Karagumruk Istanbul",
+            "Kocaelispor"
+          ]
+        },
+        "1008524": {
+          "name": "Super Lig",
+          "fixtures": [
+            "Gaziantep FK",
+            "Kayserispor",
+            "Kasimpasa Istanbul",
+            "Alanyaspor",
+            "Konyaspor",
+            "Besiktas Istanbul",
+            "Istanbul Basaksehir",
+            "Trabzonspor",
+            "Caykur Rizespor",
+            "BB Bodrumspor",
+            "Hatayspor Antakya",
+            "Sivasspor",
+            "Goztepe Izmir",
+            "Eyupspor",
+            "Fenerbahce Istanbul",
+            "Samsunspor"
+          ]
+        },
+        "1008710": {
+          "name": "3. Lig, Group 1",
+          "fixtures": [
+            "Bulvarspor",
+            "Silifke Belediyespor"
+          ]
+        },
+        "1008711": {
+          "name": "3. Lig, Group 2",
+          "fixtures": [
+            "Etimesgut Belediyespor",
+            "Balikesirspor"
+          ]
+        },
+        "1008712": {
+          "name": "3. Lig, Group 3",
+          "fixtures": [
+            "Alanya 1221 FSK",
+            "Aliaga Futbol"
+          ]
+        },
+        "1008713": {
+          "name": "3. Lig, Group 4",
+          "fixtures": [
+            "Buyukcekmece Tepecikspor",
+            "Izmir Coruhlu FK"
+          ]
+        },
+        "1010814": {
+          "name": "U19 Elit A",
+          "fixtures": [
+            "Sivasspor",
+            "Caykur Rizespor",
+            "Boluspor",
+            "Konyaspor"
+          ]
+        },
+        "1010815": {
+          "name": "U19 Elit B",
+          "fixtures": [
+            "Isparta 32 Spor",
+            "Bursaspor"
+          ]
+        }
+      }
+    },
+    "Ukraine": {
+      "leagues": {
+        "1007675": {
+          "name": "Premier League",
+          "fixtures": [
+            "FC Kryvbas Kriviy Rih",
+            "FC Levy Bereg Kyiv",
+            "FC Rukh Lviv",
+            "FC Vorskla Poltava",
+            "FC Ingulets Petrove",
+            "FC Chernomorets Odessa",
+            "LNZ Cherkasy",
+            "Kolos Kovalivka"
+          ]
+        }
+      }
+    },
+    "United Arab Emirates": {
+      "leagues": {
+        "1009711": {
+          "name": "First Division",
+          "fixtures": [
+            "Gulf United",
+            "Fujairah FC",
+            "Al-Dhaid",
+            "Emirates Club",
+            "AL Jazira AL Hamra",
+            "AL Dhafra SSC",
+            "Dibba",
+            "Dubai United FC"
+          ]
+        }
+      }
+    },
+    "Uruguay": {
+      "leagues": {
+        "1007741": {
+          "name": "Primera Division",
+          "fixtures": [
+            "Liverpool Montevideo",
+            "Montevideo City Torque",
+            "Plaza Colonia",
+            "CA Penarol Montevideo",
+            "Miramar Misiones",
+            "CA Progreso",
+            "Danubio FC",
+            "Montevideo Wanderers",
+            "CA Juventud de Las Piedras",
+            "Defensor Sporting",
+            "Racing Club Montevideo",
+            "Club Nacional de Football",
+            "Cerro Largo FC",
+            "CA Cerro",
+            "CA River Plate (URU)",
+            "CA Boston River"
+          ]
+        },
+        "1008211": {
+          "name": "Segunda Division",
+          "fixtures": [
+            "Uruguay Montevideo FC",
+            "Central Espanol FC",
+            "Deportivo Maldonado",
+            "La Luz FC",
+            "CA Artigas",
+            "Albion FC"
+          ]
+        }
+      }
+    },
+    "USA": {
+      "leagues": {
+        "1007450": {
+          "name": "Usl League One",
+          "fixtures": [
+            "Charlotte Independence",
+            "Richmond Kickers",
+            "FC Naples",
+            "Forward Madison Fc"
+          ]
+        },
+        "1007451": {
+          "name": "Usl Championship",
+          "fixtures": [
+            "Colorado Springs Switchbacks FC",
+            "Detroit City FC",
+            "North Carolina FC",
+            "Loudoun United Fc",
+            "Miami FC",
+            "Indy Eleven",
+            "Charleston Battery",
+            "Rhode Island FC",
+            "FC Tulsa",
+            "Tampa Bay Rowdies",
+            "San Antonio FC",
+            "Pittsburgh Riverhounds",
+            "El Paso Locomotive Fc",
+            "Phoenix Rising FC",
+            "Monterey Bay FC",
+            "Oakland Roots Sc",
+            "Orange County SC",
+            "Lexington SC",
+            "Las Vegas Lights",
+            "New Mexico United",
+            "Birmingham Legion Fc",
+            "Louisville City FC"
+          ]
+        },
+        "1007618": {
+          "name": "National Womens Soccer League",
+          "fixtures": [
+            "Orlando Pride",
+            "Chicago Stars FC",
+            "Houston Dash",
+            "Washington Spirit",
+            "Kansas City Nwsl",
+            "Portland Thorns FC",
+            "Racing Louisville FC",
+            "North Carolina Courage",
+            "Utah Royals FC",
+            "Bay FC",
+            "Seattle Reign FC",
+            "Gotham FC",
+            "Angel City FC",
+            "San Diego Wave FC"
+          ]
+        },
+        "1007694": {
+          "name": "MLS",
+          "fixtures": [
+            "New York Red Bulls",
+            "Orlando City SC",
+            "Toronto FC",
+            "Chicago Fire",
+            "Los Angeles FC",
+            "Austin Fc",
+            "Charlotte FC",
+            "FC Cincinnati",
+            "DC United",
+            "CF Montreal",
+            "New York City FC",
+            "New England Revolution",
+            "Sporting Kansas City",
+            "Minnesota United FC",
+            "FC Dallas",
+            "Vancouver Whitecaps FC",
+            "Houston Dynamo",
+            "Real Salt Lake",
+            "Saint Louis City SC",
+            "Seattle Sounders",
+            "San Jose Earthquakes",
+            "Colorado Rapids",
+            "San Diego FC",
+            "Columbus Crew",
+            "Philadelphia Union",
+            "Nashville SC",
+            "Portland Timbers",
+            "Los Angeles Galaxy",
+            "Atlanta United FC",
+            "Inter Miami CF"
+          ]
+        },
+        "1014691": {
+          "name": "MLS Next Pro",
+          "fixtures": [
+            "Austin FC II",
+            "Minnesota United FC 2",
+            "Sporting Kansas City II",
+            "Saint Louis City SC 2",
+            "New York City FC II",
+            "Columbus Crew 2",
+            "North Texas Sc",
+            "Vancouver Whitecaps FC II",
+            "Tacoma Defiance",
+            "The Town FC",
+            "Los Angeles FC 2",
+            "Ventura County FC",
+            "Portland Timbers II",
+            "Real Monarchs SLC"
+          ]
+        }
+      }
+    },
+    "Uzbekistan": {
+      "leagues": {
+        "1007939": {
+          "name": "Superliga",
+          "fixtures": [
+            "PFC Shurtan",
+            "FC Bunyodkor",
+            "FC Andijon",
+            "PFC Nasaf",
+            "PFK Dinamo Samarqand",
+            "PFK Mash AL Mubarek"
+          ]
+        }
+      }
+    },
+    "Venezuela": {
+      "leagues": {
+        "1009256": {
+          "name": "Primera Division",
+          "fixtures": [
+            "Monagas SC",
+            "Zamora FC",
+            "Caracas FC",
+            "Academia Puerto Cabello",
+            "Departivo Rayo Zuliano",
+            "Yaracuyanos FC",
+            "Academia Anzoategui FC",
+            "Portuguesa FC",
+            "Ucv FC",
+            "Carabobo FC",
+            "Deportivo Tachira",
+            "Metropolitanos FC",
+            "Deportivo La Guaira",
+            "Estudiantes de Merida"
+          ]
+        }
+      }
+    },
+    "Wales": {
+      "leagues": {
+        "1008612": {
+          "name": "Cymru Premier",
+          "fixtures": [
+            "Bala Town FC",
+            "Haverfordwest County AFC"
+          ]
+        },
+        "1011932": {
+          "name": "Cymru Championship, North",
+          "fixtures": [
+            "Caersws",
+            "Denbigh Town",
+            "Buckley Town",
+            "Mold Alexandra FC"
+          ]
+        },
+        "1012414": {
+          "name": "FAW Welsh Cup",
+          "fixtures": [
+            "Connah's Quay Nomads FC",
+            "Llanelli Town"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -39,10 +39,12 @@ export const fetchFromApi = async (
       ...(data && { data }), // Add data only if present
     };
 
+    // Merge any additional options (such as headers)
+    const axiosConfig: AxiosRequestConfig = { ...defaultConfig, ...options };
+
     // ✅ Make API Call
     const response = await axios(axiosConfig);
     return response.data;
-
   } catch (error: any) {
     console.error(`❌ Error fetching data: ${error.message}`);
 
