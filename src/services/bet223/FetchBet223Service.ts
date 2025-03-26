@@ -1,22 +1,8 @@
 import { launchBrowser } from "../../utils/launchBrowserUtil";
 import { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
-import { teamNameMappings } from "../teamNameMappings";
-import { leagueNameMappings } from "../leagueNameMappings"; // import league name mappings
-
-interface Market {
-  id: number;
-  group_id: number;
-  name: string;
-  order: number;
-}
-
-interface MarketType {
-   id: number;
-   market_id: number;
-   name: string;
-   order: number;
-}
+import Group from "../../models/Group";
+import Market from "../../models/Market";
 
 interface MatchInfo {
   teams: string[];
@@ -38,9 +24,9 @@ interface Match {
   odds: OddsData;
 }
 
-class Bet223ScraperService {
+class BetMomoScraperService {
   // ----- Odds mapping configuration -----
-  private readonly marketMapping: Record<string, string> = {
+  private readonly groupMapping: Record<string, string> = {
     "1x2": "1X2",
     "Both Teams To Score": "Both Teams to Score",
     Total: "Over / Under",
@@ -56,10 +42,13 @@ class Bet223ScraperService {
     no: "No",
   };
 
+  private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
-  private dbMarketTypes: MarketType[] = [];
-  private sourceName = "Bet223";
+  private readonly sourceName = "Bet223";
   private sourceId!: number;
+  private countryNameMappings: Record<string, string> = {};
+  private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
   // ----- End Odds mapping configuration -----
 
   async init() {
@@ -71,21 +60,25 @@ class Bet223ScraperService {
     } else {
       this.sourceId = source.id;
     }
+
+    await this.loadCountryNameMappings();
+    await this.loadLeagueNameMappings();
+    await this.loadTeamNameMappings();
+    this.dbGroups = await this.getGroups();
     this.dbMarkets = await this.getMarkets();
-    this.dbMarketTypes = await this.getMarketTypes();
+  }
+
+  private async getGroups(): Promise<Group[]> {
+    return await db("groups");
   }
 
   private async getMarkets(): Promise<Market[]> {
     return await db("markets");
   }
 
-  private async getMarketTypes(): Promise<MarketType[]> {
-    return await db("market_types");
-  }
-
   async scrape(): Promise<void> {
     await this.init(); // initialize DB and mappings
-    const { browser, page } = await launchBrowser();
+    const { browser, page } = await launchBrowser(true);
     await this.setupPage(page);
 
     // Process only active countries from DB
@@ -96,9 +89,11 @@ class Bet223ScraperService {
       const countryName = await this.getCountryName(page, country);
       if (!countryName) continue;
 
+      const mappedCountryName = this.countryNameMappings[countryName.trim()] ?? countryName.trim();
+
       // Check if the country is active in our DB
       const dbCountry = await db("countries")
-        .where("name", countryName)
+        .where("name", mappedCountryName)
         .andWhere("is_active", true)
         .first();
       if (!dbCountry) {
@@ -119,7 +114,15 @@ class Bet223ScraperService {
       const activeLeagues: { leagueName: string; dbLeague: any }[] = [];
       for (const leagueName of leagues) {
         // Apply league name mapping if available
-        const mappedLeagueName = leagueNameMappings[leagueName] || leagueName;
+        // const mappedLeagueName = leagueNameMappings[leagueName] || leagueName;
+
+        // Get all league mappings for this specific country
+        const countryLeagueMappings = this.leagueNameMappings[dbCountry.code] || [];
+
+        // Find the mapped league name if available
+        const mapping = countryLeagueMappings.find(m => m.mapped_name === leagueName);
+        const mappedLeagueName = mapping ? mapping.name : leagueName;
+
         const dbLeague = await db("leagues")
           .where("name", mappedLeagueName)
           .andWhere("country_code", dbCountry.code)
@@ -157,8 +160,7 @@ class Bet223ScraperService {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     );
 
-    const url =
-      "https://www.bet2africa.ml/en/sports/pre-match/event-view/Soccer";
+    const url = "https://www.bet2africa.ml/en/sports/pre-match/event-view/Soccer";
     await page.goto(url, { waitUntil: "networkidle2" });
     await page.waitForSelector(".sp-sub-list-bc.Soccer.active.selected", {
       timeout: 30000,
@@ -222,7 +224,7 @@ class Bet223ScraperService {
     countryContainer: JSHandle<Element>,
     countryName: string,
     leagueName: string,
-    leagueExternalId: string
+    leagueExternalId: number
   ): Promise<Match[]> {
     let matches: Match[] = [];
     console.log(`⚽ Processing active league: ${leagueName}`);
@@ -273,7 +275,7 @@ class Bet223ScraperService {
     matchHandles: ElementHandle<Element>[],
     country: string,
     league: string,
-    leagueExternalId: string
+    leagueExternalId: number
   ): Promise<Match[]> {
     let matches: Match[] = [];
     const today = new Date();
@@ -302,8 +304,14 @@ class Bet223ScraperService {
       // ----- Fixture matching logic -----
       const homeTeamRaw = basicInfo.teams[0];
       const awayTeamRaw = basicInfo.teams[1];
-      const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-      const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+      // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+      // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+      const leagueTeamMappings = this.teamNameMappings[leagueExternalId] || [];
+
+      // Apply team name mappings only from this league
+      const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+      const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
       // Parse the date (format: dd.mm.yyyy) and time (e.g. "23:00")
       const dateParts = basicInfo.date.split(".");
@@ -486,12 +494,12 @@ class Bet223ScraperService {
   ): Promise<void> {
     // Process Match Result (1X2) market
     if (odds.matchResult) {
-      const internalMarketName = this.marketMapping["1x2"]; // maps to "1X2"
-      const dbMarket = this.dbMarkets.find(
-        (m) => m.name === internalMarketName
+      const internalGroupName = this.groupMapping["1x2"]; // maps to "1X2"
+      const dbGroup = this.dbGroups.find(
+        (m) => m.group_name === internalGroupName
       );
-      if (!dbMarket) {
-        console.warn(`❌ No market found for ${internalMarketName}`);
+      if (!dbGroup) {
+        console.warn(`❌ No group found for ${internalGroupName}`);
       } else {
         const outcomes = [
           { alias: "1", coefficient: Number(odds.matchResult.home) },
@@ -500,21 +508,19 @@ class Bet223ScraperService {
         ];
         for (const outcome of outcomes) {
           const outcomeName = this.outcomeNameNewMapping[outcome.alias];
-          const dbMarketType = this.dbMarketTypes.find(
+          const dbMarket = this.dbMarkets.find(
             (mt) =>
-              mt.name.toLowerCase() === outcomeName.toLowerCase() &&
-              mt.market_id === dbMarket.id
+              mt.market_name.toLowerCase() === outcomeName.toLowerCase() &&
+              mt.group_id === dbGroup.group_id
           );
-          if (!dbMarketType) {
-            console.warn(
-              `❌ No market type found for outcome: ${outcome.alias}`
-            );
+          if (!dbMarket) {
+            console.warn(`❌ No market found for outcome: ${outcome.alias}`);
             continue;
           }
           await this.saveMarketOutcome(
-            dbMarketType.id,
+            dbGroup.group_id,
             outcome.coefficient,
-            dbMarket.id,
+            dbMarket.market_id,
             fixtureId,
             String(odds.external_source_fixture_id)
           );
@@ -524,12 +530,12 @@ class Bet223ScraperService {
 
     // Process Both Teams To Score market
     if (odds.bothTeams) {
-      const internalMarketName = this.marketMapping["Both Teams To Score"];
-      const dbMarket = this.dbMarkets.find(
-        (m) => m.name === internalMarketName
+      const internalGroupName = this.groupMapping["Both Teams To Score"];
+      const dbGroup = this.dbGroups.find(
+        (m) => m.group_name === internalGroupName
       );
-      if (!dbMarket) {
-        console.warn(`❌ No market found for ${internalMarketName}`);
+      if (!dbGroup) {
+        console.warn(`❌ No group found for ${internalGroupName}`);
       } else {
         const outcomes = [
           { alias: "yes", coefficient: Number(odds.bothTeams.yes) },
@@ -537,21 +543,19 @@ class Bet223ScraperService {
         ];
         for (const outcome of outcomes) {
           const outcomeName = this.outcomeNameNewMapping[outcome.alias];
-          const dbMarketType = this.dbMarketTypes.find(
+          const dbMarket = this.dbMarkets.find(
             (mt) =>
-              mt.name.toLowerCase() === outcomeName.toLowerCase() &&
-              mt.market_id === dbMarket.id
+              mt.market_name.toLowerCase() === outcomeName.toLowerCase() &&
+              mt.group_id === dbGroup.group_id
           );
-          if (!dbMarketType) {
-            console.warn(
-              `❌ No market type found for outcome: ${outcome.alias}`
-            );
+          if (!dbMarket) {
+            console.warn(`❌ No market found for outcome: ${outcome.alias}`);
             continue;
           }
           await this.saveMarketOutcome(
-            dbMarketType.id,
+            dbGroup.group_id,
             outcome.coefficient,
-            dbMarket.id,
+            dbMarket.market_id,
             fixtureId,
             String(odds.external_source_fixture_id)
           );
@@ -561,12 +565,12 @@ class Bet223ScraperService {
 
     // Process Total Goals market
     if (odds.totalGoals) {
-      const internalMarketName = this.marketMapping["Total"];
-      const dbMarket = this.dbMarkets.find(
-        (m) => m.name === internalMarketName
+      const internalGroupName = this.groupMapping["Total"];
+      const dbGroup = this.dbGroups.find(
+        (m) => m.group_name === internalGroupName
       );
-      if (!dbMarket) {
-        console.warn(`❌ No market found for ${internalMarketName}`);
+      if (!dbGroup) {
+        console.warn(`❌ No group found for ${internalGroupName}`);
       } else {
         const outcomes = [
           {
@@ -580,21 +584,19 @@ class Bet223ScraperService {
         ];
         for (const outcome of outcomes) {
           const outcomeName = this.outcomeNameNewMapping[outcome.alias];
-          const dbMarketType = this.dbMarketTypes.find(
+          const dbMarket = this.dbMarkets.find(
             (mt) =>
-              mt.name.toLowerCase() === outcomeName.toLowerCase() &&
-              mt.market_id === dbMarket.id
+              mt.market_name.toLowerCase() === outcomeName.toLowerCase() &&
+              mt.group_id === dbGroup.group_id
           );
-          if (!dbMarketType) {
-            console.warn(
-              `❌ No market type found for outcome: ${outcome.alias}`
-            );
+          if (!dbMarket) {
+            console.warn(`❌ No market found for outcome: ${outcome.alias}`);
             continue;
           }
           await this.saveMarketOutcome(
-            dbMarketType.id,
+            dbGroup.group_id,
             outcome.coefficient,
-            dbMarket.id,
+            dbMarket.market_id,
             fixtureId,
             String(odds.external_source_fixture_id)
           );
@@ -604,25 +606,25 @@ class Bet223ScraperService {
   }
 
   private async saveMarketOutcome(
-    marketTypeId: number,
+    groupId: number,
     coefficient: number,
     marketId: number,
     fixtureId: number,
     externalSourceFixtureId: string
   ) {
     try {
-      await db("odds")
+      await db("fixture_odds")
         .insert({
+          group_id: groupId,
           market_id: marketId,
-          market_type_id: marketTypeId,
           coefficient,
           fixture_id: fixtureId,
           external_source_fixture_id: externalSourceFixtureId,
           source_id: this.sourceId,
         })
         .onConflict([
+          "group_id",
           "market_id",
-          "market_type_id",
           "fixture_id",
           "external_source_fixture_id",
           "source_id",
@@ -637,6 +639,63 @@ class Bet223ScraperService {
   private wait(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
+  private async loadCountryNameMappings() {
+    console.log("🔄 Loading country name mappings...");
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
+    this.countryNameMappings = mappings.reduce((acc, mapping) => {
+      acc[mapping.mapped_name] = mapping.name;
+      return acc;
+    }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
+  }
+
+  private async loadLeagueNameMappings() {
+    console.log("🔄 Loading filtered league name mappings by country...");
+
+    const mappings = await db("league_name_mappings as lm")
+      .join("leagues as l", "lm.league_id", "=", "l.external_id")
+      .join("countries as c", "l.country_code", "=", "c.code")
+      .where("c.is_active", true) // Ensure country is active
+      .select("lm.name", "lm.mapped_name", "l.country_code");
+
+    // Group league mappings by country and store as an array
+    this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.country_code]) {
+        acc[mapping.country_code] = []; // Initialize an empty array for each country
+      }
+      acc[mapping.country_code].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered league name mappings categorized by country loaded.");
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
+  }
 }
 
-export default new Bet223ScraperService();
+export default new BetMomoScraperService();

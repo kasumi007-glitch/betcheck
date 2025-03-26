@@ -26,11 +26,16 @@ class SaveSuperGoalLeaguesWithFixturesService {
   }
 
   async syncLeaguesAndFixtures() {
+    await this.init();
     console.log("🚀 Fetching SuperGoal leagues...");
     const token = await GetAccessTokenService.getAccessToken();
     const response = await httpClientFromApi(this.leaguesApiUrl, {
       method: "GET",
-      headers: { accept: "application/json", authorization: `Bearer ${token}` },
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "accept-language": "en",
+        authorization: `Bearer ${token}`, // Replace with your token
+      },
     });
 
     if (!response?.payload?.length) {
@@ -40,7 +45,7 @@ class SaveSuperGoalLeaguesWithFixturesService {
 
     let jsonData: any = { countries: {} };
     for (const region of response.payload) {
-      await this.processCountry(region, jsonData);
+      await this.processCountry(region, jsonData, token);
     }
 
     jsonData.countries = Object.fromEntries(
@@ -54,18 +59,18 @@ class SaveSuperGoalLeaguesWithFixturesService {
     console.log("✅ JSON file generated: supergoal_leagues_fixtures.json");
   }
 
-  private async processCountry(region: any, jsonData: any) {
+  private async processCountry(region: any, jsonData: any, token: string) {
     const countryName =
       this.countryNameMappings[region.name.toLowerCase()] || region.name;
     console.log(`🌍 Processing country: ${countryName}`);
     jsonData.countries[countryName] = { leagues: {} };
 
     for (const league of region.leagues) {
-      await this.processLeague(league, jsonData, countryName);
+      await this.processLeague(league, jsonData, countryName, token);
     }
   }
 
-  private async processLeague(league: any, jsonData: any, countryName: string) {
+  private async processLeague(league: any, jsonData: any, countryName: string, token: string) {
     const leagueId = league.leagueId;
     const leagueName = league.name;
     console.log(`⚽ Processing league: ${leagueName} in ${countryName}`);
@@ -74,22 +79,27 @@ class SaveSuperGoalLeaguesWithFixturesService {
       name: leagueName,
       fixtures: [],
     };
-    await this.fetchAndProcessFixtures(leagueId, jsonData, countryName);
+    await this.fetchAndProcessFixtures(leagueId, jsonData, countryName, token);
   }
 
   private async fetchAndProcessFixtures(
     leagueId: number,
     jsonData: any,
-    countryName: string
+    countryName: string,
+    token: string
   ) {
-    const token = await GetAccessTokenService.getAccessToken();
+    // const token = await GetAccessTokenService.getAccessToken();
     const fixturesUrl = this.fixturesApiUrlTemplate.replace(
       "{leagueId}",
       String(leagueId)
     );
     const response = await httpClientFromApi(fixturesUrl, {
       method: "GET",
-      headers: { accept: "application/json", authorization: `Bearer ${token}` },
+      headers: {
+        accept: "application/json, text/plain, */*",
+        "accept-language": "en",
+        authorization: `Bearer ${token}`, // Replace with your token
+      },
     });
     if (!response?.payload?.leagues?.length) return;
 

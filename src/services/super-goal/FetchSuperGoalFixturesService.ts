@@ -10,6 +10,7 @@ class FetchSuperGoalFixturesService {
     "https://online.meridianbet.com/betshop/api/v1/standard/sport/58/league?page=0&time=ONE_DAY&leagues={leagueId}";
   private readonly sourceName = "SUPERGOOAL";
   private sourceId!: number;
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     // Get source id (insert if not exists)
@@ -21,6 +22,7 @@ class FetchSuperGoalFixturesService {
     } else {
       this.sourceId = source.id;
     }
+    await this.loadTeamNameMappings();
   }
 
   async syncFixtures() {
@@ -36,7 +38,6 @@ class FetchSuperGoalFixturesService {
         "source_league_matches.source_country_id"
       )
       .where("source_league_matches.source_id", this.sourceId)
-      .andWhere("leagues.external_id", 39)
       .andWhere("leagues.is_active", true);
 
     if (!leagues.length) {
@@ -93,20 +94,25 @@ class FetchSuperGoalFixturesService {
 
     if (eventDate < today) {
       console.log(
-        `🗓️ Skipping past fixture: ${
-          event.header.code
+        `🗓️ Skipping past fixture: ${event.header.code
         } ${event.header.rivals.join(" vs ")}`
       );
       return;
     }
 
     // Get team names from the rivals array.
-    let homeTeam = event.header.rivals[0];
-    let awayTeam = event.header.rivals[1];
+    let homeTeamName = event.header.rivals[0];
+    let awayTeamName = event.header.rivals[1];
 
-    // Apply any team name mappings.
-    homeTeam = teamNameMappings[homeTeam] || homeTeam;
-    awayTeam = teamNameMappings[awayTeam] || awayTeam;
+    // // Apply any team name mappings.
+    // homeTeam = teamNameMappings[homeTeamName] || homeTeamName;
+    // awayTeam = teamNameMappings[awayTeamName] || awayTeamName;
+
+    const leagueTeamMappings = this.teamNameMappings[league.league_id] || [];
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamName)?.name ?? homeTeamName;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamName)?.name ?? awayTeamName;
 
     // Fuzzy match the fixture in your DB using ILIKE with wildcards and apply league filter.
     const fixture = await db("fixtures")
@@ -145,6 +151,29 @@ class FetchSuperGoalFixturesService {
         `⚠️ Duplicate fixture mapping ignored: ${homeTeam} vs ${awayTeam}`
       );
     }
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

@@ -10,6 +10,7 @@ class FetchSunubetFixturesService {
     "https://hg-event-api-prod.sporty-tech.net/api/events?eventCategoryIds={leagueId}&offset=0&length=21&fetchEventBetTypesMode=0&betTypeId=10001&timeFilter=All";
   private readonly sourceName = "SUNUBET";
   private sourceId!: number;
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -20,6 +21,7 @@ class FetchSunubetFixturesService {
     } else {
       this.sourceId = source.id;
     }
+    await this.loadTeamNameMappings();
   }
 
   async syncFixtures() {
@@ -70,10 +72,17 @@ class FetchSunubetFixturesService {
 
   private async matchAndStoreFixture(fixtureData: any, league: any) {
     // Process team names with team mappings (if any)
-    const homeTeam =
-      teamNameMappings[fixtureData.homeTeamName] || fixtureData.homeTeamName;
-    const awayTeam =
-      teamNameMappings[fixtureData.awayTeamName] || fixtureData.awayTeamName;
+    // const homeTeam =
+    //   teamNameMappings[fixtureData.homeTeamName] || fixtureData.homeTeamName;
+    // const awayTeam =
+    //   teamNameMappings[fixtureData.awayTeamName] || fixtureData.awayTeamName;
+
+
+    const leagueTeamMappings = this.teamNameMappings[league.league_id] || [];
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === fixtureData.homeTeamName)?.name ?? fixtureData.homeTeamName;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === fixtureData.awayTeamName)?.name ?? fixtureData.awayTeamName;
 
     // Convert expectedStart (ISO) to a Date object
     const eventDate = new Date(fixtureData.expectedStart);
@@ -125,6 +134,29 @@ class FetchSunubetFixturesService {
     } else {
       console.warn(`⚠️ Duplicate fixture: ${homeTeam} vs ${awayTeam}`);
     }
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

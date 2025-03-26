@@ -11,6 +11,7 @@ class Fetch1WinLeaguesService {
     "https://match-storage-parsed.top-parser.com/matches/list?data=%7B%22lang%22:%22en%22,%22localeId%22:82,%22service%22:%22prematch%22,%22categoryId%22:{categoryId},%22onlyOutrights%22:false%7D";
   private readonly sourceName = "1WIN";
   private sourceId!: number;
+  private countryNameMappings: Record<string, string> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -21,6 +22,7 @@ class Fetch1WinLeaguesService {
     } else {
       this.sourceId = source.id;
     }
+    await this.loadCountryNameMappings();
   }
 
   async syncLeagues() {
@@ -124,6 +126,16 @@ class Fetch1WinLeaguesService {
         `⚠️ No match found for league: ${sourceLeagueName} in ${countryName}`
       );
     }
+  }
+
+  private async loadCountryNameMappings() {
+    console.log("🔄 Loading country name mappings...");
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
+    this.countryNameMappings = mappings.reduce((acc, mapping) => {
+      acc[mapping.mapped_name.toLowerCase()] = mapping.name;
+      return acc;
+    }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
   }
 }
 
