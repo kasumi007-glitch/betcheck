@@ -893,9 +893,6 @@
         }
       }
     },
-    "Burkina Faso Cup": {
-      "leagues": {}
-    },
     "Chile": {
       "leagues": {
         "58345": {
@@ -1565,30 +1562,18 @@
     "Friendlies. National Teams. Special bets": {
       "leagues": {}
     },
-    "Gambia": {
-      "leagues": {
-        "1692256": {
-          "name": "Gambian Championship. 1st Division",
-          "fixtures": [
-            "Falcons",
-            "Banjul United"
-          ]
-        },
-        "1900627": {
-          "name": "Gambian Championship. 2nd Division",
-          "fixtures": [
-            "Serekunda",
-            "Kanifing East",
-            "RS Tallinding",
-            "Baalor Sarr",
-            "Serekunda United",
-            "Gunjur United"
-          ]
-        }
-      }
+    "Gambian Championship. 2nd Division": {
+      "leagues": {}
     },
     "Germany": {
       "leagues": {
+        "28351": {
+          "name": "Germany. Regionalliga North",
+          "fixtures": [
+            "St. Pauli II",
+            "Teutonia 05 Ottensen"
+          ]
+        },
         "40369": {
           "name": "Germany. Oberliga Bayern",
           "fixtures": [
@@ -1601,6 +1586,13 @@
           "fixtures": [
             "Viktoria Aschaffenburg",
             "DJK Vilzing"
+          ]
+        },
+        "86681": {
+          "name": "Germany. Regionalliga. Nordost",
+          "fixtures": [
+            "Plauen",
+            "Zwickau"
           ]
         },
         "96463": {
@@ -1765,9 +1757,6 @@
       }
     },
     "Guatemala. Primera Division de Ascenso": {
-      "leagues": {}
-    },
-    "Hungarian Cup. Women": {
       "leagues": {}
     },
     "Iceland Championship U19": {
@@ -2130,6 +2119,8 @@
           "fixtures": [
             "Vanraure Hachinohe",
             "Albirex Niigata",
+            "Home",
+            "Away",
             "Azul Claro Numazu",
             "Kashiwa Reysol",
             "Gainare Tottori",
@@ -2153,9 +2144,7 @@
             "Tochigi City",
             "Kashima Antlers",
             "Zweigen Kanazawa",
-            "Shonan Bellmare",
-            "Home",
-            "Away"
+            "Shonan Bellmare"
           ]
         }
       }
@@ -2670,9 +2659,6 @@
     "Slovakia. Liga 2": {
       "leagues": {}
     },
-    "South Africa Championship. Women": {
-      "leagues": {}
-    },
     "South Korea": {
       "leagues": {
         "30467": {
@@ -2957,8 +2943,6 @@
         "2287838": {
           "name": "Spain. Tercera Division RFEF. Group 13",
           "fixtures": [
-            "Bala Azul",
-            "Alcantarilla",
             "Deportivo Maritimo",
             "Muleno"
           ]
@@ -3122,14 +3106,30 @@
             "Altınordu",
             "Ankaraspor A.S.",
             "Isparta DavrazSpor",
+            "Arnavutköy Belediyesi",
+            "Giresunspor",
             "Batman Petrolspor",
             "Sarıyer",
+            "Belediye Vanspor",
+            "Diyarbakırspor",
             "Beykoz Anadoluspor",
             "İnegolspor",
+            "Derince Belediyespor",
+            "Bucaspor",
             "Karakopru Belediyespor",
             "Adana 1954",
+            "Karaman FC",
+            "Karacabey Belediyespor",
             "Kastamonuspor",
-            "Kepez"
+            "Kepez",
+            "Menemen Belediyespor",
+            "Ankara Demirspor",
+            "Mersin İdmanyurdu",
+            "Beyoglu Yeni Carsi",
+            "Nazilli Belediyespor",
+            "Serik Belediyespor",
+            "Sanica Boru Elazıgspor",
+            "Somaspor"
           ]
         }
       }
@@ -3162,9 +3162,6 @@
       "leagues": {}
     },
     "UEFA Nations League. Team vs Player": {
-      "leagues": {}
-    },
-    "Uganda Cup": {
       "leagues": {}
     },
     "Ukraine": {
@@ -3418,9 +3415,6 @@
       "leagues": {}
     },
     "World Cup 2026 Qualification. Africa": {
-      "leagues": {}
-    },
-    "World Cup 2026 Qualification. Africa. Statistics Round": {
       "leagues": {}
     },
     "World Cup 2026 Qualification. Europe": {
