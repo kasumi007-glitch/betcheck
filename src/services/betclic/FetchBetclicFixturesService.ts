@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClient";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchBetclicFixturesService {
@@ -7,8 +7,9 @@ class FetchBetclicFixturesService {
   // Note: lc[]=1 is hardcoded for sport (soccer) here.
   private readonly apiUrlTemplate =
     "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&lsubc={leagueId}&ss=all&l=20&ltr=0";
-  private readonly sourceName = "Betclic";
+  private readonly sourceName = "BETCLIC";
   private sourceId!: number;
+  private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
   async init() {
     const source = await db("sources").where("name", this.sourceName).first();
@@ -19,6 +20,8 @@ class FetchBetclicFixturesService {
     } else {
       this.sourceId = source.id;
     }
+
+    await this.loadTeamNameMappings();
   }
 
   async syncFixtures() {
@@ -34,8 +37,7 @@ class FetchBetclicFixturesService {
         "leagues.external_id as league_id"
       )
       .where("source_league_matches.source_id", this.sourceId)
-      .andWhere("leagues.is_active", true)
-      .andWhere("leagues.external_id", 39);
+      .andWhere("leagues.is_active", true);
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for Betclic in our database.");
@@ -49,7 +51,7 @@ class FetchBetclicFixturesService {
       const apiUrl = this.apiUrlTemplate
         .replace("{countryId}", String(countryId))
         .replace("{leagueId}", String(leagueId));
-      const response = await fetchFromApi(apiUrl);
+      const response = await httpClientFromApi(apiUrl);
       if (!response?.lines_hierarchy?.length) {
         console.warn(`⚠️ No fixture data for league id: ${leagueId}`);
         continue;
@@ -126,8 +128,17 @@ class FetchBetclicFixturesService {
     }
 
     // Process team names with your mappings
-    const homeTeam = teamNameMappings[match.team1.title] || match.team1.title;
-    const awayTeam = teamNameMappings[match.team2.title] || match.team2.title;
+    // const homeTeam = teamNameMappings[match.team1.title] || match.team1.title;
+    // const awayTeam = teamNameMappings[match.team2.title] || match.team2.title;
+
+    const leagueTeamMappings = this.teamNameMappings[league.league_id] || [];
+
+    const homeTeamName = match.team1.title || "";
+    const awayTeamName = match.team2.title || "";
+
+    // Apply team name mappings only from this league
+    const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamName)?.name ?? homeTeamName;
+    const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamName)?.name ?? awayTeamName;
 
     // Attempt to find a matching fixture in our DB (using fuzzy matching on team names)
     let fixture = await db("fixtures")
@@ -163,6 +174,29 @@ class FetchBetclicFixturesService {
     } else {
       console.warn(`⚠️ Duplicate fixture: ${homeTeam} vs ${awayTeam}`);
     }
+  }
+
+  private async loadTeamNameMappings() {
+    console.log("🔄 Loading filtered team name mappings by league...");
+
+    const mappings = await db("team_name_mappings as tm")
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+    // Group team mappings by league
+    this.teamNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.league_id]) {
+        acc[mapping.league_id] = []; // Initialize an array for each league
+      }
+      acc[mapping.league_id].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered team name mappings categorized by league loaded.");
   }
 }
 

@@ -1,7 +1,7 @@
 // services/22bet/Fetch22betLeaguesService.ts
 import { db } from "../../infrastructure/database/Database";
 import { httpClientFromApi } from "../../utils/HttpClient";
-import { leagueNameMappings } from "../leagueNameMappings";
+// import { leagueNameMappings } from "../leagueNameMappings";
 
 class Fetch22betLeaguesService {
   // 22BET API endpoint (GET)
@@ -13,7 +13,8 @@ class Fetch22betLeaguesService {
   private readonly lang = "en";
   private readonly sourceName = "22BET";
   private sourceId!: number;
-
+  private countryNameMappings: Record<string, string> = {};
+  private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
   async init() {
     // Initialize the source record for 22BET in our database.
     const source = await db("sources").where("name", this.sourceName).first();
@@ -24,9 +25,13 @@ class Fetch22betLeaguesService {
     } else {
       this.sourceId = source.id;
     }
+
+    await this.loadCountryNameMappings();
+    await this.loadLeagueNameMappings();
   }
 
   async syncLeagues() {
+    await this.init();
     console.log("🚀 Fetching 22BET leagues...");
 
     // 1. Fetch the leagues data from the 22BET endpoint.
@@ -54,8 +59,9 @@ class Fetch22betLeaguesService {
     for (const category of filteredCategories) {
       // Look up the corresponding active country in our DB.
       // Here we assume that the sport category's country code matches the DB's "code" field.
+      const countryName = this.countryNameMappings[category.name.trim()] ?? category.name.trim();
       const dbCountry = await db("countries")
-        .where("name", category.name)
+        .where("name", countryName)
         .andWhere("is_active", true)
         .first();
 
@@ -99,8 +105,15 @@ class Fetch22betLeaguesService {
     const sourceLeagueName = league.name;
 
     // Optionally apply name mappings (if any) to standardize league names.
-    const mappedLeagueName =
-      leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+    // const mappedLeagueName =
+    //   this.leagueNameMappings[sourceLeagueName] || sourceLeagueName;
+
+    // Get all league mappings for this specific country
+    const countryLeagueMappings = this.leagueNameMappings[dbCountry.code] || [];
+
+    // Find the mapped league name if available
+    const mapping = countryLeagueMappings.find(m => m.mapped_name === sourceLeagueName);
+    const mappedLeagueName = mapping ? mapping.name : sourceLeagueName;
 
     // Look up the internal league (active) by mapped name and country code.
     const dbLeague = await db("leagues")
@@ -142,6 +155,40 @@ class Fetch22betLeaguesService {
         `⚠️ No active internal league match found for: '${sourceLeagueName}' in '${dbCountry.name}'`
       );
     }
+  }
+
+  private async loadCountryNameMappings() {
+    console.log("🔄 Loading country name mappings...");
+    const mappings = await db("country_name_mappings").select("name", "mapped_name");
+    this.countryNameMappings = mappings.reduce((acc, mapping) => {
+      acc[mapping.mapped_name] = mapping.name;
+      return acc;
+    }, {} as Record<string, string>);
+    console.log("✅ Country name mappings loaded.");
+  }
+  
+  private async loadLeagueNameMappings() {
+    console.log("🔄 Loading filtered league name mappings by country...");
+
+    const mappings = await db("league_name_mappings as lm")
+      .join("leagues as l", "lm.league_id", "=", "l.external_id")
+      .join("countries as c", "l.country_code", "=", "c.code")
+      .where("c.is_active", true) // Ensure country is active
+      .select("lm.name", "lm.mapped_name", "l.country_code");
+
+    // Group league mappings by country and store as an array
+    this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+      if (!acc[mapping.country_code]) {
+        acc[mapping.country_code] = []; // Initialize an empty array for each country
+      }
+      acc[mapping.country_code].push({
+        name: mapping.name,
+        mapped_name: mapping.mapped_name
+      });
+      return acc;
+    }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+    console.log("✅ Filtered league name mappings categorized by country loaded.");
   }
 }
 

@@ -60,7 +60,6 @@ class Add1WinOddService {
       )
       .where("fixtures.date", ">=", new Date())
       .andWhere("leagues.is_active", true)
-      .andWhere("leagues.external_id", 39)
       .andWhere("source_matches.source_id", this.sourceId);
 
     if (!fixtures.length) {
