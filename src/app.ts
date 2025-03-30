@@ -187,33 +187,33 @@ const syncAllLeagues = async () => {
 
 // Run fixture sync first, then odds sync immediately
 const runInitialSync = async () => {
-  await saveBetPawaLeaguesWithFixturesService.syncLeaguesAndFixtures();
+  // await saveBetPawaLeaguesWithFixturesService.syncLeaguesAndFixtures();
   //
-  // console.log("⏳ Running initial league sync...");
-  // await syncAllLeagues();
-  // console.log("✅ Initial league sync done!");
-  //
-  // console.log("⏳ Running initial fixture sync...");
-  // await syncAllFixtures();
-  // console.log("✅ Initial fixture sync done!");
-  //
-  // console.log("⏳ Running initial odds sync...");
-  // await syncAllOdds();
-  // console.log("✅ Initial odds sync done!");
+  console.log("⏳ Running initial league sync...");
+  await syncAllLeagues();
+  console.log("✅ Initial league sync done!");
+
+  console.log("⏳ Running initial fixture sync...");
+  await syncAllFixtures();
+  console.log("✅ Initial fixture sync done!");
+
+  console.log("⏳ Running initial odds sync...");
+  await syncAllOdds();
+  console.log("✅ Initial odds sync done!");
 
 };
 
 // Schedule fixture sync
-// cron.schedule(SYNC_FIXTURES_CRON, async () => {
-//   console.log("📅 Scheduled fixture sync started...");
-//   await syncAllFixtures();
-// });
-//
-// // Schedule odds sync (ensuring it runs after fixtures sync)
-// cron.schedule(SYNC_ODDS_CRON, async () => {
-//   console.log("⏳ Scheduled odds sync started...");
-//   await syncAllOdds();
-// });
+cron.schedule(SYNC_FIXTURES_CRON, async () => {
+  console.log("📅 Scheduled fixture sync started...");
+  await syncAllFixtures();
+});
+
+// Schedule odds sync (ensuring it runs after fixtures sync)
+cron.schedule(SYNC_ODDS_CRON, async () => {
+  console.log("⏳ Scheduled odds sync started...");
+  await syncAllOdds();
+});
 
 // Run immediate sync
 runInitialSync();
