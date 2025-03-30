@@ -26,6 +26,7 @@ class FetchBetPawaLeagueService {
     }
 
     async syncLeagues() {
+        await this.init();
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
 
         const myHeaders = new Headers();

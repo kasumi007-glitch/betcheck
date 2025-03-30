@@ -1,7 +1,7 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { fetchFromApi } from "../../utils/ApiClientMultiTry";
 import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
@@ -92,7 +92,7 @@ class Fetch1xBetFixturesWithOddsService {
             "{sourceLeagueId}",
             sourceLeagueId
         );
-        const response = await httpClientFromApi(apiUrl);
+        const response = await fetchFromApi(apiUrl);
 
         if (!response?.Value?.length) {
             console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);

@@ -1,5 +1,5 @@
 import {db} from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { fetchFromApi } from "../../utils/ApiClientMultiTry";
 //
 class Fetch1xBetLeagueService {
     private readonly apiUrl =
@@ -26,7 +26,7 @@ class Fetch1xBetLeagueService {
     async syncLeagues() {
         await this.init();
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
-        const response = await httpClientFromApi(this.apiUrl);
+        const response = await fetchFromApi(this.apiUrl);
 
         if (!response?.Value?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);

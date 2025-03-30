@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { fetchFromApi } from "../../utils/ApiClientMultiTry";
 import fs from "fs";
 
 class Save1xBetLeaguesWithFixturesService {
