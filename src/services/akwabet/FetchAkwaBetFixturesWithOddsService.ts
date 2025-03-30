@@ -2,16 +2,16 @@ import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
 import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
-import {teamNameMappings} from "../teamNameMappings";
 import fs from "fs";
 
 const path = require("path");
 
 class FetchAkwaBetFixturesWithOddsService {
-    private readonly sourceName = "AkwaBet";
+    private readonly sourceName = "AKWABET";
     private sourceId!: number;
     private fetchFixture!: boolean;
     private fetchOdd!: boolean;
+    private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
     // 1) Market ID → Market Name
     private readonly groupMapping: Record<number, string> = {
@@ -51,6 +51,8 @@ class FetchAkwaBetFixturesWithOddsService {
         } else {
             this.sourceId = source.id;
         }
+
+        await this.loadTeamNameMappings();
 
         this.dbMarkets = await this.getMarkets();
         this.dbGroups = await this.getGroups();
@@ -136,10 +138,6 @@ class FetchAkwaBetFixturesWithOddsService {
 
             if (this.fetchOdd) {
                 await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-            } else {
-                console.warn(
-                    `⚠️ Skipping odds fetch for fixture: ${fixture.I} due to failed processing.`
-                );
             }
         }
     }
@@ -167,8 +165,14 @@ class FetchAkwaBetFixturesWithOddsService {
         }
 
         // **Apply Name Mapping for Home and Away Teams**
-        const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-        const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+        // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+        // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+        const leagueTeamMappings = this.teamNameMappings[leagueId] || [];
+
+        // Apply team name mappings only from this league
+        const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+        const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
         // **Match fixture in database**
         let matchedFixture = await db("fixtures")
@@ -227,6 +231,17 @@ class FetchAkwaBetFixturesWithOddsService {
     ) {
         const {MatchId: sourceFixtureId} = fixtureData;
 
+        if (!fixtureData) {
+            console.warn(`❌ No Fixture found!`);
+            return;
+        }
+
+        // Typically the markets are in data.Value.E
+        if (!fixtureData?.Markets?.length) {
+            console.warn(`❌ No 'Markets' array for fixture: ${sourceFixtureId}`);
+            return;
+        }
+
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
@@ -245,18 +260,7 @@ class FetchAkwaBetFixturesWithOddsService {
 
         if (!fixture) {
             console.warn(`❌ No Fixture found! Fixture: ${sourceFixtureId} league: ${leagueId}`);
-            return;
-        }
-
-        if (!fixtureData) {
-            console.warn(`❌ No Fixture found!`);
-            return;
-        }
-
-        // Typically the markets are in data.Value.E
-        if (!fixtureData?.Markets?.length) {
-            console.warn(`❌ No 'Markets' array for fixture: ${sourceFixtureId}`);
-            return;
+            return false;
         }
 
         // Process each "marketObj" in Markets
@@ -348,7 +352,31 @@ class FetchAkwaBetFixturesWithOddsService {
 
         console.log("Odds data inserted/updated successfully.");
     }
+
+    private async loadTeamNameMappings() {
+        console.log("🔄 Loading filtered team name mappings by league...");
+
+        const mappings = await db("team_name_mappings as tm")
+            .join("leagues as l", "tm.league_id", "=", "l.external_id")
+            .where("l.is_active", true) // Ensure the league is active
+            .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+        // Group team mappings by league
+        this.teamNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.league_id]) {
+                acc[mapping.league_id] = []; // Initialize an array for each league
+            }
+            acc[mapping.league_id].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered team name mappings categorized by league loaded.");
+    }
 }
+
 // TODO: Refactor them into separate files
 interface Country {
     id: number;
@@ -360,6 +388,4 @@ interface CountriesData {
 }
 
 // Export and initialize
-const fetchAkwaBetFixturesWithOddsService = new FetchAkwaBetFixturesWithOddsService();
-
-export default fetchAkwaBetFixturesWithOddsService;
+export default new FetchAkwaBetFixturesWithOddsService();

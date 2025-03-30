@@ -6,8 +6,10 @@ class FetchBetPawaLeagueService {
     // Sport category 2 is football.
     private readonly apiUrl =
         "https://www.betpawa.sn/api/sportsbook/v3/categories/list/2";
-    private readonly sourceName = "BetPawa";
+    private readonly sourceName = "BETPAWA";
     private sourceId!: number;
+    private countryNameMappings: Record<string, string> = {};
+    private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
 
     async init() {
         const source = await db("sources").where("name", this.sourceName).first();
@@ -18,6 +20,9 @@ class FetchBetPawaLeagueService {
         } else {
             this.sourceId = source.id;
         }
+
+        await this.loadCountryNameMappings();
+        await this.loadLeagueNameMappings();
     }
 
     async syncLeagues() {
@@ -122,9 +127,11 @@ class FetchBetPawaLeagueService {
     private async processLeague(
         leagueName: string,
         sourceLeagueId: number,
-        countryName: string,
+        sourceCountryName: string,
         countryId: number
     ) {
+        const countryName = this.countryNameMappings[sourceCountryName.trim()] ?? sourceCountryName.trim();
+
         // Find a matching country in our db
         const country = await db("countries")
             .where("name", countryName)
@@ -136,9 +143,16 @@ class FetchBetPawaLeagueService {
             return;
         }
 
+        // Get all league mappings for this specific country
+        const countryLeagueMappings = this.leagueNameMappings[country.code] || [];
+
+        // Find the mapped league name if available
+        const mapping = countryLeagueMappings.find(m => m.mapped_name === leagueName);
+        const mappedLeagueName = mapping ? mapping.name : leagueName;
+
         // Find a matching league in our db
         const league = await db("leagues")
-            .where("name", leagueName)
+            .where("name", mappedLeagueName)
             .andWhere("country_code", country.code)
             .first();
 
@@ -175,6 +189,40 @@ class FetchBetPawaLeagueService {
                 `⚠️ No match found for league: ${leagueName} (Source: ${leagueName}) in country: ${country.name}`
             );
         }
+    }
+
+    private async loadCountryNameMappings() {
+        console.log("🔄 Loading country name mappings...");
+        const mappings = await db("country_name_mappings").select("name", "mapped_name");
+        this.countryNameMappings = mappings.reduce((acc, mapping) => {
+            acc[mapping.mapped_name] = mapping.name;
+            return acc;
+        }, {} as Record<string, string>);
+        console.log("✅ Country name mappings loaded.");
+    }
+
+    private async loadLeagueNameMappings() {
+        console.log("🔄 Loading filtered league name mappings by country...");
+
+        const mappings = await db("league_name_mappings as lm")
+            .join("leagues as l", "lm.league_id", "=", "l.external_id")
+            .join("countries as c", "l.country_code", "=", "c.code")
+            .where("c.is_active", true) // Ensure country is active
+            .select("lm.name", "lm.mapped_name", "l.country_code");
+
+        // Group league mappings by country and store as an array
+        this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.country_code]) {
+                acc[mapping.country_code] = []; // Initialize an empty array for each country
+            }
+            acc[mapping.country_code].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered league name mappings categorized by country loaded.");
     }
 }
 

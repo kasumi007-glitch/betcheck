@@ -2,15 +2,15 @@ import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
 import {fetchFromApi} from "../../utils/ApiClientWithPost";
-import {teamNameMappings} from "../teamNameMappings";
 
 class FetchGeniusBetFixturesWithOddsService {
     private readonly apiUrlTemplate =
         "https://api.geniusbet.com.gn/api/v2/get-tournament-events-refactor";
-    private readonly sourceName = "GeniusBet";
+    private readonly sourceName = "GENIUSBET";
     private sourceId!: number;
     private fetchFixture!: boolean;
     private fetchOdd!: boolean;
+    private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
     // 1) Market ID → Market Name
     private readonly groupMapping: Record<number, string> = {
@@ -49,6 +49,8 @@ class FetchGeniusBetFixturesWithOddsService {
         } else {
             this.sourceId = source.id;
         }
+
+        await this.loadTeamNameMappings();
 
         this.dbMarkets = await this.getMarkets();
         this.dbGroups = await this.getGroups();
@@ -89,7 +91,7 @@ class FetchGeniusBetFixturesWithOddsService {
             "{sourceLeagueId}",
             sourceLeagueId
         );
-        // Use this to test
+
         // const payload = {"tournament_ids": [218708]}; // TODO: remove this
         const payload = {"tournament_ids": [Number(sourceLeagueId)]};
         const response = await fetchFromApi(apiUrl, "POST", payload);
@@ -111,10 +113,6 @@ class FetchGeniusBetFixturesWithOddsService {
             }
             if (this.fetchOdd) {
                 await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-            } else {
-                console.warn(
-                    `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
-                );
             }
         }
     }
@@ -140,8 +138,14 @@ class FetchGeniusBetFixturesWithOddsService {
         }
 
         // **Apply Name Mapping for Home and Away Teams**
-        const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-        const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+        // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+        // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+        const leagueTeamMappings = this.teamNameMappings[leagueId] || [];
+
+        // Apply team name mappings only from this league
+        const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+        const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
         // **Match fixture in database**
         let matchedFixture = await db("fixtures")
@@ -199,6 +203,17 @@ class FetchGeniusBetFixturesWithOddsService {
         sourceLeagueId: string
     ) {
         const {id: sourceFixtureId} = fixtureData;
+
+        if (!fixtureData) {
+            console.warn(`❌ No Fixture found!`);
+            return;
+        }
+
+        if (!fixtureData?.markets?.length) {
+            console.warn(`❌ No 'markets' array for fixture: ${sourceFixtureId}`);
+            return;
+        }
+
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
@@ -217,17 +232,7 @@ class FetchGeniusBetFixturesWithOddsService {
 
         if (!fixture) {
             console.warn(`❌ No Fixture found! for ${sourceFixtureId}`);
-            return;
-        }
-
-        if (!fixtureData) {
-            console.warn(`❌ No Fixture found!`);
-            return;
-        }
-
-        if (!fixtureData?.markets?.length) {
-            console.warn(`❌ No 'markets' array for fixture: ${sourceFixtureId}`);
-            return;
+            return false;
         }
 
         const markets = fixtureData.markets;
@@ -319,6 +324,29 @@ class FetchGeniusBetFixturesWithOddsService {
             .merge(["coefficient"]);
 
         console.log("Odds data inserted/updated successfully.");
+    }
+
+    private async loadTeamNameMappings() {
+        console.log("🔄 Loading filtered team name mappings by league...");
+
+        const mappings = await db("team_name_mappings as tm")
+            .join("leagues as l", "tm.league_id", "=", "l.external_id")
+            .where("l.is_active", true) // Ensure the league is active
+            .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+        // Group team mappings by league
+        this.teamNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.league_id]) {
+                acc[mapping.league_id] = []; // Initialize an array for each league
+            }
+            acc[mapping.league_id].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered team name mappings categorized by league loaded.");
     }
 }
 
