@@ -7,7 +7,7 @@ class SaveAkwaBetLeaguesWithFixturesService {
         "https://api.logiqsport.com:60009/api/pregame/getPregameData?providerId=1&h24=false&lang=en&siteid=43";
     private readonly fixturesApiUrl =
         "https://api.logiqsport.com:60009/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
-    private readonly sourceName = "AkwaBet";
+    private readonly sourceName = "AKWABET";
     private sourceId!: number;
 
     async init() {

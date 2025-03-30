@@ -8,7 +8,7 @@ class SaveMelBetLeaguesWithFixturesService {
 
     private readonly fixturesApiUrlTemplate =
         "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-    private readonly sourceName = "MelBet";
+    private readonly sourceName = "MELBET";
     private sourceId!: number;
 
     async init() {

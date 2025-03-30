@@ -8,7 +8,7 @@ import {ResponseData} from "../interfaces/BetPawa/ResponseData";
 class SaveBetPawaLeaguesWithFixturesService {
     private readonly apiUrl =
         "https://www.betpawa.sn/api/sportsbook/v3/categories/list/2";
-    private readonly sourceName = "BetPawa";
+    private readonly sourceName = "BETPAWA";
     private sourceId!: number;
 
     private readonly marketMapping: Record<number, string> = {
