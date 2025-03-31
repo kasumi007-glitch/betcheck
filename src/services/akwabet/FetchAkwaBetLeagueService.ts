@@ -5,8 +5,10 @@ import {leagueNameMappings} from "../leagueNameMappings";
 class FetchAkwaBetLeagueService {
     private readonly apiUrl =
         "https://api.logiqsport.com:60009/api/pregame/getPregameData?providerId=1&h24=false&lang=en&siteid=43";
-    private readonly sourceName = "AkwaBet";
+    private readonly sourceName = "AKWABET";
     private sourceId!: number;
+    private countryNameMappings: Record<string, string> = {};
+    private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
 
     async init() {
         const source = await db("sources").where("name", this.sourceName).first();
@@ -17,6 +19,9 @@ class FetchAkwaBetLeagueService {
         } else {
             this.sourceId = source.id;
         }
+
+        await this.loadCountryNameMappings();
+        await this.loadLeagueNameMappings();
     }
 
     async syncLeagues() {
@@ -76,9 +81,11 @@ class FetchAkwaBetLeagueService {
     private async processLeague(
         leagueName: string,
         sourceLeagueId: number,
-        countryName: string,
+        sourceCountryName: string,
         countryId: number
     ) {
+        const countryName = this.countryNameMappings[sourceCountryName.trim()] ?? sourceCountryName.trim();
+
         // Find country by country code
         const country = await db("countries")
             .where("name", countryName)
@@ -89,9 +96,16 @@ class FetchAkwaBetLeagueService {
             return;
         }
 
+        // Get all league mappings for this specific country
+        const countryLeagueMappings = this.leagueNameMappings[country.code] || [];
+
+        // Find the mapped league name if available
+        const mapping = countryLeagueMappings.find(m => m.mapped_name === leagueName);
+        const mappedLeagueName = mapping ? mapping.name : leagueName;
+
         // Find a matching league in our database
         const league = await db("leagues")
-            .where("name", leagueName)
+            .where("name", mappedLeagueName)
             .andWhere("country_code", country.code)
             .first();
 
@@ -128,6 +142,41 @@ class FetchAkwaBetLeagueService {
                 `⚠️ No match found for league: ${leagueName} (Source: ${leagueName}) in country: ${country.name}`
             );
         }
+    }
+
+
+    private async loadCountryNameMappings() {
+        console.log("🔄 Loading country name mappings...");
+        const mappings = await db("country_name_mappings").select("name", "mapped_name");
+        this.countryNameMappings = mappings.reduce((acc, mapping) => {
+            acc[mapping.mapped_name] = mapping.name;
+            return acc;
+        }, {} as Record<string, string>);
+        console.log("✅ Country name mappings loaded.");
+    }
+
+    private async loadLeagueNameMappings() {
+        console.log("🔄 Loading filtered league name mappings by country...");
+
+        const mappings = await db("league_name_mappings as lm")
+            .join("leagues as l", "lm.league_id", "=", "l.external_id")
+            .join("countries as c", "l.country_code", "=", "c.code")
+            .where("c.is_active", true) // Ensure country is active
+            .select("lm.name", "lm.mapped_name", "l.country_code");
+
+        // Group league mappings by country and store as an array
+        this.leagueNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.country_code]) {
+                acc[mapping.country_code] = []; // Initialize an empty array for each country
+            }
+            acc[mapping.country_code].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<string, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered league name mappings categorized by country loaded.");
     }
 }
 

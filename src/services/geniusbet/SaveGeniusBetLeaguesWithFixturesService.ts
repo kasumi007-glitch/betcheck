@@ -7,7 +7,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
         "https://api.geniusbet.com.gn/api/v2/side-bar";
     private readonly fixturesApiUrlTemplate =
         "https://api.geniusbet.com.gn/api/v2/get-tournament-events-refactor";
-    private readonly sourceName = "GeniusBet";
+    private readonly sourceName = "GENIUSBET";
     private sourceId!: number;
 
     async init() {

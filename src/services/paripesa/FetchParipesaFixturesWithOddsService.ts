@@ -1,18 +1,18 @@
-import {db} from "../../infrastructure/database/Database";
-import Market from "../../models/Market";
+import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
-import {fetchFromApi} from "../../utils/ApiClient";
-import {MarketObj} from "../interfaces/MarketObj";
-import {teamNameMappings} from "../teamNameMappings";
+import Market from "../../models/Market";
+import { httpClientFromApi } from "../../utils/HttpClient";
+import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchParipesaFixturesWithOddsService {
     private readonly apiUrlTemplate =
         "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-    private readonly sourceName = "Paripesa";
+    private readonly sourceName = "PARIPESA";
     private sourceId!: number;
     private fetchFixture!: boolean;
     private fetchOdd!: boolean;
+    private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
     // 1) Market ID → Market Name
     private readonly groupMapping: Record<number, string> = {
@@ -39,21 +39,22 @@ class FetchParipesaFixturesWithOddsService {
         181: "No",
     };
 
-    private dbMarkets: Market[] = [];
     private dbGroups: Group[] = [];
+    private dbMarkets: Market[] = [];
 
     async initialize() {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
         }
 
-        this.dbMarkets = await this.getMarkets();
+        await this.loadTeamNameMappings();
         this.dbGroups = await this.getGroups();
+        this.dbMarkets = await this.getMarkets();
     }
 
     async syncFixtures(fetchFixture: boolean, fetchOdd: boolean = false) {
@@ -63,7 +64,7 @@ class FetchParipesaFixturesWithOddsService {
 
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
 
-        // Fetch active leagues linked to Paripesa
+        // Fetch active leagues linked to MegaPari
         const leagues = await db("source_league_matches")
             .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
             .select(
@@ -91,7 +92,7 @@ class FetchParipesaFixturesWithOddsService {
             "{sourceLeagueId}",
             sourceLeagueId
         );
-        const response = await fetchFromApi(apiUrl);
+        const response = await httpClientFromApi(apiUrl);
 
         if (!response?.Value?.length) {
             console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
@@ -99,20 +100,13 @@ class FetchParipesaFixturesWithOddsService {
         }
 
         for (const fixture of response.Value) {
+            // let isFixtureProcessed: boolean = false;
             if (this.fetchFixture) {
-                await this.processFixture(
-                    fixture,
-                    leagueId,
-                    sourceLeagueId
-                );
+                await this.processFixture(fixture, leagueId, sourceLeagueId);
             }
 
             if (this.fetchOdd) {
                 await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-            } else {
-                console.warn(
-                    `⚠️ Skipping odds fetch for fixture: ${fixture.I} due to failed processing.`
-                );
             }
         }
     }
@@ -138,8 +132,14 @@ class FetchParipesaFixturesWithOddsService {
         }
 
         // **Apply Name Mapping for Home and Away Teams**
-        const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-        const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+        // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+        // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+        const leagueTeamMappings = this.teamNameMappings[leagueId] || [];
+
+        // Apply team name mappings only from this league
+        const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+        const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
 
         // **Match fixture in database**
         let matchedFixture = await db("fixtures")
@@ -196,9 +196,20 @@ class FetchParipesaFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {I: sourceFixtureId} = fixtureData;
+        const { I: sourceFixtureId } = fixtureData;
 
-        const fixture = await db("source_matches")
+        if (!fixtureData) {
+            console.warn(`❌ No Fixture found!`);
+            return;
+        }
+
+        // Typically the markets are in data.Value.E
+        if (!fixtureData?.E?.length) {
+            console.warn(`❌ No 'E' array for fixture: ${sourceFixtureId}`);
+            return;
+        }
+
+        const matchedFixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
             .select(
@@ -214,20 +225,11 @@ class FetchParipesaFixturesWithOddsService {
             .andWhere("leagues.external_id", leagueId)
             .first();
 
-        if (!fixture) {
-            console.warn(`❌ No Fixture found! ----- in league ${leagueId}`);
-            return;
-        }
-
-        if (!fixtureData) {
-            console.warn(`❌ No Fixture found!`);
-            return;
-        }
-
-        // Typically the markets are in data.Value.E
-        if (!fixtureData?.E?.length) {
-            console.warn(`❌ No 'E' array for fixture: ${sourceFixtureId}`);
-            return;
+        if (!matchedFixture) {
+            console.warn(
+                `⚠️ No match found for fixture in league ${leagueId}`
+            );
+            return false;
         }
 
         // Process each "marketObj" in E
@@ -237,10 +239,10 @@ class FetchParipesaFixturesWithOddsService {
 
         for (const marketObj of filteredData) {
             // G => the market ID
-            const marketId = marketObj.G; // e.g. 7 => "Correct Score"
+            const groupId = marketObj.G; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
-            const groupName = this.groupMapping[marketId];
+            const groupName = this.groupMapping[groupId];
 
             // find market
             const dbGroup = this.dbGroups.find(
@@ -250,6 +252,7 @@ class FetchParipesaFixturesWithOddsService {
                 console.warn(`❌ No 'Group Found' : ${groupName}`);
                 continue;
             }
+
             // T => the outcome ID we want to map
             const outcomeId = marketObj.T; // e.g. 221
 
@@ -259,9 +262,8 @@ class FetchParipesaFixturesWithOddsService {
                 (marketType) =>
                     marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
             );
-
             if (!dbMarket) {
-                console.warn(`❌ No 'Market Type Found' : ${outcome}`);
+                console.warn(`❌ No 'Market Found' : ${outcome}`);
                 continue;
             }
 
@@ -270,7 +272,7 @@ class FetchParipesaFixturesWithOddsService {
                 dbGroup.group_id,
                 Number(marketObj.C),
                 dbMarket.market_id,
-                fixture.id,
+                matchedFixture.id,
                 sourceFixtureId
             );
 
@@ -278,12 +280,12 @@ class FetchParipesaFixturesWithOddsService {
         }
     }
 
-    private async getMarkets(): Promise<Market[]> {
-        return db("markets");
+    private async getGroups(): Promise<Group[]> {
+        return await db("groups");
     }
 
-    private async getGroups(): Promise<Group[]> {
-        return db("groups");
+    private async getMarkets(): Promise<Market[]> {
+        return await db("markets");
     }
 
     private async saveMarketOutcome(
@@ -295,16 +297,16 @@ class FetchParipesaFixturesWithOddsService {
     ) {
         await db("fixture_odds")
             .insert({
-                market_id: marketId,
                 group_id: groupId,
+                market_id: marketId,
                 coefficient,
                 fixture_id: fixtureId,
                 external_source_fixture_id: externalSourceFixtureId,
                 source_id: this.sourceId,
             })
             .onConflict([
-                "market_id",
                 "group_id",
+                "market_id",
                 "fixture_id",
                 "external_source_fixture_id",
                 "source_id",
@@ -313,10 +315,30 @@ class FetchParipesaFixturesWithOddsService {
 
         console.log("Odds data inserted/updated successfully.");
     }
+
+    private async loadTeamNameMappings() {
+        console.log("🔄 Loading filtered team name mappings by league...");
+
+        const mappings = await db("team_name_mappings as tm")
+            .join("leagues as l", "tm.league_id", "=", "l.external_id")
+            .where("l.is_active", true) // Ensure the league is active
+            .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+        // Group team mappings by league
+        this.teamNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.league_id]) {
+                acc[mapping.league_id] = []; // Initialize an array for each league
+            }
+            acc[mapping.league_id].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered team name mappings categorized by league loaded.");
+    }
 }
 
 // Export and initialize
-const fetchParipesaFixturesWithOddsService =
-    new FetchParipesaFixturesWithOddsService();
-
-export default fetchParipesaFixturesWithOddsService;
+export default new FetchParipesaFixturesWithOddsService();

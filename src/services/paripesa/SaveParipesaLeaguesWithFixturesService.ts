@@ -7,7 +7,7 @@ class SaveParipesaLeaguesWithFixturesService {
     "https://paripesa.top/service-api/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
   private readonly fixturesApiUrlTemplate =
     "https://paripesa.top/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-  private readonly sourceName = "Paripesa";
+  private readonly sourceName = "PARIPESA";
   private sourceId!: number;
 
   async init() {

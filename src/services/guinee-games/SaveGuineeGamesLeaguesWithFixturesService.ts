@@ -7,7 +7,7 @@ class SaveGuineeGamesLeaguesWithFixturesService {
         "https://sports-api.guineegames.com/v1/competitions?country=GN&group=g6&platform=desktop&locale=en&timeOffset=-180&sportId=1";
     private readonly fixturesApiUrlTemplate =
         "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=en&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
-    private readonly sourceName = "GuineeGames";
+    private readonly sourceName = "GUINEEGAMES";
     private sourceId!: number;
 
     private readonly groupMapping: Record<number, string> = {

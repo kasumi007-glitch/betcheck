@@ -1,5 +1,5 @@
 import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClient";
+import {fetchFromApi} from "../../utils/ApiClientMultiTry";
 import fs from "fs";
 
 class SaveMelBetLeaguesWithFixturesService {
@@ -8,7 +8,7 @@ class SaveMelBetLeaguesWithFixturesService {
 
     private readonly fixturesApiUrlTemplate =
         "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-    private readonly sourceName = "MelBet";
+    private readonly sourceName = "MELBET";
     private sourceId!: number;
 
     async init() {

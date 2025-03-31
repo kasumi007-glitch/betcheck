@@ -7,7 +7,7 @@ import FetchOnebetOddsService from "./services/one-bet/FetchOnebetOddsService";
 import Fetch22betFixturesWithOddsService from "./services/22bet/Fetch22betFixturesWithOddsService";
 import FetchSunubetOddService from "./services/sunu-bet/FetchSunubetOddService";
 import FetchSuperGoalOddService from "./services/super-goal/FetchSuperGoalOddService";
-
+import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchPremierBetFixtureService from "./services/premierbet/FetchFixturesService";
 import FetchMegaPariFixturesService from "./services/mega-pari/FetchMegaPariFixturesService";
 import FetchOnebetFixturesService from "./services/one-bet/FetchOnebetFixturesService";
@@ -29,6 +29,32 @@ import FetchSunubetLeaguesService from "./services/sunu-bet/FetchSunubetLeaguesS
 import FetchSuperGoalLeaguesService from "./services/super-goal/FetchSuperGoalLeaguesService";
 import FetchYellowBetLeagueService from "./services/yellowbet/FetchYellowBetLeagueService";
 
+import FetchGeniusBetLeagueService from "./services/geniusbet/FetchGeniusBetLeagueService";
+import FetchGeniusBetFixturesWithOddsService from "./services/geniusbet/FetchGeniusBetFixturesWithOddsService";
+import saveGeniusBetLeaguesWithFixturesService from "./services/geniusbet/SaveGeniusBetLeaguesWithFixturesService";
+import FetchGuineeGamesLeagueService from "./services/guinee-games/FetchGuineeGamesLeagueService";
+import FetchGuineeGamesFixturesWithOddsService from "./services/guinee-games/FetchGuineeGamesFixturesWithOddsService";
+import saveGuineeGamesLeaguesWithFixturesService
+    from "./services/guinee-games/SaveGuineeGamesLeaguesWithFixturesService";
+import saveAkwaBetLeaguesWithFixturesService from "./services/akwabet/SaveAkwaBetLeaguesWithFixturesService";
+import saveBetPawaLeaguesWithFixturesService from "./services/betpawa/SaveBetPawaLeaguesWithFixturesService";
+import save1xBetLeaguesWithFixturesService from "./services/1xbet/Save1xBetLeaguesWithFixturesService";
+import saveParipesaLeaguesWithFixturesService from "./services/paripesa/SaveParipesaLeaguesWithFixturesService";
+import saveLineBetLeaguesWithFixturesService from "./services/linebet/SaveLineBetLeaguesWithFixturesService";
+import saveMelBetLeaguesWithFixturesService from "./services/melbet/SaveMelBetLeaguesWithFixturesService";
+import FetchAkwaBetLeagueService from "./services/akwabet/FetchAkwaBetLeagueService";
+import FetchBetPawaLeagueService from "./services/betpawa/FetchBetPawaLeagueService";
+import Fetch1xBetLeagueService from "./services/1xbet/Fetch1xBetLeagueService";
+import FetchLineBetLeagueService from "./services/linebet/FetchLineBetLeagueService";
+import FetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueService";
+import FetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService";
+import FetchAkwaBetFixturesWithOddsService from "./services/akwabet/FetchAkwaBetFixturesWithOddsService";
+import FetchBetPawaFixturesWithOddsService from "./services/betpawa/FetchBetPawaFixturesWithOddsService";
+import Fetch1xBetFixturesWithOddsService from "./services/1xbet/Fetch1xBetFixturesWithOddsService";
+import FetchLineBetFixturesWithOddsService from "./services/linebet/FetchLineBetFixturesWithOddsService";
+import FetchParipesaFixturesWithOddsService from "./services/paripesa/FetchParipesaFixturesWithOddsService";
+import FetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
+
 dotenv.config();
 
 const app = express();
@@ -45,17 +71,26 @@ const syncAllOdds = async () => {
   );
 
   const results = await Promise.allSettled([
-    Add1WinOddService.syncOdds(),
-    Fetch22betFixturesWithOddsService.syncFixtures(false, true),
-    AddBetclicOddService.syncOdds(),
-    FetchMegaPariFixturesWithOddsService.syncFixtures(false, true),
-    // // // FetchOnebetOddsService.syncOdds(),
-    AddPremierBetOddService.syncOdds(),
-    FetchSunubetOddService.syncOdds(),
-    FetchSuperGoalOddService.syncOdds(),
-    FetchYellowBetFixturesWithOddsService.syncFixtures(false, true),
-    BetMomoScraperService.scrape(), //scrapper
-    Bet22333ScraperService.scrape(), //scrapepr
+    // Add1WinOddService.syncOdds(),
+    // Fetch22betFixturesWithOddsService.syncFixtures(false, true),
+    // AddBetclicOddService.syncOdds(),
+    // FetchMegaPariFixturesWithOddsService.syncFixtures(false, true),
+    // // // // FetchOnebetOddsService.syncOdds(),
+    // AddPremierBetOddService.syncOdds(),
+    // FetchSunubetOddService.syncOdds(),
+    // FetchSuperGoalOddService.syncOdds(),
+    // FetchYellowBetFixturesWithOddsService.syncFixtures(false, true),
+    // BetMomoScraperService.scrape(), //scrapper
+    // Bet22333ScraperService.scrape(), //scrapepr
+    //   FetchGeniusBetFixturesWithOddsService.syncFixtures(false, true),
+      FetchGuineeGamesFixturesWithOddsService.syncFixtures(false, true),
+    //   FetchAkwaBetFixturesWithOddsService.syncFixtures(false, true),
+    //   FetchBetPawaFixturesWithOddsService.syncFixtures(false, true),
+    //   Fetch1xBetFixturesWithOddsService.syncFixtures(false, true),
+    //   FetchLineBetFixturesWithOddsService.syncFixtures(false, true),
+    //   FetchParipesaFixturesWithOddsService.syncFixtures(false, true),
+    // FetchMelBetFixturesWithOddsService.syncFixtures(false, true)
+
   ]);
 
   results.forEach((result, index) => {
@@ -71,7 +106,7 @@ const syncAllOdds = async () => {
   // console.log("✅ All odds services completed successfully!");
   // ✅ Now fetch and save the aggregated odds
   console.log("🛠️ Fetching and saving bet odds...");
-  await SaveBetsOddsService.saveOdds();
+  // await SaveBetsOddsService.saveOdds();
   console.log("✅ Bet odds successfully saved!");
 };
 
@@ -82,16 +117,25 @@ const syncAllFixtures = async () => {
   );
 
   const results = await Promise.allSettled([
-    Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(false, true), // on hold
-    Fetch22betFixturesWithOddsService.syncFixtures(true), //on hold
-    FetchBetclicFixturesService.syncFixtures(),
-    FetchMegaPariFixturesWithOddsService.syncFixtures(true), //on hold
-    // // FetchOnebetFixturesService.syncFixtures(),
-    FetchPremierBetFixtureService.syncFixtures(),
-    FetchSunubetFixturesService.syncFixtures(),
-    FetchSuperGoalFixturesService.syncFixtures(),
-    FetchYellowBetFixturesWithOddsService.syncFixtures(true) //on hold
+    // Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(false, true), // on hold
+    // Fetch22betFixturesWithOddsService.syncFixtures(true), //on hold
+    // FetchBetclicFixturesService.syncFixtures(),
+    // FetchMegaPariFixturesWithOddsService.syncFixtures(true), //on hold
+    // // // FetchOnebetFixturesService.syncFixtures(),
+    // FetchPremierBetFixtureService.syncFixtures(),
+    // FetchSunubetFixturesService.syncFixtures(),
+    // FetchSuperGoalFixturesService.syncFixtures(),
+    // FetchYellowBetFixturesWithOddsService.syncFixtures(true), //on hold
+    //   FetchGeniusBetFixturesWithOddsService.syncFixtures(true),
+      FetchGuineeGamesFixturesWithOddsService.syncFixtures(true),
+    //   FetchAkwaBetFixturesWithOddsService.syncFixtures(true),
+    //   FetchBetPawaFixturesWithOddsService.syncFixtures(true),
+    //   Fetch1xBetFixturesWithOddsService.syncFixtures(true),
+    //   FetchLineBetFixturesWithOddsService.syncFixtures(true),
+    //   FetchParipesaFixturesWithOddsService.syncFixtures(true),
+    //   FetchMelBetFixturesWithOddsService.syncFixtures(true)
   ]);
+
 
   results.forEach((result, index) => {
     if (result.status === "rejected") {
@@ -111,15 +155,23 @@ const syncAllLeagues = async () => {
   );
 
   const results = await Promise.allSettled([
-    Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(true, true),
-    Fetch22betLeaguesService.syncLeagues(),
-    FetchBetclicLeaguesService.syncLeagues(),
-    FetchMegaPariLeagueService.syncLeagues(),
-    // // FetchOnebetFixturesService.syncFixtures(),
-    FetchPremierBetLeagueService.syncLeagues(),
-    FetchSunubetLeaguesService.syncLeagues(),
-    FetchSuperGoalLeaguesService.syncLeagues(),
-    FetchYellowBetLeagueService.syncLeagues()
+    // Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(true, true),
+    // Fetch22betLeaguesService.syncLeagues(),
+    // FetchBetclicLeaguesService.syncLeagues(),
+    // FetchMegaPariLeagueService.syncLeagues(),
+    // // // FetchOnebetFixturesService.syncFixtures(),
+    // FetchPremierBetLeagueService.syncLeagues(),
+    // FetchSunubetLeaguesService.syncLeagues(),
+    // FetchSuperGoalLeaguesService.syncLeagues(),
+    // FetchYellowBetLeagueService.syncLeagues(),
+    //   FetchGeniusBetLeagueService.syncLeagues(),
+      FetchGuineeGamesLeagueService.syncLeagues(),
+      // FetchAkwaBetLeagueService.syncLeagues(),
+    //   FetchBetPawaLeagueService.syncLeagues(),
+    //   Fetch1xBetLeagueService.syncLeagues(),
+    //   FetchLineBetLeagueService.syncLeagues(),
+    //   FetchParipesaLeagueService.syncLeagues(),
+    //   FetchMelBetLeagueService.syncLeagues()
   ]);
 
   results.forEach((result, index) => {
@@ -135,30 +187,33 @@ const syncAllLeagues = async () => {
 
 // Run fixture sync first, then odds sync immediately
 const runInitialSync = async () => {
-  console.log("⏳ Running initial league sync...");
-  await syncAllLeagues();
-  console.log("✅ Initial league sync done!");
+  await saveMelBetLeaguesWithFixturesService.syncLeaguesAndFixtures();
+  //
+  // console.log("⏳ Running initial league sync...");
+  // await syncAllLeagues();
+  // console.log("✅ Initial league sync done!");
+  //
+  // console.log("⏳ Running initial fixture sync...");
+  // await syncAllFixtures();
+  // console.log("✅ Initial fixture sync done!");
+  //
+  // console.log("⏳ Running initial odds sync...");
+  // await syncAllOdds();
+  // console.log("✅ Initial odds sync done!");
 
-  console.log("⏳ Running initial fixture sync...");
-  await syncAllFixtures();
-  console.log("✅ Initial fixture sync done!");
-
-  console.log("⏳ Running initial odds sync...");
-  await syncAllOdds();
-  console.log("✅ Initial odds sync done!");
 };
 
 // Schedule fixture sync
-cron.schedule(SYNC_FIXTURES_CRON, async () => {
-  console.log("📅 Scheduled fixture sync started...");
-  await syncAllFixtures();
-});
-
-// Schedule odds sync (ensuring it runs after fixtures sync)
-cron.schedule(SYNC_ODDS_CRON, async () => {
-  console.log("⏳ Scheduled odds sync started...");
-  await syncAllOdds();
-});
+// cron.schedule(SYNC_FIXTURES_CRON, async () => {
+//   console.log("📅 Scheduled fixture sync started...");
+//   await syncAllFixtures();
+// });
+//
+// // Schedule odds sync (ensuring it runs after fixtures sync)
+// cron.schedule(SYNC_ODDS_CRON, async () => {
+//   console.log("⏳ Scheduled odds sync started...");
+//   await syncAllOdds();
+// });
 
 // Run immediate sync
 runInitialSync();

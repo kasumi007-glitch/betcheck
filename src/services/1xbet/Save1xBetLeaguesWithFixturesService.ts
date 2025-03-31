@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { fetchFromApi } from "../../utils/ApiClientMultiTry";
 import fs from "fs";
 
 class Save1xBetLeaguesWithFixturesService {
@@ -7,7 +7,7 @@ class Save1xBetLeaguesWithFixturesService {
     "https://1xbet.com/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
   private readonly fixturesApiUrlTemplate =
     "https://1xbet.com/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
-  private readonly sourceName = "1xBet";
+  private readonly sourceName = "1XBET";
   private sourceId!: number;
 
   async init() {

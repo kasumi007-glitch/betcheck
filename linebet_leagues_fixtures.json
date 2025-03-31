@@ -762,6 +762,8 @@
         "28665": {
           "name": "Costa Rica. Primera Division",
           "fixtures": [
+            "Cartagines",
+            "Puntarenas",
             "Deportivo Saprissa",
             "Herediano",
             "Sporting San Jose",
@@ -775,6 +777,10 @@
         "415883": {
           "name": "Costa Rica. Segunda Division",
           "fixtures": [
+            "AD Aserrí",
+            "Antioquia",
+            "AD Municipal Turrialba",
+            "Limon Black Star",
             "Consultants Moravia",
             "Escorpiones"
           ]
@@ -914,6 +920,8 @@
         "1133095": {
           "name": "El Salvador. Reserve League",
           "fixtures": [
+            "CD Platense Zacatecoluca II",
+            "Fuerte San Francisco II",
             "CD Dragon II",
             "Alianza San Salvador II"
           ]
@@ -1238,40 +1246,8 @@
         "1138299": {
           "name": "Finland Championship U20",
           "fixtures": [
-            "Real Betis",
-            "Sevilla",
-            "Napoli",
-            "Milan",
-            "Hellas Verona",
-            "Parma",
-            "Home",
-            "Away",
-            "Akron Tolyatti",
-            "Rostov",
-            "Lille OSC",
-            "RC Lens",
-            "Moreirense",
-            "Vitoria Guimaraes",
-            "St. Louis City",
-            "Austin",
-            "Portland Timbers",
-            "Houston Dynamo",
-            "Belgrano",
-            "Talleres de Cordoba",
-            "Gimnasia y Esgrima La Plata",
-            "Club Atletico Sarmiento Junin",
-            "Newell's Old Boys",
-            "Boca Juniors",
-            "FCV Dender EH",
-            "K.V.C. Westerlo",
-            "Sociedade Esportiva Palmeiras",
-            "Botafogo de Futebol e Regatas",
-            "CR Vasco da Gama",
-            "Santos",
-            "Bahia",
-            "Corinthians Paulista",
-            "Olympiacos Piraeus",
-            "Panathinaikos"
+            "Atlantis U20",
+            "HJK Helsinki U20"
           ]
         },
         "1554897": {
@@ -1564,45 +1540,19 @@
         "1762563": {
           "name": "Guatemala. Liga Nacional. Women",
           "fixtures": [
-            "Real Betis",
-            "Sevilla",
-            "Napoli",
-            "Milan",
-            "Hellas Verona",
-            "Parma",
-            "Home",
-            "Away",
-            "Akron Tolyatti",
-            "Rostov",
-            "Lille OSC",
-            "RC Lens",
-            "Moreirense",
-            "Vitoria Guimaraes",
-            "St. Louis City",
-            "Austin",
-            "Portland Timbers",
-            "Houston Dynamo",
-            "Belgrano",
-            "Talleres de Cordoba",
-            "Gimnasia y Esgrima La Plata",
-            "Club Atletico Sarmiento Junin",
-            "Newell's Old Boys",
-            "Boca Juniors",
-            "FCV Dender EH",
-            "K.V.C. Westerlo",
-            "Sociedade Esportiva Palmeiras",
-            "Botafogo de Futebol e Regatas",
-            "CR Vasco da Gama",
-            "Santos",
-            "Bahia",
-            "Corinthians Paulista",
-            "Olympiacos Piraeus",
-            "Panathinaikos"
+            "Municipal (Women)",
+            "Xelaju (Women)",
+            "Suchitepequez (Women)",
+            "Xinabajul (Women)"
           ]
         },
         "1905833": {
           "name": "Guatemala. Segunda Division",
           "fixtures": [
+            "Deportivo Colomba",
+            "Chichicasteco",
+            "Fraijanes",
+            "Tigres del Jumay",
             "CSD Amatitlan",
             "Puerto San Jose",
             "Deportivo Carchá",
@@ -1638,6 +1588,8 @@
         "56283": {
           "name": "Hungary. NB II",
           "fixtures": [
+            "Honved",
+            "Aqvital Csakvar",
             "Vasas",
             "Soroksar"
           ]
@@ -1919,6 +1871,8 @@
         "1054533": {
           "name": "Mexico. Segunda Division",
           "fixtures": [
+            "Caja Oblatos CFD",
+            "Cordobes",
             "Montaneses",
             "Universidad Autonoma de Zacatecas",
             "Real Apodaca",
@@ -1973,40 +1927,8 @@
         "2567424": {
           "name": "Mexico Championship U23",
           "fixtures": [
-            "Real Betis",
-            "Sevilla",
-            "Napoli",
-            "Milan",
-            "Hellas Verona",
-            "Parma",
-            "Home",
-            "Away",
-            "Akron Tolyatti",
-            "Rostov",
-            "Lille OSC",
-            "RC Lens",
-            "Moreirense",
-            "Vitoria Guimaraes",
-            "St. Louis City",
-            "Austin",
-            "Portland Timbers",
-            "Houston Dynamo",
-            "Belgrano",
-            "Talleres de Cordoba",
-            "Gimnasia y Esgrima La Plata",
-            "Club Atletico Sarmiento Junin",
-            "Newell's Old Boys",
-            "Boca Juniors",
-            "FCV Dender EH",
-            "K.V.C. Westerlo",
-            "Sociedade Esportiva Palmeiras",
-            "Botafogo de Futebol e Regatas",
-            "CR Vasco da Gama",
-            "Santos",
-            "Bahia",
-            "Corinthians Paulista",
-            "Olympiacos Piraeus",
-            "Panathinaikos"
+            "Santos Laguna U23",
+            "Atletico San Luis U23"
           ]
         },
         "2727669": {
@@ -2210,40 +2132,8 @@
         "1323071": {
           "name": "Panama. Division 2",
           "fixtures": [
-            "Real Betis",
-            "Sevilla",
-            "Napoli",
-            "Milan",
-            "Hellas Verona",
-            "Parma",
-            "Home",
-            "Away",
-            "Akron Tolyatti",
-            "Rostov",
-            "Lille OSC",
-            "RC Lens",
-            "Moreirense",
-            "Vitoria Guimaraes",
-            "St. Louis City",
-            "Austin",
-            "Portland Timbers",
-            "Houston Dynamo",
-            "Belgrano",
-            "Talleres de Cordoba",
-            "Gimnasia y Esgrima La Plata",
-            "Club Atletico Sarmiento Junin",
-            "Newell's Old Boys",
-            "Boca Juniors",
-            "FCV Dender EH",
-            "K.V.C. Westerlo",
-            "Sociedade Esportiva Palmeiras",
-            "Botafogo de Futebol e Regatas",
-            "CR Vasco da Gama",
-            "Santos",
-            "Bahia",
-            "Corinthians Paulista",
-            "Olympiacos Piraeus",
-            "Panathinaikos"
+            "Club Deportivo Árabe Unido II",
+            "Tauro II"
           ]
         }
       }
@@ -2358,6 +2248,8 @@
         "17555": {
           "name": "Portugal. Segunda Liga",
           "fixtures": [
+            "Feirense",
+            "Alverca",
             "S.L. Benfica II",
             "Academico de Viseu",
             "Mafra",
@@ -2377,6 +2269,8 @@
         "118663": {
           "name": "Portugal. Primeira Liga",
           "fixtures": [
+            "Estoril",
+            "Porto",
             "Moreirense",
             "Vitoria Guimaraes",
             "Boavista Porto",
@@ -2384,7 +2278,6 @@
             "Benfica",
             "Farense",
             "Aves",
-            "Estoril",
             "Arouca",
             "Famalicao",
             "Nacional da Madeira",
@@ -2581,7 +2474,22 @@
       "leagues": {
         "13521": {
           "name": "Scotland. Premier League",
-          "fixtures": []
+          "fixtures": [
+            "Dundee",
+            "St. Mirren",
+            "Kilmarnock",
+            "Motherwell",
+            "Rangers",
+            "Hibernian",
+            "Ross County",
+            "Aberdeen",
+            "Home",
+            "Away",
+            "St. Johnstone",
+            "Celtic",
+            "Heart of Midlothian",
+            "Dundee United"
+          ]
         },
         "281713": {
           "name": "Scotland. Championship",
@@ -2795,6 +2703,13 @@
             "Osasuna"
           ]
         },
+        "915815": {
+          "name": "Spain. Regional League",
+          "fixtures": [
+            "Guadiana",
+            "RCP Valverdeno"
+          ]
+        },
         "1303243": {
           "name": "Spain. La Liga. Statistics Round",
           "fixtures": [
@@ -2820,6 +2735,8 @@
         "2282697": {
           "name": "Spain. Primera Division RFEF. Group 1",
           "fixtures": [
+            "Arenteiro",
+            "Celta De Vigo II",
             "Real Sociedad II",
             "Barakaldo"
           ]
@@ -2827,40 +2744,8 @@
         "2282698": {
           "name": "Spain. Primera Division RFEF. Group 2",
           "fixtures": [
-            "Real Betis",
-            "Sevilla",
-            "Napoli",
-            "Milan",
-            "Hellas Verona",
-            "Parma",
-            "Home",
-            "Away",
-            "Akron Tolyatti",
-            "Rostov",
-            "Lille OSC",
-            "RC Lens",
-            "Moreirense",
-            "Vitoria Guimaraes",
-            "St. Louis City",
-            "Austin",
-            "Portland Timbers",
-            "Houston Dynamo",
-            "Belgrano",
-            "Talleres de Cordoba",
-            "Gimnasia y Esgrima La Plata",
-            "Club Atletico Sarmiento Junin",
-            "Newell's Old Boys",
-            "Boca Juniors",
-            "FCV Dender EH",
-            "K.V.C. Westerlo",
-            "Sociedade Esportiva Palmeiras",
-            "Botafogo de Futebol e Regatas",
-            "CR Vasco da Gama",
-            "Santos",
-            "Bahia",
-            "Corinthians Paulista",
-            "Olympiacos Piraeus",
-            "Panathinaikos"
+            "Real Murcia",
+            "Recreativo de Huelva"
           ]
         },
         "2286218": {

@@ -2,16 +2,16 @@ import {db} from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
 import {fetchFromApi} from "../../utils/ApiClient";
-import {teamNameMappings} from "../teamNameMappings";
 
 class FetchGuineeGamesFixturesWithOddsService {
     private readonly apiUrlTemplate =
         "https://sports-api.guineegames.com/v1/events?country=GN&group=g6&platform=desktop&locale=en&sportId=1&competitionId={sourceLeagueId}&marketId={sourceMarketId}&isGroup=false";
 
-    private readonly sourceName = "GuineeGames";
+    private readonly sourceName = "GUINEEGAMES";
     private sourceId!: number;
     private fetchFixture!: boolean;
     private fetchOdd!: boolean;
+    private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
     // 1) Market ID → Market Name
     private readonly groupMapping: Record<number, string> = {
@@ -50,6 +50,8 @@ class FetchGuineeGamesFixturesWithOddsService {
         } else {
             this.sourceId = source.id;
         }
+
+        await this.loadTeamNameMappings();
 
         this.dbMarkets = await this.getMarkets();
         this.dbGroups = await this.getGroups();
@@ -149,10 +151,6 @@ class FetchGuineeGamesFixturesWithOddsService {
 
                     if (this.fetchOdd) {
                        await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
-                    } else {
-                        console.warn(
-                            `⚠️ Skipping odds fetch for fixture: ${fixture.id} due to failed processing.`
-                        );
                     }
                 }
             }
@@ -182,8 +180,15 @@ class FetchGuineeGamesFixturesWithOddsService {
         }
 
         // **Apply Name Mapping for Home and Away Teams**
-        const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-        const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+        // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
+        // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
+
+        const leagueTeamMappings = this.teamNameMappings[leagueId] || [];
+
+        // Apply team name mappings only from this league
+        const homeTeam = leagueTeamMappings.find(m => m.mapped_name === homeTeamRaw)?.name ?? homeTeamRaw;
+        const awayTeam = leagueTeamMappings.find(m => m.mapped_name === awayTeamRaw)?.name ?? awayTeamRaw;
+
 
         // **Match fixture in database**
         let matchedFixture = await db("fixtures")
@@ -242,6 +247,16 @@ class FetchGuineeGamesFixturesWithOddsService {
     ) {
         const {id: sourceFixtureId} = fixtureData;
 
+        if (!fixtureData) {
+            console.warn(`❌ No Fixture found!`);
+            return;
+        }
+
+        if (!fixtureData?.markets?.length) {
+            console.warn(`❌ No 'markets' array for fixture: ${sourceFixtureId}`);
+            return;
+        }
+
         const fixture = await db("source_matches")
             .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
             .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
@@ -260,17 +275,7 @@ class FetchGuineeGamesFixturesWithOddsService {
 
         if (!fixture) {
             console.warn(`❌ No Fixture found! for ${sourceFixtureId}`);
-            return;
-        }
-
-        if (!fixtureData) {
-            console.warn(`❌ No Fixture found!`);
-            return;
-        }
-
-        if (!fixtureData?.markets?.length) {
-            console.warn(`❌ No 'markets' array for fixture: ${sourceFixtureId}`);
-            return;
+            return false;
         }
 
         const markets = fixtureData.markets;
@@ -362,9 +367,30 @@ class FetchGuineeGamesFixturesWithOddsService {
 
         console.log("Odds data inserted/updated successfully.");
     }
+
+    private async loadTeamNameMappings() {
+        console.log("🔄 Loading filtered team name mappings by league...");
+
+        const mappings = await db("team_name_mappings as tm")
+            .join("leagues as l", "tm.league_id", "=", "l.external_id")
+            .where("l.is_active", true) // Ensure the league is active
+            .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+
+        // Group team mappings by league
+        this.teamNameMappings = mappings.reduce((acc, mapping) => {
+            if (!acc[mapping.league_id]) {
+                acc[mapping.league_id] = []; // Initialize an array for each league
+            }
+            acc[mapping.league_id].push({
+                name: mapping.name,
+                mapped_name: mapping.mapped_name
+            });
+            return acc;
+        }, {} as Record<number, { name: string; mapped_name: string }[]>);
+
+        console.log("✅ Filtered team name mappings categorized by league loaded.");
+    }
 }
 
 // Export and initialize
-const fetchGuineeGamesFixturesWithOddsService = new FetchGuineeGamesFixturesWithOddsService();
-
-export default fetchGuineeGamesFixturesWithOddsService;
+export default new FetchGuineeGamesFixturesWithOddsService();
