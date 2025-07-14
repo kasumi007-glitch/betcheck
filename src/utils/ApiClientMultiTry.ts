@@ -8,9 +8,9 @@ const proxies = [
 let proxyIndex = 0;
 
 export const fetchFromApi = async (
-    url: string,
-    options?: AxiosRequestConfig,
-    retries = 10
+  url: string,
+  options?: AxiosRequestConfig,
+  retries = 10
 ) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -49,5 +49,30 @@ export const fetchFromApi = async (
         return null;
       }
     }
+  }
+};
+
+/**
+ * Fetches from API directly without any proxy.
+ */
+export const fetchFromApiWithoutProxy = async (
+  url: string,
+  options?: AxiosRequestConfig
+) => {
+  try {
+    const axiosConfig: AxiosRequestConfig = {
+      ...options,
+      timeout: 20000,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        ...(options?.headers || {}),
+      },
+    };
+
+    const response = await axios.request({ url, ...axiosConfig });
+    return response.data;
+  } catch (error: any) {
+    console.error(`❌ Error fetching without proxy: ${error.message}`);
+    return null;
   }
 };

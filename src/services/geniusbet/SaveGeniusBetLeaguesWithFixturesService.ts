@@ -1,5 +1,5 @@
-import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClientWithPost";
+import { db } from "../../infrastructure/database/Database";
+import { fetchFromApi } from "../../utils/ApiClientWithPost";
 import fs from "fs";
 
 class SaveGeniusBetLeaguesWithFixturesService {
@@ -14,7 +14,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -29,7 +29,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
             return;
         }
 
-        let jsonData: any = {countries: {}};
+        let jsonData: any = { countries: {} };
         const matches = response.data.sidebar.matches;
 
         for (const match of matches) {
@@ -47,11 +47,14 @@ class SaveGeniusBetLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync(
-            "geniusbet_leagues_fixtures.json",
-            JSON.stringify(jsonData, null, 2)
-        );
-        console.log("✅ JSON file generated: geniusbet_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/geniusbet_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
     }
 
     private async processCountry(country: any, jsonData: any) {
@@ -59,7 +62,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
         const countryName = country.name;
         console.log(`🌍 Processing country: ${countryName}`);
 
-        jsonData.countries[countryName] = {leagues: {}};
+        jsonData.countries[countryName] = { leagues: {} };
 
         if (country.tournaments) {
             for (const league of country.tournaments) {
@@ -90,7 +93,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
             String(leagueId)
         );
 
-        const payload = {"tournament_ids": [Number(leagueId)]};
+        const payload = { "tournament_ids": [Number(leagueId)] };
         const response = await fetchFromApi(fixturesUrl, "POST", payload);
 
         if (!response?.data?.tournaments?.[0]?.marketGroupEvents?.length) return;

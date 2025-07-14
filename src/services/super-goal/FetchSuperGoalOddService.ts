@@ -2,7 +2,7 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 import GetAccessTokenService from "./GetAccessTokenService";
 
 class FetchSuperGoalOddService {
@@ -11,8 +11,8 @@ class FetchSuperGoalOddService {
     "https://online.meridianbet.com/betshop/api/v2/events/{fixtureId}";
   private readonly sourceName = "SUPERGOOAL";
   private sourceId!: number;
-    private dbGroups: Group[] = [];
-    private dbMarkets: Market[] = [];
+  private dbGroups: Group[] = [];
+  private dbMarkets: Market[] = [];
 
   // Example market mapping:
   // Map SuperGoal market names to your internal market names.
@@ -208,7 +208,10 @@ class FetchSuperGoalOddService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log(
       `Odds saved: market ${marketId}, fixture ${externalSourceFixtureId}, coefficient ${coefficient}`

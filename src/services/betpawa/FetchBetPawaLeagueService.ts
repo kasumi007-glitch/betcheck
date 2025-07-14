@@ -1,6 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
-import {SourceLeague} from "../interfaces/BetPawa/SourceLeague";
-import {Country} from "../interfaces/BetPawa/Country";
+import { db } from "../../infrastructure/database/Database";
+import { SourceLeague } from "../interfaces/BetPawa/SourceLeague";
+import { Country } from "../interfaces/BetPawa/Country";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 
 class FetchBetPawaLeagueService {
     // Sport category 2 is football.
@@ -15,7 +16,7 @@ class FetchBetPawaLeagueService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -54,7 +55,28 @@ class FetchBetPawaLeagueService {
             redirect: "follow"
         };
 
-        const response = await this.fetchData(requestOptions);
+        // const response = await this.fetchData(requestOptions);
+        const response = await httpClientFromApi(this.apiUrl, {
+            headers: {
+                accept: "*/*",
+                "accept-language": "en-US,en;q=0.9",
+                devicetype: "web",
+                priority: "u=1, i",
+                referer: "https://www.betpawa.sn/",
+                "sec-ch-ua": "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Microsoft Edge\";v=\"134\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                traceid: "cb12065c-e282-4d18-853c-0988e5d6b195",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+                vuejs: "true",
+                "x-pawa-brand": "betpawa-senegal",
+                "x-pawa-language": "en",
+                Cookie: process.env.COOKIE_HEADER_BETPAWA_LEAGUES ?? ""
+            }
+        });
 
         if (!response?.withRegions?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}. 1`);
@@ -171,7 +193,7 @@ class FetchBetPawaLeagueService {
                     country_code: country.code,
                     source_id: this.sourceId,
                 })
-                .onConflict(["league_id", "source_id"])
+                .onConflict(["league_id", "source_id","source_league_id"])
                 .ignore() // This prevents duplicate inserts
                 .returning("*"); // Returns the inserted row(s) if successful
 

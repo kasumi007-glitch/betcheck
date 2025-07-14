@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SavePremierBetLeaguesWithFixturesService {
@@ -23,7 +23,7 @@ class SavePremierBetLeaguesWithFixturesService {
 
   async syncLeaguesAndFixtures() {
     console.log("🚀 Fetching PremierBet leagues...");
-    const response = await fetchFromApi(this.leaguesApiUrl);
+    const response = await httpClientFromApi(this.leaguesApiUrl);
     if (!response?.categories.length) {
       console.warn("⚠️ No leagues found in PremierBet API response.");
       return;
@@ -39,11 +39,14 @@ class SavePremierBetLeaguesWithFixturesService {
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync(
-      "premierbet_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: premierbet_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/premierbet_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(category: any, jsonData: any) {
@@ -81,7 +84,7 @@ class SavePremierBetLeaguesWithFixturesService {
       "{competitionId}",
       String(competitionId)
     );
-    const response = await fetchFromApi(fixturesUrl);
+    const response = await httpClientFromApi(fixturesUrl);
     if (!response?.data?.categories.length) return;
 
     for (const category of response.data.categories) {

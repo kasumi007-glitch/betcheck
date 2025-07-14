@@ -1,7 +1,6 @@
 // services/22bet/Fetch22betLeaguesService.ts
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
-// import { leagueNameMappings } from "../leagueNameMappings";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 
 class Fetch22betLeaguesService {
   // 22BET API endpoint (GET)
@@ -137,7 +136,7 @@ class Fetch22betLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore()
         .returning("*");
 
@@ -166,7 +165,7 @@ class Fetch22betLeaguesService {
     }, {} as Record<string, string>);
     console.log("✅ Country name mappings loaded.");
   }
-  
+
   private async loadLeagueNameMappings() {
     console.log("🔄 Loading filtered league name mappings by country...");
 

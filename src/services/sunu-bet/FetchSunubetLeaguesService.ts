@@ -1,7 +1,7 @@
 // src/services/FetchSunubetLeaguesService.ts
 import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 // Optionally import a league name mappings file if you need to normalize names
 import { leagueNameMappings } from "../leagueNameMappings";
 
@@ -103,7 +103,7 @@ class FetchSunubetLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore();
     } else {
       console.warn(

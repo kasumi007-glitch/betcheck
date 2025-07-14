@@ -1,5 +1,5 @@
 import { Page } from "puppeteer";
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import {  launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtilCM";
 
 class GetAccessTokenService {
   private readonly maxRetries = 3;
@@ -13,7 +13,7 @@ class GetAccessTokenService {
     let attempt = 0;
 
     while (attempt < this.maxRetries) {
-      const { browser, page } = await launchBrowser(true);
+      const { browser, page } = await launchBrowserWithProxy(true);
       try {
         await this.setupPage(page);
 

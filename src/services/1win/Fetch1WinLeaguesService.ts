@@ -108,7 +108,7 @@ class Fetch1WinLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore()
         .returning("*");
 

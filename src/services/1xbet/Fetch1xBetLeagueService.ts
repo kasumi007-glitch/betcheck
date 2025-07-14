@@ -1,6 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClientMultiTry";
-//
+import { db } from "../../infrastructure/database/Database";
+// import { fetchFromApi, fetchFromApiWithoutProxy } from "../../utils/ApiClientMultiTry";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
+
 class Fetch1xBetLeagueService {
     private readonly apiUrl =
         "https://1xbet.com/LineFeed/GetSportsShortZip?sports=1&lng=en&virtualSports=true&gr=824&groupChamps=true";
@@ -26,17 +27,19 @@ class Fetch1xBetLeagueService {
     async syncLeagues() {
         await this.init();
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await httpClientFromApi(this.apiUrl);
 
         if (!response?.Value?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
             return;
         }
 
-        for (const sport of response.Value) {
-            if (!sport.L) continue; // Skip if no leagues exist
 
+        const sport = response.Value.find((s: any) => s.I === 1 && s.L);
+
+        if (sport?.L?.length) {
             for (const leagueData of sport.L) {
+                // if (leagueData.L !== "Germany") continue;
                 if (leagueData.SC) {
                     for (const subLeague of leagueData.SC) {
                         await this.processLeague(
@@ -50,7 +53,7 @@ class Fetch1xBetLeagueService {
                     await this.processLeague(
                         leagueData.L,
                         leagueData.LI,
-                        null,
+                        "World",
                         leagueData.CI
                     );
                 }
@@ -63,29 +66,42 @@ class Fetch1xBetLeagueService {
     private async processLeague(
         leagueName: string,
         sourceLeagueId: number,
-        parentLeagueName: string | null,
+        parentLeagueName: string,
         countryId: number
     ) {
+
+        // let [sourceCountryName, extractedLeagueName] = leagueName.split(".").map((s: string) => s.trim());
+        let sourceCountryName: string;
+        let extractedLeagueName: string;
+
         if (!leagueName.includes(".")) {
-            console.warn(
-                `⚠️ Skipping league "${leagueName}" - No dot separator found.`
-            );
-            return;
+            extractedLeagueName = leagueName.trim();
+            sourceCountryName = parentLeagueName;
+        } else {
+            const leagueParts = leagueName.split(".");
+
+            // if (leagueParts.length > 2) {
+            //     console.warn(`⚠️ Skipping league "${leagueName}" - Too many dot separators.`);
+            //     return;
+            // }
+
+            sourceCountryName = leagueParts[0].trim();
+            extractedLeagueName = leagueParts.slice(1).join(".").trim(); // handle names like "2. Bundesliga"
         }
 
         // Extract country name & actual league name
-        const leagueParts = leagueName.split(".");
-        if (leagueParts.length > 2) {
-            console.warn(
-                `⚠️ Skipping league "${leagueName}" - Too many dot separators.`
-            );
-            return;
-        }
-        const extractedLeagueName =
-            leagueParts.length > 1 ? leagueParts[1].trim() : leagueName;
+        // const leagueParts = leagueName.split(".");
+        // if (leagueParts.length > 2) {
+        //     console.warn(
+        //         `⚠️ Skipping league "${leagueName}" - Too many dot separators.`
+        //     );
+        //     return;
+        // }
+        // const extractedLeagueName =
+        //     leagueParts.length > 1 ? leagueParts[1].trim() : leagueName;
 
-        const sourceCountryName =
-            leagueParts.length > 1 ? leagueParts[0].trim() : leagueName;
+        // const sourceCountryName =
+        //     leagueParts.length > 1 ? leagueParts[0].trim() : leagueName;
 
         const countryName = this.countryNameMappings[sourceCountryName.trim()] ?? sourceCountryName.trim();
 
@@ -126,7 +142,7 @@ class Fetch1xBetLeagueService {
                     country_code: dbCountry.code,
                     source_id: this.sourceId,
                 })
-                .onConflict(["league_id", "source_id"])
+                .onConflict(["league_id", "source_id", "source_league_id"])
                 .ignore() // This prevents duplicate inserts
                 .returning("*"); // Returns the inserted row(s) if successful
 

@@ -48,11 +48,14 @@ class SaveGuineeGamesLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync(
-            "guineegames_leagues_fixtures.json",
-            JSON.stringify(jsonData, null, 2)
-        );
-        console.log("✅ JSON file generated: guineegames_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+    
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/guineegames_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
     }
 
     private async processCountry(country: any, jsonData: any) {

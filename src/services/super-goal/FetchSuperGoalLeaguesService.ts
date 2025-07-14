@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 // import { countryNameMappings } from "../countryNameMappings";
 import { leagueNameMappings } from "../leagueNameMappings";
 import GetAccessTokenService from "./GetAccessTokenService";
@@ -106,7 +106,7 @@ class FetchSuperGoalLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore()
         .returning("*");
 

@@ -1,6 +1,5 @@
 import puppeteer from "puppeteer-extra";
 import { executablePath, Browser, Page } from "puppeteer";
-
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 puppeteer.use(StealthPlugin()); // Bypass bot detection
@@ -12,8 +11,6 @@ const proxies: string[] = [
 
 /**
  * Randomly selects a proxy from the list.
- *
- * @returns {string} A proxy string.
  */
 function getRandomProxy(): string {
   return proxies[Math.floor(Math.random() * proxies.length)];
@@ -21,47 +18,59 @@ function getRandomProxy(): string {
 
 /**
  * Launches Puppeteer with a rotating proxy.
- *
- * Proxy format: "host:port:username:password"
- *
- * @returns {Promise<{ browser: puppeteer.Browser, page: puppeteer.Page }>}
  */
-export async function launchBrowser(headless: boolean = false): Promise<{
+export async function launchBrowserWithProxy(headless: boolean = false): Promise<{
   browser: Browser;
   page: Page;
 }> {
-  // ✅ Select a random proxy string
   const proxyStr = getRandomProxy();
-
-  // ✅ Extract Proxy Credentials (host, port, username, password)
   const parts = proxyStr.split(":");
+
   if (parts.length < 4) {
-    throw new Error(
-      "Invalid proxy format. Expected format: host:port:username:password"
-    );
+    throw new Error("Invalid proxy format. Expected format: host:port:username:password");
   }
+
   const host = parts[0];
   const port = parts[1];
   const username = parts[2];
-  const password = parts.slice(3).join(":"); // Captures full password if colons are present
+  const password = parts.slice(3).join(":"); // Handles ":" in password
 
   console.log(`🌍 Using Proxy: ${host}:${port} with username: ${username}`);
 
-  // ✅ Launch Puppeteer with the selected proxy (credentials will be provided via page.authenticate)
   const browser = await puppeteer.launch({
-    headless: headless, // Change to true for production use
+    headless,
     defaultViewport: null,
-    args: [`--proxy-server=${host}:${port}`, "--start-maximized"],
+    args: [
+      `--proxy-server=${host}:${port}`,
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--start-maximized"
+    ],
     executablePath: executablePath(),
   });
 
   const page = await browser.newPage();
 
-  // ✅ Authenticate proxy using credentials
-  await page.authenticate({
-    username,
-    password,
+  await page.authenticate({ username, password });
+
+  return { browser, page };
+}
+
+/**
+ * Launches Puppeteer without using a proxy.
+ */
+export async function launchBrowserWithoutProxy(headless: boolean = false): Promise<{
+  browser: Browser;
+  page: Page;
+}> {
+  const browser = await puppeteer.launch({
+    headless,
+    defaultViewport: null,
+    args: ["--start-maximized"],
+    executablePath: executablePath(),
   });
+
+  const page = await browser.newPage();
 
   return { browser, page };
 }

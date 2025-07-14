@@ -1,7 +1,7 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { MarketObj } from "../interfaces/MarketObj";
 
 class AddBetclicOddService {
@@ -60,9 +60,9 @@ class AddBetclicOddService {
         "fixtures.id",
         "fixtures.date"
       )
-      .where("fixtures.date", ">=", new Date())
+      .whereRaw("fixtures.date >= NOW()")
       .andWhere("leagues.is_active", true)
-      .where("source_matches.source_id", this.sourceId);
+      .andWhere("source_matches.source_id", this.sourceId);
 
     for (const fixture of fixtures) {
       await this.fetchAndProcessOdds(fixture.id, fixture.source_fixture_id);
@@ -189,7 +189,10 @@ class AddBetclicOddService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds inserted/updated successfully.");
   }

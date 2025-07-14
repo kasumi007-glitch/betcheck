@@ -1,5 +1,5 @@
 import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClient";
+import {httpClientFromApi} from "../../utils/HttpClientGN";
 
 class FetchGuineeGamesLeagueService {
     private readonly apiUrl =
@@ -28,7 +28,7 @@ class FetchGuineeGamesLeagueService {
         await this.init();
 
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await httpClientFromApi(this.apiUrl);
 
         if (!response?.categories?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
@@ -121,7 +121,7 @@ class FetchGuineeGamesLeagueService {
                     country_code: country.code,
                     source_id: this.sourceId,
                 })
-                .onConflict(["league_id", "source_id"])
+                .onConflict(["league_id", "source_id","source_league_id"])
                 .ignore() // This prevents duplicate inserts
                 .returning("*"); // Returns the inserted row(s) if successful
 

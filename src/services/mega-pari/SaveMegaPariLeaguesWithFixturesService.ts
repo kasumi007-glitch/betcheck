@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveMegaPariLeaguesWithFixturesService {
@@ -23,7 +23,7 @@ class SaveMegaPariLeaguesWithFixturesService {
 
   async syncLeaguesAndFixtures() {
     console.log("🚀 Fetching MegaPari leagues...");
-    const response = await fetchFromApi(this.apiUrl);
+    const response = await httpClientFromApi(this.apiUrl);
     if (!response?.Value?.length) {
       console.warn("⚠️ No leagues found in MegaPari API response.");
       return;
@@ -42,11 +42,14 @@ class SaveMegaPariLeaguesWithFixturesService {
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync(
-      "megapari_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: megapari_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/megapari_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(country: any, jsonData: any) {
@@ -54,18 +57,28 @@ class SaveMegaPariLeaguesWithFixturesService {
     const countryName = country.L;
     console.log(`🌍 Processing country: ${countryName}`);
 
-    jsonData.countries[countryName] = { leagues: {} };
+    // jsonData.countries[countryName] = { leagues: {} };
 
     if (country.SC) {
       for (const league of country.SC) {
         await this.processLeague(league, jsonData, countryName);
       }
+    } else {
+      // 🏟️ It's a direct league (not grouped under country)
+      await this.processLeague(country, jsonData, "World");
     }
   }
 
   private async processLeague(league: any, jsonData: any, countryName: string) {
     const leagueId = league.LI;
     const leagueName = league.L;
+
+    if (!leagueName || !leagueId) return;
+
+    if (!jsonData.countries[countryName]) {
+      jsonData.countries[countryName] = { leagues: {} };
+    }
+
     console.log(`⚽ Processing league: ${leagueName} in ${countryName}`);
 
     jsonData.countries[countryName].leagues[leagueId] = {
@@ -84,7 +97,7 @@ class SaveMegaPariLeaguesWithFixturesService {
       "{sourceLeagueId}",
       String(leagueId)
     );
-    const response = await fetchFromApi(fixturesUrl);
+    const response = await httpClientFromApi(fixturesUrl);
     if (!response?.Value?.length) return;
 
     for (const fixture of response.Value) {

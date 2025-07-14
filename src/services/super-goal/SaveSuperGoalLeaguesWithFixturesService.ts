@@ -1,72 +1,51 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 import fs from "fs";
-import GetAccessTokenService from "./GetAccessTokenService";
+import puppeteer from "puppeteer";
 
 class SaveSuperGoalLeaguesWithFixturesService {
-  private readonly leaguesApiUrl =
-    "https://online.meridianbet.com/betshop/api/v1/standard/outright/58";
+  private readonly websiteUrl = "https://supergooal.cm/en/betting/football";
   private readonly fixturesApiUrlTemplate =
     "https://online.meridianbet.com/betshop/api/v1/standard/sport/58/league?page=0&time=ONE_DAY&leagues={leagueId}";
   private readonly sourceName = "SUPERGOOAL";
-  private sourceId!: number;
-  private countryNameMappings: Record<string, string> = {};
-
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
-    if (!source) {
-      [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
-        .returning("id");
-    } else {
-      this.sourceId = source.id;
-    }
-
-    await this.loadCountryNameMappings();
-  }
 
   async syncLeaguesAndFixtures() {
-    await this.init();
     console.log("🚀 Fetching SuperGoal leagues...");
-    const token = await GetAccessTokenService.getAccessToken();
-    const response = await httpClientFromApi(this.leaguesApiUrl, {
-      method: "GET",
-      headers: {
-        accept: "application/json, text/plain, */*",
-        "accept-language": "en",
-        authorization: `Bearer ${token}`, // Replace with your token
-      },
-    });
+    const { sidebarData, token } = await this.fetchSidebarJsonFromWebsite();
+    // const token = await GetAccessTokenService.getAccessToken();
 
-    if (!response?.payload?.length) {
-      console.warn("⚠️ No leagues found in SuperGoal API response.");
+    if (!sidebarData?.payload?.sports?.length) {
+      console.error("❌ No league data found in sidebar JSON!");
       return;
     }
 
+    const payload = sidebarData.payload.sports.find((sport: any) => sport.name === "Football");
+
     let jsonData: any = { countries: {} };
-    for (const region of response.payload) {
-      await this.processCountry(region, jsonData, token);
+    for (const region of payload.regions) {
+      await this.processCountry(region, jsonData, token.access_token);
     }
 
     jsonData.countries = Object.fromEntries(
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync(
-      "supergoal_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: supergoal_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/supergoal_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(region: any, jsonData: any, token: string) {
-    const countryName =
-      this.countryNameMappings[region.name.toLowerCase()] || region.name;
-    console.log(`🌍 Processing country: ${countryName}`);
-    jsonData.countries[countryName] = { leagues: {} };
+    console.log(`🌍 Processing country: ${region.name}`);
+    jsonData.countries[region.name] = { leagues: {} };
 
     for (const league of region.leagues) {
-      await this.processLeague(league, jsonData, countryName, token);
+      await this.processLeague(league, jsonData, region.name, token);
     }
   }
 
@@ -133,17 +112,41 @@ class SaveSuperGoalLeaguesWithFixturesService {
     }
   }
 
-  private async loadCountryNameMappings() {
-    console.log("🔄 Loading country name mappings...");
-    const mappings = await db("country_name_mappings").select(
-      "name",
-      "mapped_name"
-    );
-    this.countryNameMappings = mappings.reduce((acc, mapping) => {
-      acc[mapping.mapped_name.toLowerCase()] = mapping.name;
-      return acc;
-    }, {} as Record<string, string>);
-    console.log("✅ Country name mappings loaded.");
+  private async fetchSidebarJsonFromWebsite(): Promise<any | null> {
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+
+      const page = await browser.newPage();
+      await page.goto(this.websiteUrl, { waitUntil: "networkidle2" });
+
+      // Wait for the script tag to be loaded
+      await page.waitForSelector("#ng-state", { timeout: 10000 });
+
+      const ngStateContent = await page.$eval("#ng-state", el => el.textContent || "");
+
+      const ngStateJson = JSON.parse(ngStateContent);
+
+      if (!ngStateJson.sidebar || !ngStateJson.NEW_TOKEN) {
+        console.warn("⚠️ Sidebar or NEW_TOKEN not found in ng-state.");
+        return null;
+      }
+
+      const sidebarData = JSON.parse(ngStateJson.sidebar);
+      const token = JSON.parse(ngStateJson.NEW_TOKEN);
+
+      return { sidebarData, token };
+    } catch (error) {
+      console.error("❌ Failed to extract sidebar using Puppeteer:", error);
+      return null;
+    } finally {
+      if (browser) {
+        await browser.close();
+      }
+    }
   }
 }
 

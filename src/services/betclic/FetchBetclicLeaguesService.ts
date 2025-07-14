@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 // import any league name mappings if needed
 import { leagueNameMappings } from "../leagueNameMappings";
 
@@ -45,31 +45,41 @@ class FetchBetclicLeaguesService {
       const countryTitle = country.title;
       console.log(`🔍 Processing leagues for country: ${countryTitle}`);
 
-      const countryName = this.countryNameMappings[countryTitle.trim()] ?? countryTitle.trim();
-      // Find the country record in our DB (for example by name)
-      const dbCountry = await db("countries")
-        .where("name", countryName)
-        .andWhere("is_active", true)
-        .first();
-      if (!dbCountry) {
-        console.warn(`⚠️ No match found for country: ${countryTitle}`);
-        continue;
-      }
+      //the ones with country object are the ones we need to process for country based others are worldwide leagues
 
-      // Build URL to get leagues for this country
-      const leaguesUrl = this.leaguesApiUrlTemplate.replace(
-        "{countryId}",
-        String(countryId)
-      );
-      const leaguesResponse = await httpClientFromApi(leaguesUrl);
-      if (!leaguesResponse?.length) {
-        console.warn(`⚠️ No leagues received for country: ${countryTitle}`);
-        continue;
-      }
+      if (country.country) {
+        const countryName = this.countryNameMappings[countryTitle.trim()] ?? countryTitle.trim();
+        // Find the country record in our DB (for example by name)
+        const dbCountry = await db("countries")
+          .where("name", countryName)
+          .andWhere("is_active", true)
+          .first();
+        if (!dbCountry) {
+          console.warn(`⚠️ No match found for country: ${countryTitle}`);
+          continue;
+        }
 
-      // Process each league
-      for (const league of leaguesResponse) {
-        await this.processLeague(dbCountry, league, countryId);
+        // Build URL to get leagues for this country
+        const leaguesUrl = this.leaguesApiUrlTemplate.replace(
+          "{countryId}",
+          String(countryId)
+        );
+        const leaguesResponse = await httpClientFromApi(leaguesUrl);
+        if (!leaguesResponse?.length) {
+          console.warn(`⚠️ No leagues received for country: ${countryTitle}`);
+          continue;
+        }
+
+        // Process each league
+        for (const league of leaguesResponse) {
+          await this.processLeague(dbCountry, league, countryId);
+        }
+      } else {
+        await this.processLeague(
+          { name: "World", code: "world" }, // Pass a mock dbCountry object
+          country,
+          null
+        );
       }
     }
 
@@ -79,7 +89,7 @@ class FetchBetclicLeaguesService {
   private async processLeague(
     dbCountry: any,
     league: any,
-    sourceCountryId: string
+    sourceCountryId: string | null = null
   ) {
     const sourceLeagueId = league.id;
     const sourceLeagueName = league.title;
@@ -119,7 +129,7 @@ class FetchBetclicLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore()
         .returning("*");
 

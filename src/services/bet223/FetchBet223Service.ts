@@ -1,4 +1,4 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import { launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtilML";
 import { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
@@ -78,16 +78,43 @@ class BetMomoScraperService {
 
   async scrape(): Promise<void> {
     await this.init(); // initialize DB and mappings
-    const { browser, page } = await launchBrowser(true);
+    const { browser, page } = await launchBrowserWithProxy(true);
     await this.setupPage(page);
 
     // Process only active countries from DB
-    const countryElements = await this.getCountryElements(page);
+    let countryElements = await this.getCountryElements(page);
+    // Step 1: Collapse Europe if it's expanded by default
+    for (let i = 0; i < countryElements.length; i++) {
+      const countryName = await this.getCountryName(page, countryElements[i]);
+      if (countryName === "Football" && i + 1 < countryElements.length) {
+        const nextCountry = countryElements[i + 1];
+        const nextCountryName = await this.getCountryName(page, nextCountry);
+        console.log(`🔽 Collapsing country after "Football": ${nextCountryName}`);
+        await nextCountry.click(); // Collapse the one after "Football"
+        await this.wait(3000);
+        countryElements = await this.getCountryElements(page); // Refresh after collapsing
+        break;
+      }
+    }
+
+
     let allMatches: Match[] = [];
 
     for (const country of countryElements) {
       const countryName = await this.getCountryName(page, country);
-      if (!countryName) continue;
+      if (!countryName || countryName === "Football") continue;
+
+      // if (countryName !== "Slovakia") {
+      //   continue;
+      // }
+
+      try {
+        await country.click();
+        await this.wait(3000);
+      } catch (err) {
+        console.warn(`⚠️ Failed to click country '${countryName}':`, err);
+        continue;
+      }
 
       const mappedCountryName = this.countryNameMappings[countryName.trim()] ?? countryName.trim();
 
@@ -102,8 +129,8 @@ class BetMomoScraperService {
       }
 
       console.log(`🌍 Processing active country: ${countryName}`);
-      await country.click();
-      await this.wait(3000);
+      // await country.click();
+      // await this.wait(3000);
 
       const countryContainer = await this.getCountryContainer(page, country);
       if (!countryContainer) continue;
@@ -342,16 +369,21 @@ class BetMomoScraperService {
         continue;
       }
 
-      let fixture = await db("fixtures")
-        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
-        .select("fixtures.*", "leagues.id as parent_league_id")
-        .whereRaw(
-          `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
-          [`%${homeTeam}%`, `%${awayTeam}%`]
-        )
-        .andWhere("date", ">=", today)
-        .andWhere("fixtures.league_id", leagueExternalId)
-        .first();
+      let fixture;
+      try {
+        fixture = await db("fixtures")
+          .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+          .select("fixtures.*", "leagues.id as parent_league_id")
+          .whereRaw(
+            `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
+            [`%${homeTeam}%`, `%${awayTeam}%`]
+          )
+          .andWhere("date", ">=", today)
+          .andWhere("fixtures.league_id", leagueExternalId)
+          .first();
+      } catch (error) {
+        console.error("Error fetching fixture:", error);
+      }
 
       if (!fixture) {
         console.warn(
@@ -629,7 +661,10 @@ class BetMomoScraperService {
           "external_source_fixture_id",
           "source_id",
         ])
-        .merge(["coefficient"]);
+        .merge({
+          coefficient: db.raw("EXCLUDED.coefficient"),
+          updated_at: db.fn.now(),
+        });
       console.log("Odds outcome inserted/updated successfully.");
     } catch (err) {
       console.error("Error saving odds outcome:", err);

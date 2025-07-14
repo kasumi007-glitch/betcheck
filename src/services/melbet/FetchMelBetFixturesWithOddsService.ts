@@ -1,13 +1,13 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { fetchFromApi } from "../../utils/ApiClientMultiTry";
+import { httpClientFromApi, fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
 import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
 class FetchMelBetFixturesWithOddsService {
   private readonly apiUrlTemplate =
-      "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
+    "https://melbet.com/service-api/LineFeed/Get1x2_VZip?sports=1&champs={sourceLeagueId}&count=20&lng=en&mode=4&getEmpty=true&virtualSports=true&countryFirst=true";
   private readonly sourceName = "MELBET";
   private sourceId!: number;
   private fetchFixture!: boolean;
@@ -46,8 +46,8 @@ class FetchMelBetFixturesWithOddsService {
     const source = await db("sources").where("name", this.sourceName).first();
     if (!source) {
       [this.sourceId] = await db("sources")
-          .insert({ name: this.sourceName })
-          .returning("id");
+        .insert({ name: this.sourceName })
+        .returning("id");
     } else {
       this.sourceId = source.id;
     }
@@ -66,18 +66,19 @@ class FetchMelBetFixturesWithOddsService {
 
     // Fetch active leagues linked to MegaPari
     const leagues = await db("source_league_matches")
-        .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-        .select(
-            "source_league_matches.source_league_id",
-            "leagues.external_id as league_id"
-        )
-        .where("source_league_matches.source_id", this.sourceId)
-        .andWhere("leagues.is_active", true);
+      .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+      .select(
+        "source_league_matches.source_league_id",
+        "leagues.external_id as league_id"
+      )
+      .where("source_league_matches.source_id", this.sourceId)
+      .andWhere("leagues.is_active", true);
+    // .andWhere("leagues.id", 10368);
 
     for (const league of leagues) {
       await this.fetchAndProcessFixtures(
-          league.source_league_id,
-          league.league_id
+        league.source_league_id,
+        league.league_id
       );
     }
 
@@ -85,14 +86,14 @@ class FetchMelBetFixturesWithOddsService {
   }
 
   private async fetchAndProcessFixtures(
-      sourceLeagueId: string,
-      leagueId: number
+    sourceLeagueId: string,
+    leagueId: number
   ) {
     const apiUrl = this.apiUrlTemplate.replace(
-        "{sourceLeagueId}",
-        sourceLeagueId
+      "{sourceLeagueId}",
+      sourceLeagueId
     );
-    const response = await fetchFromApi(apiUrl);
+    const response = await httpClientFromApi(apiUrl);
 
     if (!response?.Value?.length) {
       console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
@@ -112,9 +113,9 @@ class FetchMelBetFixturesWithOddsService {
   }
 
   private async processFixture(
-      fixture: any,
-      leagueId: number,
-      sourceLeagueId: string
+    fixture: any,
+    leagueId: number,
+    sourceLeagueId: string
   ): Promise<boolean> {
     const {
       I: sourceFixtureId,
@@ -143,48 +144,48 @@ class FetchMelBetFixturesWithOddsService {
 
     // **Match fixture in database**
     let matchedFixture = await db("fixtures")
-        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
-        .select(
-            "fixtures.*",
-            "leagues.name as league_name",
-            "leagues.id as parent_league_id"
-        )
-        .whereRaw(
-            `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
-            [`%${homeTeam}%`, `%${awayTeam}%`]
-        )
-        .andWhere("fixtures.date", ">=", today)
-        .andWhere("fixtures.league_id", leagueId)
-        .first();
+      .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+      .select(
+        "fixtures.*",
+        "leagues.name as league_name",
+        "leagues.id as parent_league_id"
+      )
+      .whereRaw(
+        `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
+        [`%${homeTeam}%`, `%${awayTeam}%`]
+      )
+      .andWhere("fixtures.date", ">=", today)
+      .andWhere("fixtures.league_id", leagueId)
+      .first();
 
     if (!matchedFixture) {
       console.warn(
-          `⚠️ No match found for fixture: ${homeTeam} vs ${awayTeam} in league ${leagueId}`
+        `⚠️ No match found for fixture: ${homeTeam} vs ${awayTeam} in league ${leagueId}`
       );
       return false;
     }
 
     // **Insert into source_matches**
     const result = await db("source_matches")
-        .insert({
-          source_fixture_id: sourceFixtureId,
-          source_competition_id: sourceLeagueId,
-          source_event_name: `${homeTeam} vs ${awayTeam}`,
-          fixture_id: matchedFixture.id,
-          competition_id: matchedFixture.parent_league_id,
-          source_id: this.sourceId,
-        })
-        .onConflict(["fixture_id", "source_id"])
-        .ignore()
-        .returning("*");
+      .insert({
+        source_fixture_id: sourceFixtureId,
+        source_competition_id: sourceLeagueId,
+        source_event_name: `${homeTeam} vs ${awayTeam}`,
+        fixture_id: matchedFixture.id,
+        competition_id: matchedFixture.parent_league_id,
+        source_id: this.sourceId,
+      })
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
+      .ignore()
+      .returning("*");
 
     if (result.length > 0) {
       console.log(
-          `✅ Inserted match: ${homeTeam} vs ${awayTeam} (Fixture ID: ${matchedFixture.id})`
+        `✅ Inserted match: ${homeTeam} vs ${awayTeam} (Fixture ID: ${matchedFixture.id})`
       );
     } else {
       console.warn(
-          `⚠️ Ignored duplicate match: ${homeTeam} vs ${awayTeam} (Fixture ID: ${matchedFixture.id})`
+        `⚠️ Ignored duplicate match: ${homeTeam} vs ${awayTeam} (Fixture ID: ${matchedFixture.id})`
       );
     }
 
@@ -192,9 +193,9 @@ class FetchMelBetFixturesWithOddsService {
   }
 
   private async fetchAndProcessOdds(
-      fixtureData: any,
-      leagueId: number,
-      sourceLeagueId: string
+    fixtureData: any,
+    leagueId: number,
+    sourceLeagueId: string
   ) {
     const { I: sourceFixtureId } = fixtureData;
 
@@ -210,31 +211,31 @@ class FetchMelBetFixturesWithOddsService {
     }
 
     const matchedFixture = await db("source_matches")
-        .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
-        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
-        .select(
-            "source_matches.source_fixture_id",
-            "fixtures.id",
-            "fixtures.date"
-        )
-        .where("source_matches.source_id", this.sourceId)
-        .andWhere("source_matches.source_competition_id", sourceLeagueId)
-        .andWhere("source_matches.source_fixture_id", sourceFixtureId)
-        .andWhere("fixtures.date", ">=", new Date())
-        .andWhere("leagues.is_active", true)
-        .andWhere("leagues.external_id", leagueId)
-        .first();
+      .join("fixtures", "source_matches.fixture_id", "=", "fixtures.id")
+      .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+      .select(
+        "source_matches.source_fixture_id",
+        "fixtures.id",
+        "fixtures.date"
+      )
+      .where("source_matches.source_id", this.sourceId)
+      .andWhere("source_matches.source_competition_id", sourceLeagueId)
+      .andWhere("source_matches.source_fixture_id", sourceFixtureId)
+      .andWhere("fixtures.date", ">=", new Date())
+      .andWhere("leagues.is_active", true)
+      .andWhere("leagues.external_id", leagueId)
+      .first();
 
     if (!matchedFixture) {
       console.warn(
-          `⚠️ No match found for fixture in league ${leagueId}`
+        `⚠️ No match found for fixture in league ${leagueId}`
       );
       return false;
     }
 
     // Process each "marketObj" in E
     const filteredData = fixtureData.E.filter((match: MarketObj) =>
-        Object.keys(this.groupMapping).includes(String(match.G))
+      Object.keys(this.groupMapping).includes(String(match.G))
     );
 
     for (const marketObj of filteredData) {
@@ -246,7 +247,7 @@ class FetchMelBetFixturesWithOddsService {
 
       // find market
       const dbGroup = this.dbGroups.find(
-          (market) => market.group_name === groupName
+        (market) => market.group_name === groupName
       );
       if (!dbGroup) {
         console.warn(`❌ No 'Group Found' : ${groupName}`);
@@ -259,8 +260,8 @@ class FetchMelBetFixturesWithOddsService {
       const outcome = this.outcomeNameNewMapping[outcomeId];
 
       const dbMarket = this.dbMarkets.find(
-          (marketType) =>
-              marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
+        (marketType) =>
+          marketType.market_name === outcome && marketType.group_id === dbGroup.group_id
       );
       if (!dbMarket) {
         console.warn(`❌ No 'Market Found' : ${outcome}`);
@@ -269,11 +270,11 @@ class FetchMelBetFixturesWithOddsService {
 
       // If there's a single coefficient .C, store as an outcome
       await this.saveMarketOutcome(
-          dbGroup.group_id,
-          Number(marketObj.C),
-          dbMarket.market_id,
-          matchedFixture.id,
-          sourceFixtureId
+        dbGroup.group_id,
+        Number(marketObj.C),
+        dbMarket.market_id,
+        matchedFixture.id,
+        sourceFixtureId
       );
 
       // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
@@ -289,29 +290,32 @@ class FetchMelBetFixturesWithOddsService {
   }
 
   private async saveMarketOutcome(
-      groupId: number,
-      coefficient: number,
-      marketId: number,
-      fixtureId: number,
-      externalSourceFixtureId: string
+    groupId: number,
+    coefficient: number,
+    marketId: number,
+    fixtureId: number,
+    externalSourceFixtureId: string
   ) {
     await db("fixture_odds")
-        .insert({
-          group_id: groupId,
-          market_id: marketId,
-          coefficient,
-          fixture_id: fixtureId,
-          external_source_fixture_id: externalSourceFixtureId,
-          source_id: this.sourceId,
-        })
-        .onConflict([
-          "group_id",
-          "market_id",
-          "fixture_id",
-          "external_source_fixture_id",
-          "source_id",
-        ])
-        .merge(["coefficient"]);
+      .insert({
+        group_id: groupId,
+        market_id: marketId,
+        coefficient,
+        fixture_id: fixtureId,
+        external_source_fixture_id: externalSourceFixtureId,
+        source_id: this.sourceId,
+      })
+      .onConflict([
+        "group_id",
+        "market_id",
+        "fixture_id",
+        "external_source_fixture_id",
+        "source_id",
+      ])
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds data inserted/updated successfully.");
   }
@@ -320,9 +324,9 @@ class FetchMelBetFixturesWithOddsService {
     console.log("🔄 Loading filtered team name mappings by league...");
 
     const mappings = await db("team_name_mappings as tm")
-        .join("leagues as l", "tm.league_id", "=", "l.external_id")
-        .where("l.is_active", true) // Ensure the league is active
-        .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
+      .join("leagues as l", "tm.league_id", "=", "l.external_id")
+      .where("l.is_active", true) // Ensure the league is active
+      .select("tm.name", "tm.mapped_name", "l.external_id as league_id");
 
     // Group team mappings by league
     this.teamNameMappings = mappings.reduce((acc, mapping) => {

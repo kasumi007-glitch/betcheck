@@ -1,6 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 import fs from "fs";
 
 class SaveSunubetLeaguesWithFixturesService {
@@ -48,11 +48,14 @@ class SaveSunubetLeaguesWithFixturesService {
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync(
-      "sunubet_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: sunubet_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/sunubet_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(country: any, jsonData: any) {

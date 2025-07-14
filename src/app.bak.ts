@@ -60,7 +60,7 @@ const processData = async () => {
 
   //PremierBet
   // await FetchPremierBetOddService.syncOdds();
-  await FetchPremierBetLeagueService.syncLeagues(); //league
+  // await FetchPremierBetLeagueService.syncLeagues(); //league
   // await FetchPremierBetFixtureService.syncFixtures(); //fixture
   // await AddPremierBetOddService.syncOdds(); //odds
   // await SavePremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures();

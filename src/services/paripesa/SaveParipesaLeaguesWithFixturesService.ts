@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveParipesaLeaguesWithFixturesService {
@@ -23,7 +23,7 @@ class SaveParipesaLeaguesWithFixturesService {
 
   async syncLeaguesAndFixtures() {
     console.log("🚀 Fetching Paripesa leagues...");
-    const response = await fetchFromApi(this.apiUrl);
+    const response = await httpClientFromApi(this.apiUrl);
     if (!response?.Value?.length) {
       console.warn("⚠️ No leagues found in Paripesa API response.");
       return;
@@ -42,11 +42,14 @@ class SaveParipesaLeaguesWithFixturesService {
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync(
-      "paripesa_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: paripesa_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/paripesa_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(country: any, jsonData: any) {
@@ -84,7 +87,7 @@ class SaveParipesaLeaguesWithFixturesService {
       "{sourceLeagueId}",
       String(leagueId)
     );
-    const response = await fetchFromApi(fixturesUrl);
+    const response = await httpClientFromApi(fixturesUrl);
     if (!response?.Value?.length) return;
 
     for (const fixture of response.Value) {

@@ -193,7 +193,10 @@ class FetchOnebetOddsService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds inserted/updated successfully.");
   }

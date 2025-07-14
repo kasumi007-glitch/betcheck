@@ -1,76 +1,88 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import { launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtilCI";
 import { Page, ElementHandle, JSHandle } from "puppeteer";
-import { db } from "../../infrastructure/database/Database";
 import fs from "fs";
 
 class SaveBetMomoLeaguesWithFixturesService {
-    private readonly sourceName = "BetMomo";
     private readonly url = "https://www.betmomo.com/en/sports/pre-match/event-view/Soccer";
 
     async syncLeaguesAndFixtures() {
-        console.log("🚀 Fetching BetMomo leagues and fixtures...");
-        const { browser, page } = await launchBrowser();
+        console.log("🚀 Fetching Bet223 leagues and fixtures...");
+        const { browser, page } = await launchBrowserWithProxy(true);
         await this.setupPage(page);
 
         let jsonData: any = { countries: {} };
-        const countryElements = await this.getCountryElements(page);
+        let countryElements = await this.getCountryElements(page);
 
-        const dbCountries = await db("countries")
-            .andWhere("is_active", true);
+        // Step 1: Collapse Europe if it's expanded by default
+        for (let i = 0; i < countryElements.length; i++) {
+            const countryName = await this.getCountryName(page, countryElements[i]);
+            if (countryName === "Football" && i + 1 < countryElements.length) {
+                const nextCountry = countryElements[i + 1];
+                const nextCountryName = await this.getCountryName(page, nextCountry);
+                console.log(`🔽 Collapsing country after "Football": ${nextCountryName}`);
+                await nextCountry.click(); // Collapse the one after "Football"
+                await this.wait(3000);
+                countryElements = await this.getCountryElements(page); // Refresh after collapsing
+                break;
+            }
+        }
 
+        // Step 2: Process all countries excluding "Europe"
         for (const country of countryElements) {
             const countryName = await this.getCountryName(page, country);
-            if (!countryName) continue;
+            if (!countryName || countryName === "Football") continue;
 
-            // Check if the country is active in our DB
-            // const dbCountry = await db("countries")
-            //     .where("name", countryName)
-            //     .andWhere("is_active", true)
-            //     .first();
-            const dbCountry = dbCountries.find((c) => c.name === countryName);
-            if (!dbCountry) {
-                console.warn(`Skipping inactive or unknown country: ${countryName}`);
+            try {
+                await country.click();
+                await this.wait(3000);
+            } catch (err) {
+                console.warn(`⚠️ Failed to click country '${countryName}':`, err);
                 continue;
             }
-
-            await country.click();
-            await this.wait(3000);
 
             const countryContainer = await this.getCountryContainer(page, country);
             if (!countryContainer) continue;
 
             jsonData.countries[countryName] = { leagues: {} };
-
             console.log(`🌍 Processing active country: ${countryName}`);
 
             const leagues = await this.getLeagues(page, countryContainer);
 
             for (const league of leagues) {
-                await this.processLeagues(page,
+                await this.processLeagues(
+                    page,
                     countryContainer,
                     countryName,
                     league,
-                    jsonData);
+                    jsonData
+                );
             }
         }
 
+        // Optional: sort countries alphabetically
         jsonData.countries = Object.fromEntries(
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync("betmomo_leagues_fixtures.json", JSON.stringify(jsonData, null, 2));
-        console.log("✅ JSON file generated: betmomo_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/betmomo_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
 
         await browser.close();
     }
+
 
     private async setupPage(page: Page): Promise<void> {
         await page.setUserAgent(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         );
 
-        const url = "https://www.betmomo.com/en/sports/pre-match/event-view/Soccer";
-        await page.goto(url, { waitUntil: "networkidle2" });
+        await page.goto(this.url, { waitUntil: "networkidle2" });
         await page.waitForSelector(".sp-sub-list-bc.Soccer.active.selected", {
             timeout: 30000,
         });
@@ -117,31 +129,51 @@ class SaveBetMomoLeaguesWithFixturesService {
         }, container);
     }
 
-
     private async processLeagues(
         page: Page,
         countryContainer: JSHandle<Element>,
         countryName: string,
         leagueName: string,
-        jsonData: any) {
+        jsonData: any
+    ) {
         console.log(`⚽ Processing active league: ${leagueName}`);
 
-        const leagueElement = (await countryContainer
-            .asElement()
-            ?.$(
-                `.sp-s-l-head-bc[title="${leagueName}"]`
-            )) as ElementHandle<Element> | null;
-        if (!leagueElement) return;
+        // Fetch the container again for fresh DOM state
+        const containerEl = countryContainer.asElement();
+        if (!containerEl) return;
 
-        // jsonData.countries[countryName].leagues[1] = { name: leagueName, fixtures: [] };
+        // Use `evaluate` to find the matching league via text or title
+        const leagueHandles = await containerEl.$$(`.sp-s-l-head-bc`);
+        let targetHandle: ElementHandle<Element> | null = null;
+
+        for (const league of leagueHandles) {
+            const name = await page.evaluate(el => el.getAttribute("title") || el.textContent?.trim(), league);
+            if (name === leagueName) {
+                targetHandle = league;
+                break;
+            }
+        }
+
+        if (!targetHandle) {
+            console.warn(`❌ League element for '${leagueName}' not found or detached.`);
+            return;
+        }
+
+        try {
+            await targetHandle.evaluate(el => el.scrollIntoView({ behavior: "instant", block: "center" }));
+            await this.wait(500);
+            await targetHandle.click();
+            await this.wait(3000);
+        } catch (err) {
+            console.warn(`⚠️ Failed to click league '${leagueName}':`, err);
+            return;
+        }
+
         jsonData.countries[countryName].leagues[leagueName] = { fixtures: [] };
-        await leagueElement.click();
-        await this.wait(3000);
 
         const matchHandles = await page.$$(".multi-column-content li");
         console.log(`📌 Found ${matchHandles.length} matches in ${leagueName}`);
 
-        // Filter valid matches (with at least two teams)
         const validMatchHandles: ElementHandle<Element>[] = [];
         for (const matchHandle of matchHandles) {
             const isValid = await page.evaluate((el) => {
@@ -150,16 +182,16 @@ class SaveBetMomoLeaguesWithFixturesService {
             }, matchHandle);
             if (isValid) validMatchHandles.push(matchHandle);
         }
+
         console.log(`📌 Valid matches: ${validMatchHandles.length}`);
 
-        // Process matches while passing the leagueExternalId for fixture filtering
         await this.processMatches(
             page,
             validMatchHandles,
             jsonData,
             leagueName,
             countryName
-        )
+        );
     }
 
 

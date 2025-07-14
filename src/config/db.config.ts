@@ -9,4 +9,10 @@ export const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
   },
+  pool: {
+    min: 2,
+    max: 100, // Increase based on load – 20 is safe for medium usage
+    acquireTimeoutMillis: 20000, // optional: wait 10s for a connection
+    idleTimeoutMillis: 40000,    // optional: release idle connections after 30s
+  },
 };

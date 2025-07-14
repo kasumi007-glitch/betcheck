@@ -1,4 +1,4 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import {  launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtil";
 import puppeteer, { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
 import { teamNameMappings } from "../teamNameMappings";
@@ -84,7 +84,7 @@ class Bet2233ScraperService {
 
   async scrape(): Promise<void> {
     await this.init(); // ensure DB initialization for odds mapping
-    const { browser, page } = await launchBrowser();
+    const { browser, page } = await launchBrowserWithProxy();
     await this.setupPage(page);
 
     // Process only active countries from DB

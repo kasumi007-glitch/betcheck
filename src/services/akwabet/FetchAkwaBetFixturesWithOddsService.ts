@@ -1,7 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
+import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
-import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
+import { httpClientFromApiV2, fetchFromApiWithoutProxyV2 } from "../../utils/ApiClientAkwaBet";
 import fs from "fs";
 
 const path = require("path");
@@ -41,12 +41,12 @@ class FetchAkwaBetFixturesWithOddsService {
     private dbMarkets: Market[] = [];
     private dbGroups: Group[] = [];
 
-// sport, category, tournament
+    // sport, category, tournament
     async initialize() {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -64,36 +64,38 @@ class FetchAkwaBetFixturesWithOddsService {
         this.fetchOdd = fetchOdd;
 
         console.log(`🚀 Fetching fixtures from ${this.sourceName}...`);
-        const filePath = path.join(process.cwd(), "akwabet_leagues_fixtures.json");
-        const rawData = fs.readFileSync(filePath, "utf8");
+        // const filePath = path.join(process.cwd(), "akwabet_leagues_fixtures.json");
+        // const rawData = fs.readFileSync(filePath, "utf8");
 
-        const jsonData: CountriesData = JSON.parse(rawData);
-        const countries: Country[] = Object.values(jsonData.countries).map(({id, name}) => ({id, name}));
+        // const jsonData: CountriesData = JSON.parse(rawData);
+        // const countries: Country[] = Object.values(jsonData.countries).map(({ id, name }) => ({ id, name }));
 
-        for (const country of countries) {
-            const externalCountryId = String(country.id);
-            // Todo: remove to load other countries (TEST)
-            // if (country.external_id == "236") {
+        // for (const country of countries) {
+        // const externalCountryId = String(country.id);
+        // Todo: remove to load other countries (TEST)
+        // if (country.external_id == "236") {
 
-            // Fetch active leagues linked to AkwaBet
-            const leagues = await db("source_league_matches")
-                .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
-                .select(
-                    "source_league_matches.source_league_id",
-                    "leagues.external_id as league_id"
-                )
-                .where("source_league_matches.source_id", this.sourceId)
-                .andWhere("leagues.is_active", true);
+        // Fetch active leagues linked to AkwaBet
+        const leagues = await db("source_league_matches")
+            .join("leagues", "source_league_matches.league_id", "=", "leagues.id")
+            .select(
+                "source_league_matches.source_league_id",
+                "leagues.external_id as league_id",
+                "source_league_matches.source_country_id",
+            )
+            .where("source_league_matches.source_id", this.sourceId)
+            .andWhere("leagues.is_active", true);
+        // .andWhere("leagues.external_id", 43);
 
-            for (const league of leagues) {
-                await this.fetchAndProcessFixtures(
-                    league.source_league_id,
-                    league.league_id,
-                    externalCountryId
-                );
-            }
-            // }
+        for (const league of leagues) {
+            await this.fetchAndProcessFixtures(
+                league.source_league_id,
+                league.league_id,
+                league.source_country_id,
+            );
         }
+        // }
+        // }
 
         console.log(`✅ Fixtures synced successfully from ${this.sourceName}!`);
     }
@@ -115,7 +117,7 @@ class FetchAkwaBetFixturesWithOddsService {
             }),
         };
 
-        const response = await fetchFromApi(apiUrl, "POST", payloadData);
+        const response = await httpClientFromApiV2(apiUrl, "POST", payloadData);
 
         if (!response?.Contents) {
             console.warn(`⚠️ No fixtures received for league  ID: ${sourceLeagueId}`);
@@ -207,7 +209,7 @@ class FetchAkwaBetFixturesWithOddsService {
                 competition_id: matchedFixture.parent_league_id,
                 source_id: this.sourceId,
             })
-            .onConflict(["fixture_id", "source_id"])
+            .onConflict(["fixture_id", "source_id", "source_fixture_id"])
             .ignore()
             .returning("*");
 
@@ -229,7 +231,7 @@ class FetchAkwaBetFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {MatchId: sourceFixtureId} = fixtureData;
+        const { MatchId: sourceFixtureId } = fixtureData;
 
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
@@ -253,7 +255,7 @@ class FetchAkwaBetFixturesWithOddsService {
             .where("source_matches.source_id", this.sourceId)
             .andWhere("source_matches.source_competition_id", sourceLeagueId)
             .andWhere("source_matches.source_fixture_id", sourceFixtureId)
-            .andWhere("fixtures.date", ">=", new Date())
+            .andWhereRaw("fixtures.date >= NOW()")
             .andWhere("leagues.is_active", true)
             .andWhere("leagues.external_id", leagueId)
             .first();
@@ -348,7 +350,10 @@ class FetchAkwaBetFixturesWithOddsService {
                 "external_source_fixture_id",
                 "source_id",
             ])
-            .merge(["coefficient"]);
+            .merge({
+                coefficient: db.raw("EXCLUDED.coefficient"),
+                updated_at: db.fn.now(),
+            });
 
         console.log("Odds data inserted/updated successfully.");
     }

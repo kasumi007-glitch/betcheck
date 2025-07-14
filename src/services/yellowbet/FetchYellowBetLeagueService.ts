@@ -1,6 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
 import Country from "../../models/Country";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientGN";
 import { leagueNameMappings } from "../leagueNameMappings";
 
 interface LeagueNode {
@@ -50,7 +50,7 @@ class FetchYellowBetLeagueService {
   async syncLeagues() {
     await this.init();
     console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
-    const response: NewApiResponse = await fetchFromApi(this.apiUrl);
+    const response: NewApiResponse = await httpClientFromApi(this.apiUrl);
 
     if (!response?.data?.cl?.length) {
       console.warn(`⚠️ No data received from ${this.sourceName}.`);
@@ -146,7 +146,7 @@ class FetchYellowBetLeagueService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore() // Prevent duplicate inserts
         .returning("*");
 

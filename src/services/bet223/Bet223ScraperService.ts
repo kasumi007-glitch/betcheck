@@ -1,4 +1,4 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import { launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtil";
 import { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
 import { teamNameMappings } from "../teamNameMappings";
@@ -73,7 +73,7 @@ class Bet223ScraperService {
 
   async scrape(): Promise<void> {
     await this.init(); // initialize DB and mappings
-    const { browser, page } = await launchBrowser();
+    const { browser, page } = await launchBrowserWithProxy();
     await this.setupPage(page);
 
     // Process only active countries from DB
@@ -608,7 +608,10 @@ class Bet223ScraperService {
           "external_source_fixture_id",
           "source_id",
         ])
-        .merge(["coefficient"]);
+        .merge({
+          coefficient: db.raw("EXCLUDED.coefficient"),
+          updated_at: db.fn.now(),
+        });
       console.log("Odds outcome inserted/updated successfully.");
     } catch (err) {
       console.error("Error saving odds outcome:", err);

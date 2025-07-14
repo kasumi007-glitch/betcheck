@@ -1,15 +1,26 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { fetchFromApi } from "../../utils/ApiClient";
 import { MarketObj } from "../interfaces/MarketObj";
+import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI";
+import { httpClientFromApi as httpClientML } from "../../utils/HttpClientML";
+import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
+import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
+import { httpClientFromApi as httpClientGA } from "../../utils/HttpClientGA";
+import { httpClientFromApi as httpClientTG } from "../../utils/HttpClientTG";
+import { httpClientFromApi as httpClientCG } from "../../utils/HttpClientCG";
+import { httpClientFromApi as httpClientCD } from "../../utils/HttpClientCD";
+import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
+import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
+import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
 
 class AddPremierBetOddService {
-  private readonly apiUrlTemplate =
-    "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
+  // private readonly apiUrlTemplate =
+  //   "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
 
-  private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
+  private httpClient!: (url: string) => Promise<any>;
+  private apiUrlTemplate!: string;
 
   // 1) Market ID → Market Name
   private readonly groupMapping: Record<number, string> = {
@@ -21,11 +32,81 @@ class AddPremierBetOddService {
   private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
 
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
+  async init(sourceName: string) {
+    switch (sourceName.toUpperCase()) {
+      case "PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
+        this.httpClient = httpClientCI;
+        break;
+
+      case "MLPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ml/v1/events/{fixtureId}?country=ML&group=g7&platform=desktop&locale=en";
+        this.httpClient = httpClientML;
+        break;
+
+      case "SNPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/sn/v1/events/{fixtureId}?country=SN&group=g5&platform=desktop&locale=en";
+        this.httpClient = httpClientSN;
+        break;
+
+      case "CMPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cm/v1/events/{fixtureId}?country=CM&group=g1&platform=desktop&locale=en";
+        this.httpClient = httpClientCM;
+        break;
+
+      case "GAPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ga/v1/events/{fixtureId}?country=GA&group=g4&platform=desktop&locale=en";
+        this.httpClient = httpClientGA;
+        break;
+
+      case "TGPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/tg/v2/events/{fixtureId}?country=TG&group=g3&platform=desktop&locale=en";
+        this.httpClient = httpClientTG;
+        break;
+
+      case "CGPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cg/v1/events/{fixtureId}?country=CG&group=g5&platform=desktop&locale=en";
+        this.httpClient = httpClientCG;
+        break;
+
+      case "CDPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cd/v1/events/{fixtureId}?country=CD&group=g5&platform=desktop&locale=en";
+        this.httpClient = httpClientCD;
+        break;
+
+      case "SLPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.mercurybet.com/v1/events/{fixtureId}?country=SL&group=g5&platform=desktop&locale=en";
+        this.httpClient = httpClientSL;
+        break;
+
+      case "AOPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.co.ao/v1/events/{fixtureId}?country=AO&group=g2&platform=desktop&locale=en";
+        this.httpClient = httpClientAO;
+        break;
+
+      case "ZWPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/zw/v1/events/{fixtureId}?country=ZW&group=g4&platform=desktop&locale=en";
+        this.httpClient = httpClientZW;
+        break;
+
+      default:
+        throw new Error(`Unknown source: ${sourceName}`);
+    }
+    const source = await db("sources").where("name", sourceName).first();
     if (!source) {
       [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
+        .insert({ name: sourceName })
         .returning("id");
     } else {
       this.sourceId = source.id;
@@ -35,8 +116,8 @@ class AddPremierBetOddService {
     this.dbMarkets = await this.getMarkets();
   }
 
-  async syncOdds() {
-    await this.init();
+  async syncOdds(sourceName: string) {
+    await this.init(sourceName);
     console.log("🚀 Fetching odds data...");
 
     // Fetch all countries and leagues from the database
@@ -53,10 +134,10 @@ class AddPremierBetOddService {
         "fixtures.date",
         "source_matches.competition_id"
       )
-      .where("fixtures.date", ">=", new Date())
+      .whereRaw("fixtures.date >= NOW()")
       .andWhere("source_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true);
-      // .andWhere("source_matches.source_competition_id", "1008226");
+    // .andWhere("source_matches.source_competition_id", "1008226");
 
     for (const fixture of fixtures) {
       await this.fetchAndProcessOdds(fixture.id, fixture.source_fixture_id);
@@ -71,7 +152,7 @@ class AddPremierBetOddService {
   ) {
     const apiUrl = this.apiUrlTemplate.replace("{fixtureId}", sourceFixtureId);
 
-    const response = await fetchFromApi(apiUrl);
+    const response = await this.httpClient(apiUrl);
 
     if (!response) {
       console.warn(`⚠️ No data received for fixture ID: ${sourceFixtureId}`);
@@ -188,10 +269,13 @@ class AddPremierBetOddService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds data inserted/updated successfully.");
   }
 }
 
-export default new AddPremierBetOddService();
+export default AddPremierBetOddService;

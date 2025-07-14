@@ -1,7 +1,8 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { fetchFromApi } from "../../utils/ApiClientMultiTry";
+// import { fetchFromApiWithoutProxy } from "../../utils/ApiClientMultiTry";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
@@ -17,8 +18,11 @@ class Fetch1xBetFixturesWithOddsService {
     // 1) Market ID → Market Name
     private readonly groupMapping: Record<number, string> = {
         1: "1X2",
-        17: "Over / Under",
         19: "Both Teams to Score",
+    };
+
+    private readonly groupMapping2: Record<number, string> = {
+        17: "Over / Under"
     };
 
     // 2) Market Name → Group Name
@@ -46,7 +50,7 @@ class Fetch1xBetFixturesWithOddsService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -92,7 +96,7 @@ class Fetch1xBetFixturesWithOddsService {
             "{sourceLeagueId}",
             sourceLeagueId
         );
-        const response = await fetchFromApi(apiUrl);
+        const response = await httpClientFromApi(apiUrl);
 
         if (!response?.Value?.length) {
             console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
@@ -174,7 +178,7 @@ class Fetch1xBetFixturesWithOddsService {
                 competition_id: matchedFixture.parent_league_id,
                 source_id: this.sourceId,
             })
-            .onConflict(["fixture_id", "source_id"])
+            .onConflict(["fixture_id", "source_id", "source_fixture_id"])
             .ignore()
             .returning("*");
 
@@ -196,7 +200,7 @@ class Fetch1xBetFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {I: sourceFixtureId} = fixtureData;
+        const { I: sourceFixtureId } = fixtureData;
 
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
@@ -215,7 +219,9 @@ class Fetch1xBetFixturesWithOddsService {
             .select(
                 "source_matches.source_fixture_id",
                 "fixtures.id",
-                "fixtures.date"
+                "fixtures.date",
+                "fixtures.home_team_name",
+                "fixtures.away_team_name",
             )
             .where("source_matches.source_id", this.sourceId)
             .andWhere("source_matches.source_competition_id", sourceLeagueId)
@@ -237,12 +243,18 @@ class Fetch1xBetFixturesWithOddsService {
             Object.keys(this.groupMapping).includes(String(match.G))
         );
 
-        for (const marketObj of filteredData) {
+        const filteredData2 = fixtureData.AE.filter((match: any) =>
+            Object.keys(this.groupMapping2).includes(String(match.G))
+        ).flatMap((match: any) => match.ME || []) // Select only the `.ME` list data
+
+        const combinedFilteredData = [...filteredData, ...filteredData2];
+
+        for (const marketObj of combinedFilteredData) {
             // G => the market ID
             const groupId = marketObj.G; // e.g. 7 => "Correct Score"
 
             // 1) Map G => Market Name
-            const groupName = this.groupMapping[groupId];
+            const groupName = this.groupMapping[groupId] || this.groupMapping2[groupId];
 
             // find market
             const dbGroup = this.dbGroups.find(
@@ -250,6 +262,11 @@ class Fetch1xBetFixturesWithOddsService {
             );
             if (!dbGroup) {
                 console.warn(`❌ No 'Group Found' : ${groupName}`);
+                continue;
+            }
+
+            if (groupName === "Over / Under" && marketObj.P !== Number("2.5")) {
+                // Skip if the name is "Over" or "Under" and the handicap is not "2.5"
                 continue;
             }
 
@@ -311,7 +328,10 @@ class Fetch1xBetFixturesWithOddsService {
                 "external_source_fixture_id",
                 "source_id",
             ])
-            .merge(["coefficient"]);
+            .merge({
+                coefficient: db.raw("EXCLUDED.coefficient"),
+                updated_at: db.fn.now(),
+            });
 
         console.log("Odds data inserted/updated successfully.");
     }

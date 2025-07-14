@@ -1,5 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent"; // Ensure correct import
+import http from 'http';
+import https from 'https';
 
 // ✅ List of rotating proxies
 const proxies = [
@@ -52,6 +54,29 @@ export const fetchFromApi = async (
 
     // ✅ Retry with the Next Proxy
     proxyIndex = (proxyIndex + 1) % proxies.length;
+    return null;
+  }
+};
+
+/**
+ * Fetches from API directly without any proxy.
+ */
+export const fetchFromApiWithoutProxy = async (
+  url: string,
+  options?: AxiosRequestConfig
+) => {
+  try {
+    const axiosConfig: AxiosRequestConfig = {
+      ...options,
+      timeout: 20000,
+      httpAgent: new http.Agent({ keepAlive: false }),
+      httpsAgent: new https.Agent({ keepAlive: false })
+    };
+
+    const response = await axios.request({ url, ...axiosConfig });
+    return response.data;
+  } catch (error: any) {
+    console.error(`❌ Error fetching without proxy: ${error.message}`);
     return null;
   }
 };

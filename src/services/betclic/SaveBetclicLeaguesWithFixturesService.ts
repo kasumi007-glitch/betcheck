@@ -1,11 +1,13 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveBetclicLeaguesWithFixturesService {
   private readonly countryApiUrl = "https://uodyc08.com/api/v3/user/left-menu/supercategories/1";
   private readonly leaguesApiUrlTemplate = "https://uodyc08.com/api/v1/allsports/subcategories/{countryId}";
   private readonly fixturesApiUrlTemplate = "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&lsubc={leagueId}&ss=all&l=20&ltr=0";
+  private readonly fixturesApiUrlTemplateNonCountry = "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&ss=all&l=20&ltr=0";
+  private readonly fixturesApiUrlTemplateNonPin = "https://lcj9iczmb.com/api/v3/user/line/pinned-list.json?lc[]=1&lsc={countryId}&ss=all&l=20&ltr=0";
   private readonly sourceName = "BETCLIC";
   private sourceId!: number;
 
@@ -22,7 +24,14 @@ class SaveBetclicLeaguesWithFixturesService {
 
   async syncLeaguesAndFixtures() {
     console.log("🚀 Fetching Betclic countries...");
-    const countryResponse = await fetchFromApi(this.countryApiUrl);
+    const countryResponse = await httpClientFromApi(this.countryApiUrl);
+    // const countryResponse = await fetchFromApiWithoutProxy(this.countryApiUrl, {
+    //   headers: {
+    //     Cookie:
+    //       "PHPSESSID=vk7t3hqjv6djgkurq0225nmeq3; lunetics_locale=en; tz=Africa%2FAddis_Ababa",
+    //     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ...", // mimic a real browser if needed
+    //   },
+    // });
     if (!countryResponse?.supercategory_dto_collection?.length) {
       console.warn("⚠️ No countries received from Betclic API.");
       return;
@@ -38,8 +47,14 @@ class SaveBetclicLeaguesWithFixturesService {
       Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
     );
 
-    fs.writeFileSync("betclic_leagues_fixtures.json", JSON.stringify(jsonData, null, 2));
-    console.log("✅ JSON file generated: betclic_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/betclic_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCountry(country: any, jsonData: any) {
@@ -47,13 +62,34 @@ class SaveBetclicLeaguesWithFixturesService {
     const countryName = country.title.trim();
     console.log(`🔍 Processing country: ${countryName}`);
 
-    jsonData.countries[countryName] = { leagues: {} };
-    const leaguesUrl = this.leaguesApiUrlTemplate.replace("{countryId}", String(countryId));
-    const leaguesResponse = await fetchFromApi(leaguesUrl);
-    if (!leaguesResponse?.length) return;
+    if (country.country) {
+      jsonData.countries[countryName] = { leagues: {} };
+      const leaguesUrl = this.leaguesApiUrlTemplate.replace("{countryId}", String(countryId));
+      const leaguesResponse = await httpClientFromApi(leaguesUrl);
+      if (!leaguesResponse?.length) return;
 
-    for (const league of leaguesResponse) {
-      await this.processLeague(league, jsonData, countryName, countryId);
+      for (const league of leaguesResponse) {
+        await this.processLeague(league, jsonData, countryName, countryId);
+      }
+    } else {
+      jsonData.countries["World"] ??= { leagues: {} };
+      // const leaguesUrl = this.leaguesApiUrlTemplate.replace("{countryId}", String(countryId));
+      // const leaguesResponse = await fetchFromApiWithoutProxy(leaguesUrl);
+      // if (!leaguesResponse?.length) return;
+
+      // for (const league of leaguesResponse) {
+      //   await this.processLeague(league, jsonData, "World", countryId);
+      // }
+      console.log(`⚽ Processing league: ${countryName}`);
+
+      jsonData.countries["World"].leagues[countryId] = { name: countryName, fixtures: [] };
+      await this.fetchAndProcessFixturesNonCountry(countryId, jsonData, "World", countryName);
+      // await this.processLeague(
+      //   country,
+      //   jsonData,
+      //   "World", // Pass a mock dbCountry object
+      //   countryId
+      // );
     }
   }
 
@@ -70,13 +106,36 @@ class SaveBetclicLeaguesWithFixturesService {
     const fixturesUrl = this.fixturesApiUrlTemplate
       .replace("{countryId}", String(countryId))
       .replace("{leagueId}", String(leagueId));
-    const response = await fetchFromApi(fixturesUrl);
+    const response = await httpClientFromApi(fixturesUrl);
     if (!response?.lines_hierarchy?.length) return;
 
     const fixtureLines = this.extractFixtureLines(response.lines_hierarchy);
     for (const match of fixtureLines) {
       this.processMatch(match, leagueId, jsonData, countryName);
     }
+  }
+
+  private async fetchAndProcessFixturesNonCountry(leagueId: number, jsonData: any, countryName: string, countryNameMain: string) {
+    const fixturesUrlPin = this.fixturesApiUrlTemplateNonPin
+      .replace("{countryId}", String(leagueId));
+    // if (countryNameMain === "Champions League UEFA") {
+    const responsePin = await httpClientFromApi(fixturesUrlPin);
+    if (!responsePin?.lines_hierarchy?.length) {
+      const fixturesUrl = this.fixturesApiUrlTemplateNonCountry
+        .replace("{countryId}", String(leagueId));
+      const response = await httpClientFromApi(fixturesUrl);
+      if (!response?.lines_hierarchy?.length) { return; }
+      const fixtureLines = this.extractFixtureLines(response.lines_hierarchy);
+      for (const match of fixtureLines) {
+        this.processMatch(match, leagueId, jsonData, countryName);
+      }
+    } else {
+      const fixtureLinesPin = this.extractFixtureLines(responsePin.lines_hierarchy);
+      for (const match of fixtureLinesPin) {
+        this.processMatch(match, leagueId, jsonData, countryName);
+      }
+    }
+    // }
   }
 
   private extractFixtureLines(hierarchy: any[]): any[] {

@@ -1,9 +1,8 @@
 // services/22bet/Fetch22betFixturesWithOddsService.ts
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-// import { teamNameMappings } from "../teamNameMappings";
 
 // Base API URL template for 22BET fixtures & odds.
 // The placeholder {sourceLeagueId} will be replaced dynamically.
@@ -201,7 +200,7 @@ class Fetch22betFixturesWithOddsService {
         competition_id: matchedFixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 
@@ -368,7 +367,10 @@ class Fetch22betFixturesWithOddsService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log(
       `Odds for market_id ${marketId} saved/updated (coef: ${coefficient}).`

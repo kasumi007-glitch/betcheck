@@ -3,7 +3,7 @@ import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { fetchFromApi } from "../../utils/ApiClient";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 import { MarketObj } from "../interfaces/MarketObj";
 
 class FetchSunubetOddService {
@@ -183,7 +183,10 @@ class FetchSunubetOddService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds inserted/updated successfully.");
   }

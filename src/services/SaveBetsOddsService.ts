@@ -27,24 +27,24 @@ class SaveBetsOddsService {
 
   static async getBookmakersQuery() {
     return await db("bookmakers")
-      .join("sources", "bookmakers.name", "sources.name")
+      .join("sources", "bookmakers.source_name", "sources.name")
       .select(
         "bookmakers.id as bookmaker_id",
         "bookmakers.name as bookmaker_name",
         "bookmakers.country_code",
+        "bookmakers.priority",
         "sources.id as source_id",
         "sources.name as source_name"
       );
-      //.where("bookmakers.country_code", "CI");
   }
 
   static createCountrySourceMap(bookmakersQuery: any[]) {
     const countrySourceMap = new Map();
-    for (const { source_id, country_code, bookmaker_id } of bookmakersQuery) {
+    for (const { source_id, country_code, bookmaker_id, priority } of bookmakersQuery) {
       if (!countrySourceMap.has(country_code)) {
         countrySourceMap.set(country_code, []);
       }
-      countrySourceMap.get(country_code).push({ source_id, bookmaker_id });
+      countrySourceMap.get(country_code).push({ source_id, bookmaker_id, priority });
     }
     return countrySourceMap;
   }
@@ -52,6 +52,7 @@ class SaveBetsOddsService {
   static async getFixtureOdds() {
     console.log("🔄 Fetching all fixture odds...");
     return await db("fixture_odds")
+      .join("fixtures", "fixture_odds.fixture_id", "=", "fixtures.id")
       .join("sources", "fixture_odds.source_id", "sources.id")
       .select(
         "fixture_odds.fixture_id",
@@ -61,7 +62,8 @@ class SaveBetsOddsService {
         "fixture_odds.market_id",
         "fixture_odds.source_id",
         "sources.name as source_name"
-      );
+      )
+      .whereRaw("fixtures.date >= NOW()");
   }
 
   static async processBestOdds(countrySourceMap: Map<any, any>, fixtureOdds: any[]) {
@@ -96,10 +98,17 @@ class SaveBetsOddsService {
       source_id,
       source_name,
     } of filteredFixtureOdds) {
-      const bookmaker_id = sources.find((s: any) => s.source_id === source_id).bookmaker_id;
-      const key = `${fixture_id}-${market_id}-${group_id}-${country_code}`;
+      const sourceInfo = sources.find((s: any) => s.source_id === source_id);
+      const { bookmaker_id, priority } = sourceInfo;
 
-      if (!bestOddsMap.has(key) || coefficient > bestOddsMap.get(key).coefficient) {
+      const key = `${fixture_id}-${market_id}-${group_id}-${country_code}`;
+      const existing = bestOddsMap.get(key);
+
+      if (
+        !existing ||
+        coefficient > existing.coefficient ||
+        (coefficient === existing.coefficient && priority < existing.priority)
+      ) {
         bestOddsMap.set(key, {
           fixture_id,
           market_id,
@@ -110,6 +119,7 @@ class SaveBetsOddsService {
           previous_coefficient: null,
           source_id,
           source_name,
+          priority,
         });
       }
     }
@@ -118,6 +128,7 @@ class SaveBetsOddsService {
   }
 
   static async insertOrUpdateBestOdds(bestOddsMap: Map<any, any>, country_code: string) {
+    const BATCH_SIZE = 500;
     const insertData = Array.from(bestOddsMap.values()).map((bestOdd) => ({
       fixture_id: bestOdd.fixture_id,
       market_id: bestOdd.market_id,
@@ -131,17 +142,20 @@ class SaveBetsOddsService {
     }));
 
     if (insertData.length) {
-      await db("odds")
-        .insert(insertData)
-        .onConflict(["fixture_id", "market_id", "group_id", "country_code"])
-        .merge({
-          previous_coefficient: db.raw("odds.coefficient"),
-          coefficient: db.raw("EXCLUDED.coefficient"),
-          bookmaker_id: db.raw("EXCLUDED.bookmaker_id"),
-          updated_at: db.fn.now(),
-        });
+      for (let i = 0; i < insertData.length; i += BATCH_SIZE) {
+        const batch = insertData.slice(i, i + BATCH_SIZE);
+        await db("odds")
+          .insert(batch)
+          .onConflict(["fixture_id", "market_id", "group_id", "country_code"])
+          .merge({
+            previous_coefficient: db.raw("odds.coefficient"),
+            coefficient: db.raw("EXCLUDED.coefficient"),
+            bookmaker_id: db.raw("EXCLUDED.bookmaker_id"),
+            updated_at: db.fn.now(),
+          });
 
-      console.log(`✅ Successfully inserted/updated best odds for ${country_code}`);
+        console.log(`✅ Successfully inserted/updated best odds for ${country_code}`);
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientGN";
 import { teamNameMappings } from "../teamNameMappings";
 
 // Interfaces for YellowBet API response structure
@@ -106,7 +106,7 @@ class FetchYellowBetFixturesWithOddsService {
       );
       console.log(`Fetching fixtures for source league ID: ${sourceLeagueId}`);
 
-      const response: YellowBetApiResponse = await fetchFromApi(apiUrl);
+      const response: YellowBetApiResponse = await httpClientFromApi(apiUrl);
       if (!response?.data || response.data.length === 0) {
         console.warn(`⚠️ No fixtures received for league ${sourceLeagueId}`);
         continue;
@@ -184,7 +184,7 @@ class FetchYellowBetFixturesWithOddsService {
         competition_id: matchedFixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 
@@ -330,7 +330,10 @@ class FetchYellowBetFixturesWithOddsService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds data inserted/updated successfully.");
   }

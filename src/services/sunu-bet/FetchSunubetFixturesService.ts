@@ -1,7 +1,7 @@
 // src/services/FetchSunubetFixturesService.ts
 import { db } from "../../infrastructure/database/Database";
 import { fetchFromApi } from "../../utils/ApiClient";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchSunubetFixturesService {
@@ -125,7 +125,7 @@ class FetchSunubetFixturesService {
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 

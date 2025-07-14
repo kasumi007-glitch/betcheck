@@ -1,9 +1,10 @@
-import {db} from "../../infrastructure/database/Database";
+import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
-import {EventResponse} from "../interfaces/BetPawa/EventResponse";
-import {ResponseData} from "../interfaces/BetPawa/ResponseData";
-import {QueryObject} from "../interfaces/BetPawa/QueryObject";
+import { EventResponse } from "../interfaces/BetPawa/EventResponse";
+import { ResponseData } from "../interfaces/BetPawa/ResponseData";
+import { QueryObject } from "../interfaces/BetPawa/QueryObject";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 
 class FetchBetPawaFixturesWithOddsService {
     private readonly sourceName = "BETPAWA";
@@ -44,7 +45,7 @@ class FetchBetPawaFixturesWithOddsService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -153,7 +154,28 @@ class FetchBetPawaFixturesWithOddsService {
             const apiUrl = `https://www.betpawa.sn/api/sportsbook/v2/events/lists/by-queries?q=${encodeURIComponent(JSON.stringify(queryObject))}`;
 
             try {
-                const response: ResponseData = await this.fetchData(apiUrl, requestOptions);
+                // const response: ResponseData = await this.fetchData(apiUrl, requestOptions);
+                const response: ResponseData = await httpClientFromApi(apiUrl, {
+                    headers: {
+                        accept: "*/*",
+                        "accept-language": "en-US,en;q=0.9",
+                        devicetype: "web",
+                        priority: "u=1, i",
+                        referer: `https://www.betpawa.sn/events?marketId=${marketName}&categoryId=2`,
+                        "sec-ch-ua": "\"Chromium\";v=\"134\", \"Not:A-Brand\";v=\"24\", \"Microsoft Edge\";v=\"134\"",
+                        "sec-ch-ua-mobile": "?0",
+                        "sec-ch-ua-platform": "\"Windows\"",
+                        "sec-fetch-dest": "empty",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-site": "same-origin",
+                        traceid: "cb12065c-e282-4d18-853c-0988e5d6b195",
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0",
+                        vuejs: "true",
+                        "x-pawa-brand": "betpawa-senegal",
+                        "x-pawa-language": "en",
+                        Cookie: process.env.COOKIE_HEADER_BETPAWA_FIXTURES_WITH_ODDS ?? ""
+                    }
+                });
 
                 if (!response?.responses?.length) {
                     console.warn(`⚠️ No more fixtures received for market type ${marketName}, ID: ${marketTypeId}`);
@@ -273,7 +295,7 @@ class FetchBetPawaFixturesWithOddsService {
                 competition_id: matchedFixture.parent_league_id,
                 source_id: this.sourceId,
             })
-            .onConflict(["fixture_id", "source_id"])
+            .onConflict(["fixture_id", "source_id", "source_fixture_id"])
             .ignore()
             .returning("*");
 
@@ -295,7 +317,7 @@ class FetchBetPawaFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {id: sourceFixtureId} = fixtureData;
+        const { id: sourceFixtureId } = fixtureData;
 
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
@@ -330,7 +352,12 @@ class FetchBetPawaFixturesWithOddsService {
 
         const markets = fixtureData.markets;
 
-        for (const marketObj of markets) {
+        // Filter markets based on the needed group IDs
+        const filteredMarkets = markets.filter((marketObj: any) =>
+            Object.keys(this.groupMapping).includes(String(marketObj.marketType.id))
+        );
+
+        for (const marketObj of filteredMarkets) {
             // Market ID
             const marketId = marketObj.marketType.id; // e.g. 7 => "Correct Score"
 
@@ -351,7 +378,17 @@ class FetchBetPawaFixturesWithOddsService {
                 continue;
             }
 
-            for (const outcomeData of marketObj.prices) {
+            // Filter outcomes based on the needed outcome IDs
+            const filteredOutcomes = marketObj.prices.filter((outcomeData: any) =>
+                Object.keys(this.outcomeIdNewMapping).includes(String(outcomeData.typeId))
+            );
+
+            for (const outcomeData of filteredOutcomes) {
+                if (groupName === "Over / Under" && outcomeData.handicap !== "2.5") {
+                    // Skip if the name is "Over" or "Under" and the handicap is not "2.5"
+                    continue;
+                }
+
                 // The outcome ID we want to map
                 const outcomeId = outcomeData.typeId; // e.g. 3744 '1'
 
@@ -411,7 +448,10 @@ class FetchBetPawaFixturesWithOddsService {
                 "external_source_fixture_id",
                 "source_id",
             ])
-            .merge(["coefficient"]);
+            .merge({
+                coefficient: db.raw("EXCLUDED.coefficient"),
+                updated_at: db.fn.now(),
+            });
 
         console.log("Odds data inserted/updated successfully.");
     }

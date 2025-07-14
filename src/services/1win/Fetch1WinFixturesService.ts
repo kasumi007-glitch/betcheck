@@ -123,7 +123,7 @@ class Fetch1WinFixturesService {
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 

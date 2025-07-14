@@ -1,8 +1,18 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
-import { Page, ElementHandle, JSHandle } from "puppeteer";
+import { launchBrowserWithProxy } from "../../utils/launchBrowserUtilAll";
+import { launchBrowserWithProxy as launchBrowserWithProxyAO, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtilAO";
+import { launchBrowserWithProxy as launchBrowserWithProxyCI } from "../../utils/launchBrowserUtilCI";
+import { launchBrowserWithProxy as launchBrowserWithProxySL } from "../../utils/launchBrowserUtilSL";
+import { launchBrowserWithProxy as launchBrowserWithProxyZW } from "../../utils/launchBrowserUtilZW";
+import { Page, ElementHandle, JSHandle, Browser } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
+import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
+import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI"; //same as CM
+import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
+import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
+import fs from "fs";
+import path from "path";
 
 interface MatchInfo {
   teams: string[];
@@ -44,18 +54,65 @@ class BetMomoScraperService {
 
   private dbGroups: Group[] = [];
   private dbMarkets: Market[] = [];
-  private readonly sourceName = "BETMOMO";
+  // private readonly sourceName = "BETMOMO";
+  private httpClient!: (url: string) => Promise<any>;
+  private launchBrowserWithProxy!: (headless: boolean) => Promise<{
+    browser: Browser;
+    page: Page;
+  }>;
+  private apiUrlTemplate!: string;
   private sourceId!: number;
   private countryNameMappings: Record<string, string> = {};
   private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
   private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
   // ----- End Odds mapping configuration -----
 
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
+  async init(sourceName: string) {
+    switch (sourceName.toUpperCase()) {
+      case "AOMOBET":
+        this.apiUrlTemplate =
+          "https://www.mobet.ao/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyAO;
+        break;
+      case "AOAFRIBET":
+        this.apiUrlTemplate =
+          "https://www.afribet.ao/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyAO;
+        break;
+      case "AOELEPHANTBET":
+        this.apiUrlTemplate =
+          "https://www.elephantbet.co.ao/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyAO;
+        break;
+      case "AOBANTUBET":
+        this.apiUrlTemplate =
+          "https://www.bantubet.co.ao/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyAO;
+        break;
+      case "BETMOMO":
+        this.apiUrlTemplate =
+          "https://www.betmomo.com/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyCI;
+        break;
+      case "SLELEPHANTBET":
+        this.apiUrlTemplate =
+          "https://www.elephantbet.sl/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxySL;
+        break;
+
+      case "ZWAFRICABET":
+        this.apiUrlTemplate =
+          "https://www.africabet.com/en/sports/pre-match/event-view/Soccer";
+        this.launchBrowserWithProxy = launchBrowserWithProxyZW;
+        break;
+
+      default:
+        throw new Error(`Unknown source: ${sourceName}`);
+    }
+    const source = await db("sources").where("name", sourceName).first();
     if (!source) {
       [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
+        .insert({ name: sourceName })
         .returning("id");
     } else {
       this.sourceId = source.id;
@@ -76,18 +133,43 @@ class BetMomoScraperService {
     return await db("markets");
   }
 
-  async scrape(): Promise<void> {
-    await this.init(); // initialize DB and mappings
-    const { browser, page } = await launchBrowser(true);
+  async scrape(sourceName: string): Promise<void> {
+    await this.init(sourceName); // initialize DB and mappings
+    const { browser, page } = await this.launchBrowserWithProxy(true);
     await this.setupPage(page);
-
     // Process only active countries from DB
-    const countryElements = await this.getCountryElements(page);
+    let countryElements = await this.getCountryElements(page);
+    // Step 1: Collapse Europe if it's expanded by default
+    for (let i = 0; i < countryElements.length; i++) {
+      const countryName = await this.getCountryName(page, countryElements[i]);
+      if (countryName === "Football" && i + 1 < countryElements.length) {
+        const nextCountry = countryElements[i + 1];
+        const nextCountryName = await this.getCountryName(page, nextCountry);
+        console.log(`🔽 Collapsing country after "Football": ${nextCountryName}`);
+        await nextCountry.click(); // Collapse the one after "Football"
+        await this.wait(3000);
+        countryElements = await this.getCountryElements(page); // Refresh after collapsing
+        break;
+      }
+    }
+
     let allMatches: Match[] = [];
 
     for (const country of countryElements) {
       const countryName = await this.getCountryName(page, country);
-      if (!countryName) continue;
+      if (!countryName || countryName === "Football") continue;
+
+      // if (countryName !== "Cyprus") {
+      //   continue;
+      // }
+
+      try {
+        await country.click();
+        await this.wait(3000);
+      } catch (err) {
+        console.warn(`⚠️ Failed to click country '${countryName}':`, err);
+        continue;
+      }
 
       const mappedCountryName = this.countryNameMappings[countryName.trim()] ?? countryName.trim();
 
@@ -102,8 +184,8 @@ class BetMomoScraperService {
       }
 
       console.log(`🌍 Processing active country: ${countryName}`);
-      await country.click();
-      await this.wait(3000);
+      // await country.click();
+      // await this.wait(3000);
 
       const countryContainer = await this.getCountryContainer(page, country);
       if (!countryContainer) continue;
@@ -156,12 +238,27 @@ class BetMomoScraperService {
   }
 
   private async setupPage(page: Page): Promise<void> {
+    await page.setRequestInterception(true);
+    page.on('request', req => {
+      if (req.resourceType() === 'websocket') return req.abort();
+      req.continue();
+    });
+
+    // Forward console messages from browser to Node.js
+    page.on("console", (msg) => {
+      const type = msg.type();
+      const text = msg.text();
+      if (["log", "debug", "warning", "error"].includes(type)) {
+        console.log(`🟡 [PAGE.${type.toUpperCase()}] ${text}`);
+      }
+    });
+
     await page.setUserAgent(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     );
 
-    const url = "https://www.betmomo.com/en/sports/pre-match/event-view/Soccer";
-    await page.goto(url, { waitUntil: "networkidle2" });
+    // const url = "https://www.betmomo.com/en/sports/pre-match/event-view/Soccer";
+    await page.goto(this.apiUrlTemplate, { waitUntil: "networkidle2", timeout: 60000 });
     await page.waitForSelector(".sp-sub-list-bc.Soccer.active.selected", {
       timeout: 30000,
     });
@@ -266,6 +363,43 @@ class BetMomoScraperService {
     return matches;
   }
 
+  private async extractOddsWithRetry(
+    page: Page,
+    matchHandle: ElementHandle<Element>,
+    basicInfo: MatchInfo,
+    retries = 3
+  ): Promise<OddsData> {
+    let lastErr: any;
+    for (let i = 1; i <= retries; i++) {
+      try {
+        // open match detail
+        await matchHandle.click();
+        await this.wait(2000);
+
+        // wait for panel
+        await page.waitForSelector('.sgm-body-bc', { timeout: 8000 });
+        await this.wait(1000);
+
+        // scroll panel into view
+        const panel = await page.$('.sgm-body-bc');
+        await panel?.hover();
+        await page.mouse.wheel({ deltaY: 500 });
+        await this.wait(300);
+
+        // extract odds
+        const oddsData = await this.extractOdds(page);
+        return oddsData;
+      } catch (err: any) {
+        lastErr = err;
+        console.warn(`⚠️ Attempt ${i}/${retries} for ${basicInfo.teams.join(' vs ')} failed:`, err.message);
+        // go back to list, then retry
+        await page.goBack({ waitUntil: 'networkidle2' });
+        await this.wait(1500);
+      }
+    }
+    throw lastErr;
+  }
+
   /**
    * Process matches for a given league.
    * @param leagueExternalId - the external id from the DB league record for fixture filtering.
@@ -282,30 +416,52 @@ class BetMomoScraperService {
     today.setHours(0, 0, 0, 0);
 
     for (const matchHandle of matchHandles) {
+      // const basicInfo = await this.getMatchInfo(page, matchHandle);
+      // if (!basicInfo.teams.length) continue;
+
+      // console.log(`🔎 Processing match:`, basicInfo);
+      // await matchHandle.click();
+      // await page
+      //   .waitForSelector(".sgm-body-bc", { timeout: 10000 })
+      //   .catch(() =>
+      //     console.log(
+      //       "⚠️ Detailed odds panel not found for match:",
+      //       basicInfo.teams
+      //     )
+      //   );
+      // await this.wait(2000);
+
+      // const panel = await page.$('.sgm-body-bc');
+      // if (!panel) throw new Error('Odds panel not found');
+
+      // await panel.hover();
+      // for (let i = 0; i < 15; i++) {
+      //   // scroll down by a chunk
+      //   await page.mouse.wheel({ deltaY: 500 });
+      //   await this.wait(200);
+      // }
+
+      // Extract odds and add common external source fixture id
+      // const oddsData = await this.extractOdds(page);
+
+
+      //new
       const basicInfo = await this.getMatchInfo(page, matchHandle);
       if (!basicInfo.teams.length) continue;
 
       console.log(`🔎 Processing match:`, basicInfo);
-      await matchHandle.click();
-      await page
-        .waitForSelector(".sgm-body-bc", { timeout: 10000 })
-        .catch(() =>
-          console.log(
-            "⚠️ Detailed odds panel not found for match:",
-            basicInfo.teams
-          )
-        );
-      await this.wait(2000);
-
-      // Extract odds and add common external source fixture id
-      const oddsData = await this.extractOdds(page);
+      let oddsData: OddsData;
+      try {
+        oddsData = await this.extractOddsWithRetry(page, matchHandle, basicInfo, 3);
+      } catch (err) {
+        console.error(`❌ Odds extraction failed for ${basicInfo.teams.join(' vs ')}:`, err);
+        continue;
+      }
       oddsData.external_source_fixture_id = 1;
 
       // ----- Fixture matching logic -----
       const homeTeamRaw = basicInfo.teams[0];
       const awayTeamRaw = basicInfo.teams[1];
-      // const homeTeam = teamNameMappings[homeTeamRaw] || homeTeamRaw;
-      // const awayTeam = teamNameMappings[awayTeamRaw] || awayTeamRaw;
 
       const leagueTeamMappings = this.teamNameMappings[leagueExternalId] || [];
 
@@ -342,16 +498,21 @@ class BetMomoScraperService {
         continue;
       }
 
-      let fixture = await db("fixtures")
-        .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
-        .select("fixtures.*", "leagues.id as parent_league_id")
-        .whereRaw(
-          `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
-          [`%${homeTeam}%`, `%${awayTeam}%`]
-        )
-        .andWhere("date", ">=", today)
-        .andWhere("fixtures.league_id", leagueExternalId)
-        .first();
+      let fixture;
+      try {
+        fixture = await db("fixtures")
+          .join("leagues", "fixtures.league_id", "=", "leagues.external_id")
+          .select("fixtures.*", "leagues.id as parent_league_id")
+          .whereRaw(
+            `LOWER(home_team_name) ILIKE LOWER(?) AND LOWER(away_team_name) ILIKE LOWER(?)`,
+            [`%${homeTeam}%`, `%${awayTeam}%`]
+          )
+          .andWhere("date", ">=", today)
+          .andWhere("fixtures.league_id", leagueExternalId)
+          .first();
+      } catch (error) {
+        console.error("Error fetching fixture:", error);
+      }
 
       if (!fixture) {
         console.warn(
@@ -401,83 +562,209 @@ class BetMomoScraperService {
   }
 
   private async extractOdds(page: Page): Promise<OddsData> {
+    // 1) get the panel handle
+    const panel = await page.$('.sgm-body-bc');
+    if (!panel) throw new Error('Odds panel not found');
+
+    // 2) define the market titles we care about
+    const required = ["Match Result", "Both Teams To Score", "Total Goals"];
+
+    // 3) scroll + retry until all three appear (or stop after 20 tries)
+    for (let i = 0; i < 20; i++) {
+      const titles = await page.$$eval(
+        '.sgm-market-g-h-title-bc',
+        els => els.map(el => el.getAttribute('title')?.trim() || "")
+      );
+      if (required.every(m => titles.includes(m))) {
+        break;
+      }
+      await panel.hover();
+      await page.mouse.wheel({ deltaY: 500 });
+      await this.wait(300);
+    }
+
+    // 4) now extract exactly the three markets
     return page.evaluate(() => {
-      // Helper: find market container by its title
-      const extractMarket = (marketTitle: string): Element | null => {
-        return (
-          Array.from(document.querySelectorAll(".sgm-market-g")).find(
-            (el) =>
-              el
-                .querySelector(".sgm-market-g-h-title-bc")
-                ?.getAttribute("title")
-                ?.trim() === marketTitle
-          ) || null
-        );
+      const getMarket = (title: string) =>
+        Array.from(document.querySelectorAll('.sgm-market-g')).find(m =>
+          m.querySelector('.sgm-market-g-h-title-bc')
+            ?.getAttribute('title')?.trim() === title
+        ) as HTMLElement | undefined;
+
+      const oddsFrom = (el?: HTMLElement, filterName?: string) => {
+        if (!el) return [];
+        let cells = Array.from(el.querySelectorAll('.sgm-market-g-i-cell-bc.market-bc'));
+        if (filterName) {
+          cells = cells.filter(c =>
+            c.querySelector('.market-name-bc')?.textContent?.trim() === filterName
+          );
+        }
+        return cells.map(c => c.querySelector('.market-odd-bc')?.textContent?.trim() || '0');
+      };
+
+      // 1X2
+      const mr = getMarket("Match Result");
+      const [home, draw, away] = oddsFrom(mr);
+
+      // BTTS
+      const btts = getMarket("Both Teams To Score");
+      const [yes, no] = oddsFrom(btts);
+
+      // Over/Under @2.5
+      const tg = getMarket("Total Goals");
+      const [over, under] = oddsFrom(tg, "2.5");
+
+      return {
+        matchResult: { home: home || "0", draw: draw || "0", away: away || "0" },
+        bothTeams: { yes: yes || "0", no: no || "0" },
+        totalGoals: { over: over || "0", under: under || "0" },
+      } as OddsData;
+    });
+  }
+
+
+  private async extractOddsNew(page: Page): Promise<OddsData> {
+    // 1) get the panel
+    const panel = await page.$('.sgm-body-bc');
+    if (!panel) throw new Error('Odds panel not found');
+
+    // 2) define the market titles we care about
+    const required = ["Match Result", "Both Teams To Score", "Total Goals"];
+
+    // 3) scroll until we've loaded all three, or until we've tried 20 times
+    for (let i = 0; i < 20; i++) {
+      const titles = await page.$$eval(
+        '.sgm-market-g-h-title-bc',
+        els => els.map(el => el.getAttribute('title')?.trim() || "")
+      );
+      // if all required markets are present, stop scrolling
+      if (required.every(m => titles.includes(m))) break;
+
+      // otherwise scroll a bit more
+      await panel.hover();
+      await page.mouse.wheel({ deltaY: 500 });
+      await this.wait(300);
+    }
+
+    // 4) once scrolled, pull out exactly what you need
+    return page.evaluate(() => {
+      const getMarket = (title: string) => {
+        return Array.from(document.querySelectorAll('.sgm-market-g')).find(m => {
+          return m.querySelector('.sgm-market-g-h-title-bc')?.getAttribute('title')?.trim() === title;
+        }) as HTMLElement | undefined;
+      };
+
+      const oddsFrom = (marketEl: HTMLElement | undefined, filterName?: string) => {
+        if (!marketEl) return [];
+        let cells = Array.from(marketEl.querySelectorAll('.sgm-market-g-i-cell-bc.market-bc'));
+        if (filterName) {
+          cells = cells.filter(c =>
+            c.querySelector('.market-name-bc')?.textContent?.trim() === filterName
+          );
+        }
+        return cells.map(c => c.querySelector('.market-odd-bc')?.textContent?.trim() ?? '0');
+      };
+
+      // Match Result
+      const mr = getMarket("Match Result");
+      const [home, draw, away] = oddsFrom(mr);
+
+      // Both Teams To Score
+      const btts = getMarket("Both Teams To Score");
+      const [yes, no] = oddsFrom(btts);
+
+      // Total Goals @ 2.5
+      const tg = getMarket("Total Goals");
+      const [over, under] = oddsFrom(tg, "2.5");
+
+      return {
+        matchResult: { home: home || "0", draw: draw || "0", away: away || "0" },
+        bothTeams: { yes: yes || "0", no: no || "0" },
+        totalGoals: { over: over || "0", under: under || "0" }
+      } as OddsData;
+    });
+  }
+
+
+
+  private async extractOddss(page: Page): Promise<OddsData> {
+    return page.evaluate(() => {
+      const log = (...args: any[]) => console.log("[extractOdds]", ...args);
+
+      const getMarketTitleList = (): string[] => {
+        return Array.from(document.querySelectorAll(".sgm-market-g-h-title-bc"))
+          .map(el => el.getAttribute("title")?.trim() || "")
+          .filter(Boolean);
+      };
+
+      const extractMarket = (title: string): Element | null => {
+        const markets = Array.from(document.querySelectorAll(".sgm-market-g"));
+        for (const market of markets) {
+          const marketTitle = market.querySelector(".sgm-market-g-h-title-bc")?.getAttribute("title")?.trim();
+          log("Checking market title:", marketTitle);
+          if (marketTitle === title) return market;
+        }
+        log(`❌ Market '${title}' not found`);
+        return null;
       };
 
       const extractOdds = (marketTitle: string): string[] => {
         const marketEl = extractMarket(marketTitle);
         if (!marketEl) return [];
-        return Array.from(
-          marketEl.querySelectorAll(".sgm-market-g-i-cell-bc.market-bc")
-        ).map(
-          (cell) =>
-            cell.querySelector(".market-odd-bc")?.textContent?.trim() || "N/A"
-        );
+
+        const cells = marketEl.querySelectorAll(".sgm-market-g-i-cell-bc.market-bc");
+        const odds = Array.from(cells).map(cell => {
+          const odd = cell.querySelector(".market-odd-bc")?.textContent?.trim() ?? "0";
+          log(`✅ Found odd for '${marketTitle}':`, odd);
+          return odd;
+        });
+
+        return odds;
       };
 
-      // Extract Match Result odds from the "Match Result" market
-      const extractMatchResultOdds = (): {
-        home: string;
-        draw: string;
-        away: string;
-      } => {
+      const extractMatchResultOdds = (): OddsData["matchResult"] => {
         const odds = extractOdds("Match Result");
         return {
-          home: odds[0] || "N/A",
-          draw: odds[1] || "N/A",
-          away: odds[2] || "N/A",
+          home: odds[0] || "0",
+          draw: odds[1] || "0",
+          away: odds[2] || "0"
         };
       };
 
-      // Extract Both Teams To Score odds from the "Both Teams To Score" market
-      const extractBothTeamsOdds = (): { yes: string; no: string } => {
+      const extractBothTeamsOdds = (): OddsData["bothTeams"] => {
         const odds = extractOdds("Both Teams To Score");
         return {
-          yes: odds[0] || "N/A",
-          no: odds[1] || "N/A",
+          yes: odds[0] || "0",
+          no: odds[1] || "0"
         };
       };
 
-      // Extract Total Goals odds for the "2.5" market from the "Total Goals" market
-      const extractTotalGoalsOdds = (): {
-        over: string;
-        under: string;
-      } | null => {
-        const marketEl = extractMarket("Total Goals");
-        if (!marketEl) return null;
-        // Filter cells that have a market name exactly "2.5"
+      const extractTotalGoalsOdds = (): OddsData["totalGoals"] => {
+        const market = extractMarket("Total Goals");
+        if (!market) return { over: "0", under: "0" };
+
         const cells = Array.from(
-          marketEl.querySelectorAll(".sgm-market-g-i-cell-bc.market-bc")
-        ).filter(
-          (cell) =>
-            cell.querySelector(".market-name-bc")?.textContent?.trim() === "2.5"
+          market.querySelectorAll(".sgm-market-g-i-cell-bc.market-bc")
+        ).filter(cell =>
+          cell.querySelector(".market-name-bc")?.textContent?.trim() === "2.5"
         );
-        if (cells.length < 2) return null;
+
+        if (cells.length < 2) return { over: "0", under: "0" };
+
         return {
-          over:
-            cells[0]?.querySelector(".market-odd-bc")?.textContent?.trim() ||
-            "N/A",
-          under:
-            cells[1]?.querySelector(".market-odd-bc")?.textContent?.trim() ||
-            "N/A",
+          over: cells[0]?.querySelector(".market-odd-bc")?.textContent?.trim() ?? "0",
+          under: cells[1]?.querySelector(".market-odd-bc")?.textContent?.trim() ?? "0"
         };
       };
+
+      // Print all available market titles to aid debugging
+      log("🧠 Available market titles:", getMarketTitleList());
 
       return {
         matchResult: extractMatchResultOdds(),
         bothTeams: extractBothTeamsOdds(),
-        totalGoals: extractTotalGoalsOdds() || { over: "N/A", under: "N/A" },
+        totalGoals: extractTotalGoalsOdds(),
+        rawHtml: document.querySelector(".sgm-body-bc")?.innerHTML || "❌ No odds container"
       };
     });
   }
@@ -629,7 +916,10 @@ class BetMomoScraperService {
           "external_source_fixture_id",
           "source_id",
         ])
-        .merge(["coefficient"]);
+        .merge({
+          coefficient: db.raw("EXCLUDED.coefficient"),
+          updated_at: db.fn.now(),
+        });
       console.log("Odds outcome inserted/updated successfully.");
     } catch (err) {
       console.error("Error saving odds outcome:", err);
@@ -698,4 +988,5 @@ class BetMomoScraperService {
   }
 }
 
-export default new BetMomoScraperService();
+// ↓ now export the class itself
+export default BetMomoScraperService;

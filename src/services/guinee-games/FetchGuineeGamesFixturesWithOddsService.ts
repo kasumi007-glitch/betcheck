@@ -1,7 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
+import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
-import {fetchFromApi} from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientGN";
 
 class FetchGuineeGamesFixturesWithOddsService {
     private readonly apiUrlTemplate =
@@ -45,7 +45,7 @@ class FetchGuineeGamesFixturesWithOddsService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -111,7 +111,7 @@ class FetchGuineeGamesFixturesWithOddsService {
         //     '7'
         // );
 
-        const response = await fetchFromApi(apiUrl);
+        const response = await httpClientFromApi(apiUrl);
 
         if (!response?.data?.categories.length) {
             console.warn(`⚠️ No country categories received for league ID: ${sourceLeagueId}`);
@@ -150,7 +150,7 @@ class FetchGuineeGamesFixturesWithOddsService {
                     }
 
                     if (this.fetchOdd) {
-                       await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
+                        await this.fetchAndProcessOdds(fixture, leagueId, sourceLeagueId);
                     }
                 }
             }
@@ -223,7 +223,7 @@ class FetchGuineeGamesFixturesWithOddsService {
                 competition_id: matchedFixture.parent_league_id,
                 source_id: this.sourceId,
             })
-            .onConflict(["fixture_id", "source_id"])
+            .onConflict(["fixture_id", "source_id", "source_fixture_id"])
             .ignore()
             .returning("*");
 
@@ -245,7 +245,7 @@ class FetchGuineeGamesFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {id: sourceFixtureId} = fixtureData;
+        const { id: sourceFixtureId } = fixtureData;
 
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
@@ -363,7 +363,10 @@ class FetchGuineeGamesFixturesWithOddsService {
                 "external_source_fixture_id",
                 "source_id",
             ])
-            .merge(["coefficient"]);
+            .merge({
+                coefficient: db.raw("EXCLUDED.coefficient"),
+                updated_at: db.fn.now(),
+            });
 
         console.log("Odds data inserted/updated successfully.");
     }

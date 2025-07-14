@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchFixturesService {
@@ -52,7 +52,7 @@ class FetchFixturesService {
       const response = await httpClientFromApi(apiUrl);
       if (!response?.data?.categories.length) {
         console.warn("⚠️ No data received from API.");
-        return;
+        continue;
       }
       for (const category of response.data.categories) {
         for (const competition of category.competitions) {
@@ -138,7 +138,7 @@ class FetchFixturesService {
             competition_id: fixture.parent_league_id,
             source_id: this.sourceId,
           })
-          .onConflict(["fixture_id", "source_id"])
+          .onConflict(["fixture_id", "source_id", "source_fixture_id"])
           .ignore()
           .returning("*");
 

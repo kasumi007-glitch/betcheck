@@ -1,6 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
-import {leagueNameMappings} from "../leagueNameMappings";
+import { db } from "../../infrastructure/database/Database";
+// import { httpClientFromApi } from "../../utils/ApiClientAkwaBet";
+import { httpClientFromApi,fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
+// import { tunnelClientFromApi } from "../../utils/tunnelClientCI";
 
 class FetchAkwaBetLeagueService {
     private readonly apiUrl =
@@ -14,7 +15,7 @@ class FetchAkwaBetLeagueService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -28,7 +29,7 @@ class FetchAkwaBetLeagueService {
         await this.init();
 
         console.log(`🚀 Fetching leagues data from ${this.sourceName}...`);
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await httpClientFromApi(this.apiUrl);
 
         if (!response?.Sports?.length) {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
@@ -119,11 +120,12 @@ class FetchAkwaBetLeagueService {
                     source_league_id: sourceLeagueId,
                     source_league_name: league.name,
                     source_country_name: country.name,
+                    source_country_id: countryId,
                     league_id: league.id,
                     country_code: country.code,
                     source_id: this.sourceId,
                 })
-                .onConflict(["league_id", "source_id"])
+                .onConflict(["league_id", "source_id","source_league_id"])
                 .ignore() // This prevents duplicate inserts
                 .returning("*"); // Returns the inserted row(s) if successful
 
@@ -182,4 +184,4 @@ class FetchAkwaBetLeagueService {
 
 export default new
 
-FetchAkwaBetLeagueService();
+    FetchAkwaBetLeagueService();

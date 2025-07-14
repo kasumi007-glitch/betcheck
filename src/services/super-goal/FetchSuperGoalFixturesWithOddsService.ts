@@ -2,7 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import { teamNameMappings } from "../teamNameMappings";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 import GetAccessTokenService from "./GetAccessTokenService";
 
 class FetchSuperGoalFixturesWithOddsService {
@@ -132,8 +132,7 @@ class FetchSuperGoalFixturesWithOddsService {
 
     if (eventDate < today) {
       console.log(
-        `🗓️ Skipping past fixture: ${
-          event.header.code
+        `🗓️ Skipping past fixture: ${event.header.code
         } ${event.header.rivals.join(" vs ")}`
       );
       return false;
@@ -173,7 +172,7 @@ class FetchSuperGoalFixturesWithOddsService {
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 
@@ -292,7 +291,10 @@ class FetchSuperGoalFixturesWithOddsService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
     console.log("Odds inserted/updated successfully.");
   }
 }

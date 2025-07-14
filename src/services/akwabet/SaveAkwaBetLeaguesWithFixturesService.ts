@@ -1,5 +1,6 @@
-import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClientAkwaBet";
+import { db } from "../../infrastructure/database/Database";
+import { httpClientFromApiV2, fetchFromApiWithoutProxyV2 } from "../../utils/ApiClientAkwaBet";
+import { httpClientFromApi,fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveAkwaBetLeaguesWithFixturesService {
@@ -14,7 +15,7 @@ class SaveAkwaBetLeaguesWithFixturesService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -24,13 +25,13 @@ class SaveAkwaBetLeaguesWithFixturesService {
     async syncLeaguesAndFixtures() {
         console.log("🚀 Fetching AkwaBet leagues...");
 
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await fetchFromApiWithoutProxy(this.apiUrl);
         if (!response?.Sports?.length) {
             console.warn("⚠️ No leagues found in AkwaBet API response.");
             return;
         }
 
-        let jsonData: any = {countries: {}};
+        let jsonData: any = { countries: {} };
         const sports = response.Sports;
 
         for (const sport of sports) {
@@ -47,11 +48,14 @@ class SaveAkwaBetLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync(
-            "akwabet_leagues_fixtures.json",
-            JSON.stringify(jsonData, null, 2)
-        );
-        console.log("✅ JSON file generated: akwabet_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/akwabet_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
     }
 
     private async processCountry(country: any, jsonData: any) {
@@ -59,11 +63,7 @@ class SaveAkwaBetLeaguesWithFixturesService {
         const countryName = country.Name.International;
         console.log(`🌍 Processing country: ${countryName}`);
 
-        jsonData.countries[countryName] = {
-            id: countryId,
-            name: countryName,
-            leagues: {}
-        };
+        jsonData.countries[countryName] = { leagues: {} };
 
         if (country.Tournaments) {
             for (const league of country.Tournaments) {
@@ -77,10 +77,14 @@ class SaveAkwaBetLeaguesWithFixturesService {
         const leagueName = league.Name.International;
         console.log(`⚽ Processing league: ${leagueName} in ${countryName}`);
 
-        jsonData.countries[countryName].leagues[leagueId] = {
-            name: leagueName,
-            fixtures: [],
-        };
+        // jsonData.countries[countryName].leagues[leagueId] = {
+        //     name: leagueName,
+        //     fixtures: [],
+        // };
+
+        if (!jsonData.countries[countryName].leagues[leagueId]) {
+            jsonData.countries[countryName].leagues[leagueId] = { name: leagueName, fixtures: [] };
+        }
 
         await this.fetchAndProcessFixtures(leagueId, jsonData, countryName, countryId);
     }
@@ -103,7 +107,7 @@ class SaveAkwaBetLeaguesWithFixturesService {
             }),
         };
 
-        const response = await fetchFromApi(fixturesUrl, "POST", payloadData);
+        const response = await fetchFromApiWithoutProxyV2(fixturesUrl, "POST", payloadData);
 
         if (!response?.Contents) {
             console.warn(`⚠️ No fixtures received for league  ID: ${leagueId}`);

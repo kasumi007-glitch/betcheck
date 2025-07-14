@@ -1,7 +1,7 @@
-import {db} from "../../infrastructure/database/Database";
+import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
-import {fetchFromApi} from "../../utils/ApiClientWithPost";
+import { fetchFromApi, fetchFromApiWithoutProxy } from "../../utils/ApiClientWithPost";
 
 class FetchGeniusBetFixturesWithOddsService {
     private readonly apiUrlTemplate =
@@ -44,7 +44,7 @@ class FetchGeniusBetFixturesWithOddsService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -93,8 +93,8 @@ class FetchGeniusBetFixturesWithOddsService {
         );
 
         // const payload = {"tournament_ids": [218708]}; // TODO: remove this
-        const payload = {"tournament_ids": [Number(sourceLeagueId)]};
-        const response = await fetchFromApi(apiUrl, "POST", payload);
+        const payload = { "tournament_ids": [Number(sourceLeagueId)] };
+        const response = await fetchFromApiWithoutProxy(apiUrl, "POST", payload);
 
         if (!response?.data?.tournaments?.[0]?.marketGroupEvents?.length) {
             console.warn(`⚠️ No fixtures received for league ID: ${sourceLeagueId}`);
@@ -180,7 +180,7 @@ class FetchGeniusBetFixturesWithOddsService {
                 competition_id: matchedFixture.parent_league_id,
                 source_id: this.sourceId,
             })
-            .onConflict(["fixture_id", "source_id"])
+            .onConflict(["fixture_id", "source_id", "source_fixture_id"])
             .ignore()
             .returning("*");
 
@@ -202,7 +202,7 @@ class FetchGeniusBetFixturesWithOddsService {
         leagueId: number,
         sourceLeagueId: string
     ) {
-        const {id: sourceFixtureId} = fixtureData;
+        const { id: sourceFixtureId } = fixtureData;
 
         if (!fixtureData) {
             console.warn(`❌ No Fixture found!`);
@@ -321,7 +321,10 @@ class FetchGeniusBetFixturesWithOddsService {
                 "external_source_fixture_id",
                 "source_id",
             ])
-            .merge(["coefficient"]);
+            .merge({
+                coefficient: db.raw("EXCLUDED.coefficient"),
+                updated_at: db.fn.now(),
+            });
 
         console.log("Odds data inserted/updated successfully.");
     }

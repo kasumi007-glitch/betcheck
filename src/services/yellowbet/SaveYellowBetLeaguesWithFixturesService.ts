@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientGN";
 import fs from "fs";
 
 class SaveYellowBetLeaguesWithFixturesService {
@@ -23,7 +23,7 @@ class SaveYellowBetLeaguesWithFixturesService {
 
     async syncLeaguesAndFixtures() {
         console.log("🚀 Fetching YellowBet leagues...");
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await httpClientFromApi(this.apiUrl);
 
         if (!response?.data?.cl?.length) {
             console.warn(`⚠️ No leagues data received from ${this.sourceName}.`);
@@ -48,11 +48,14 @@ class SaveYellowBetLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync(
-            "yellowbet_leagues_fixtures.json",
-            JSON.stringify(jsonData, null, 2)
-        );
-        console.log("✅ JSON file generated: yellowbet_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/yellowbet_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
     }
 
     private async processCountry(node: any, jsonData: any) {
@@ -87,7 +90,7 @@ class SaveYellowBetLeaguesWithFixturesService {
             "{leagueId}",
             String(leagueId)
         );
-        const response = await fetchFromApi(fixturesUrl);
+        const response = await httpClientFromApi(fixturesUrl);
 
         if (!response?.data?.length) {
             console.warn(`⚠️ No fixtures found for league ID: ${leagueId}`);

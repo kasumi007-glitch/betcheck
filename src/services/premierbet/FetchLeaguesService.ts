@@ -1,22 +1,52 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
-// import { leagueNameMappings } from '../leagueNameMappings';
+// import { httpClientFromApi } from "../../utils/HttpClientML";
+import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
+import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
+import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI";
+import { httpClientFromApi as httpClientML } from "../../utils/HttpClientML";
 
 
 class FetchLeaguesService {
-  private readonly apiUrl =
-    "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
-
-  private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
+  private httpClient!: (url: string) => Promise<any>;
+  private apiUrlTemplate!: string;
   private countryNameMappings: Record<string, string> = {};
   private leagueNameMappings: Record<string, { name: string; mapped_name: string }[]> = {};
 
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
+  async init(sourceName: string) {
+    switch (sourceName.toUpperCase()) {
+      case "CMPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cm/v1/competitions?country=CM&group=g1&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientCM;
+        break;
+
+      case "SNPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/sn/v1/competitions?country=SN&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientSN;
+        break;
+
+      case "PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientCI;
+        break;
+
+      case "MLPREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ml/v1/competitions?country=ML&group=g7&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientML;
+        break;
+
+      default:
+        throw new Error(`Unknown source: ${sourceName}`);
+    }
+
+    const source = await db("sources").where("name", sourceName).first();
     if (!source) {
       [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
+        .insert({ name: sourceName })
         .returning("id");
     } else {
       this.sourceId = source.id;
@@ -26,10 +56,10 @@ class FetchLeaguesService {
     await this.loadLeagueNameMappings();
   }
 
-  async syncLeagues() {
-    await this.init();
+  async syncLeagues(sourceName: string) {
+    await this.init(sourceName);
     console.log("🚀 Fetching leagues data...");
-    const response = await httpClientFromApi(this.apiUrl);
+    const response = await this.httpClient(this.apiUrlTemplate);
 
     if (!response?.categories.length) {
       console.warn("⚠️ No data received from API.");
@@ -106,7 +136,7 @@ class FetchLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore() // This prevents duplicate inserts
         .returning("*"); // Returns the inserted row(s) if successful
 

@@ -1,7 +1,5 @@
-import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClient";
-import {leagueNameMappings} from "../leagueNameMappings";
-import {httpClientFromApi} from "../../utils/HttpClient";
+import { db } from "../../infrastructure/database/Database";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 
 class FetchLineBetLeagueService {
     private readonly apiUrl =
@@ -34,10 +32,9 @@ class FetchLineBetLeagueService {
             console.warn(`⚠️ No data received from ${this.sourceName}.`);
             return;
         }
+        const sport = response.Value.find((s: any) => s.I === 1 && s.L);
 
-        for (const sport of response.Value) {
-            if (!sport.L) continue; // Skip if no leagues exist
-
+        if (sport?.L?.length) {
             for (const leagueData of sport.L) {
                 if (leagueData.SC) {
                     for (const subLeague of leagueData.SC) {
@@ -52,7 +49,7 @@ class FetchLineBetLeagueService {
                     await this.processLeague(
                         leagueData.L,
                         leagueData.LI,
-                        null,
+                        "World",
                         leagueData.CI
                     );
                 }
@@ -65,29 +62,47 @@ class FetchLineBetLeagueService {
     private async processLeague(
         leagueName: string,
         sourceLeagueId: number,
-        parentLeagueName: string | null,
+        parentLeagueName: string,
         countryId: number
     ) {
+        // if (!leagueName.includes(".")) {
+        //     console.warn(
+        //         `⚠️ Skipping league "${leagueName}" - No dot separator found.`
+        //     );
+        //     return;
+        // }
+
+        // // Extract country name & actual league name
+        // const leagueParts = leagueName.split(".");
+        // if (leagueParts.length > 2) {
+        //     console.warn(
+        //         `⚠️ Skipping league "${leagueName}" - Too many dot separators.`
+        //     );
+        //     return;
+        // }
+        // const extractedLeagueName =
+        //     leagueParts.length > 1 ? leagueParts[1].trim() : leagueName;
+
+        // const sourceCountryName =
+        //     leagueParts.length > 1 ? leagueParts[0].trim() : leagueName;
+
+        let sourceCountryName: string;
+        let extractedLeagueName: string;
+
         if (!leagueName.includes(".")) {
-            console.warn(
-                `⚠️ Skipping league "${leagueName}" - No dot separator found.`
-            );
-            return;
-        }
+            extractedLeagueName = leagueName.trim();
+            sourceCountryName = parentLeagueName;
+        } else {
+            const leagueParts = leagueName.split(".");
 
-        // Extract country name & actual league name
-        const leagueParts = leagueName.split(".");
-        if (leagueParts.length > 2) {
-            console.warn(
-                `⚠️ Skipping league "${leagueName}" - Too many dot separators.`
-            );
-            return;
-        }
-        const extractedLeagueName =
-            leagueParts.length > 1 ? leagueParts[1].trim() : leagueName;
+            // if (leagueParts.length > 2) {
+            //     console.warn(`⚠️ Skipping league "${leagueName}" - Too many dot separators.`);
+            //     return;
+            // }
 
-        const sourceCountryName =
-            leagueParts.length > 1 ? leagueParts[0].trim() : leagueName;
+            sourceCountryName = leagueParts[0].trim();
+            extractedLeagueName = leagueParts.slice(1).join(".").trim(); // handle names like "2. Bundesliga"
+        }
 
         const countryName = this.countryNameMappings[sourceCountryName.trim()] ?? sourceCountryName.trim();
 
@@ -128,7 +143,7 @@ class FetchLineBetLeagueService {
                     country_code: dbCountry.code,
                     source_id: this.sourceId,
                 })
-                .onConflict(["league_id", "source_id"])
+                .onConflict(["league_id", "source_id", "source_league_id"])
                 .ignore() // This prevents duplicate inserts
                 .returning("*"); // Returns the inserted row(s) if successful
 

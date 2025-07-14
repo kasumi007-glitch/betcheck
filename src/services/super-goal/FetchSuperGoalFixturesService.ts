@@ -1,13 +1,13 @@
 import { db } from "../../infrastructure/database/Database";
 import { teamNameMappings } from "../teamNameMappings";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCM";
 import GetAccessTokenService from "./GetAccessTokenService";
 
 class FetchSuperGoalFixturesService {
   // Endpoint to fetch fixtures (with odds) for a given league.
   // The league id will be replaced in the URL.
   private readonly apiUrlTemplate =
-    "https://online.meridianbet.com/betshop/api/v1/standard/sport/58/league?page=0&time=ONE_DAY&leagues={leagueId}";
+    "https://online.meridianbet.com/betshop/api/v1/standard/sport/58/league?page=0&time=ALL&leagues={leagueId}";
   private readonly sourceName = "SUPERGOOAL";
   private sourceId!: number;
   private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
@@ -39,6 +39,7 @@ class FetchSuperGoalFixturesService {
       )
       .where("source_league_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true);
+      // .andWhere("leagues.id", 10717);
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for SUPERGOOAL in our database.");
@@ -140,7 +141,7 @@ class FetchSuperGoalFixturesService {
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 

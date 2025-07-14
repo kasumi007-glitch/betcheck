@@ -3,6 +3,7 @@
   id: number; // Market ID (e.g., 1, 17, 19)
   G: number; // Market ID (e.g., 1, 17, 19)
   T: number; // Outcome ID
+  P: number; // type ID
   C: number; // Coefficient (the odds value)
   // Add other properties as needed
 }

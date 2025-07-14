@@ -1,7 +1,7 @@
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
@@ -174,7 +174,7 @@ class FetchMegaPariFixturesWithOddsService {
         competition_id: matchedFixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 
@@ -311,7 +311,10 @@ class FetchMegaPariFixturesWithOddsService {
         "external_source_fixture_id",
         "source_id",
       ])
-      .merge(["coefficient"]);
+      .merge({
+        coefficient: db.raw("EXCLUDED.coefficient"),
+        updated_at: db.fn.now(),
+      });
 
     console.log("Odds data inserted/updated successfully.");
   }

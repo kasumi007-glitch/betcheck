@@ -1,5 +1,6 @@
-import {db} from "../../infrastructure/database/Database";
-import {fetchFromApi} from "../../utils/ApiClientMultiTry";
+import { db } from "../../infrastructure/database/Database";
+import { fetchFromApi } from "../../utils/ApiClientMultiTry";
+import { httpClientFromApi, fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveMelBetLeaguesWithFixturesService {
@@ -15,7 +16,7 @@ class SaveMelBetLeaguesWithFixturesService {
         const source = await db("sources").where("name", this.sourceName).first();
         if (!source) {
             [this.sourceId] = await db("sources")
-                .insert({name: this.sourceName})
+                .insert({ name: this.sourceName })
                 .returning("id");
         } else {
             this.sourceId = source.id;
@@ -24,13 +25,13 @@ class SaveMelBetLeaguesWithFixturesService {
 
     async syncLeaguesAndFixtures() {
         console.log("🚀 Fetching MelBet leagues...");
-        const response = await fetchFromApi(this.apiUrl);
+        const response = await fetchFromApiWithoutProxy(this.apiUrl);
         if (!response?.Value?.length) {
             console.warn("⚠️ No leagues found in MelBet API response.");
             return;
         }
 
-        let jsonData: any = {countries: {}};
+        let jsonData: any = { countries: {} };
 
         const sport = response.Value.find((s: any) => s.I === 1 && s.L);
         if (sport) {
@@ -43,11 +44,14 @@ class SaveMelBetLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        fs.writeFileSync(
-            "melbet_leagues_fixtures.json",
-            JSON.stringify(jsonData, null, 2)
-        );
-        console.log("✅ JSON file generated: melbet_leagues_fixtures.json");
+        // 🗓️ Add today's date
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+        // 📝 Save into /src/files/ folder
+        const filePath = `./files/melbet_countries_leagues_fixtures_${dateStr}.json`;
+        fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+        console.log(`✅ JSON file generated: ${filePath}`);
     }
 
     private async processCountry(country: any, jsonData: any) {
@@ -55,7 +59,7 @@ class SaveMelBetLeaguesWithFixturesService {
         const countryName = country.L;
         console.log(`🌍 Processing country: ${countryName}`);
 
-        jsonData.countries[countryName] = {leagues: {}};
+        jsonData.countries[countryName] = { leagues: {} };
 
         if (country.SC) {
             for (const league of country.SC) {
@@ -85,7 +89,7 @@ class SaveMelBetLeaguesWithFixturesService {
             "{sourceLeagueId}",
             String(leagueId)
         );
-        const response = await fetchFromApi(fixturesUrl);
+        const response = await fetchFromApiWithoutProxy(fixturesUrl);
         if (!response?.Value?.length) return;
 
         for (const fixture of response.Value) {

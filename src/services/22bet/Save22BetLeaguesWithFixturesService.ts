@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientSN";
 import fs from "fs";
 
 class Save22BetLeaguesWithFixturesService {
@@ -23,7 +23,7 @@ class Save22BetLeaguesWithFixturesService {
 
   async syncLeaguesAndFixtures() {
     console.log("🚀 Fetching 22BET leagues...");
-    const response = await fetchFromApi(this.leaguesApiUrl);
+    const response = await httpClientFromApi(this.leaguesApiUrl);
     if (!response?.data?.leagues || !response.data.sportCategories) {
       console.warn(
         "⚠️ No leagues or sport categories found in the 22BET API response."
@@ -42,11 +42,14 @@ class Save22BetLeaguesWithFixturesService {
       await this.processCategory(category, leagues, jsonData);
     }
 
-    fs.writeFileSync(
-      "22bet_leagues_fixtures.json",
-      JSON.stringify(jsonData, null, 2)
-    );
-    console.log("✅ JSON file generated: 22bet_leagues_fixtures.json");
+    // 🗓️ Add today's date
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+
+    // 📝 Save into /src/files/ folder
+    const filePath = `./files/22bet_countries_leagues_fixtures_${dateStr}.json`;
+    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
+    console.log(`✅ JSON file generated: ${filePath}`);
   }
 
   private async processCategory(category: any, leagues: any[], jsonData: any) {
@@ -85,7 +88,7 @@ class Save22BetLeaguesWithFixturesService {
       "{leagueId}",
       String(leagueId)
     );
-    const response = await fetchFromApi(fixturesUrl);
+    const response = await httpClientFromApi(fixturesUrl);
     if (!response?.data?.items) return;
 
     const { items, relations } = response.data;

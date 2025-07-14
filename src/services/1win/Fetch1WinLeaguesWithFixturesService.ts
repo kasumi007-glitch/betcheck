@@ -1,13 +1,12 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
-import { leagueNameMappings } from "../leagueNameMappings";
-import { teamNameMappings } from "../teamNameMappings";
-import fs from "fs";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 
 class Fetch1WinLeaguesWithFixturesService {
   // URL to get all categories (countries)
   private readonly categoriesApiUrl =
     "https://match-storage-parsed.top-parser.com/categories/list?data=%7B%22lang%22:%22en%22,%22service%22:%22prematch%22%7D";
+  private readonly tournamentsApiUrl =
+    "https://match-storage-parsed.top-parser.com/tournaments/list?data=%7B%22localeId%22%3A82%2C%22lang%22%3A%22en%22%2C%22service%22%3A%22prematch%22%7D";
   // URL template to fetch matches (both leagues and fixtures) for a given category
   private readonly matchesApiUrlTemplate =
     "https://match-storage-parsed.top-parser.com/matches/list?data=%7B%22lang%22:%22en%22,%22localeId%22:82,%22service%22:%22prematch%22,%22categoryId%22:{categoryId},%22onlyOutrights%22:false%7D";
@@ -48,6 +47,13 @@ class Fetch1WinLeaguesWithFixturesService {
       return;
     }
 
+    console.log("🚀 Fetching 1WIN tournaments (countries)...");
+    const tournamentsResponse = await httpClientFromApi(this.tournamentsApiUrl);
+    if (!tournamentsResponse?.tournaments?.length) {
+      console.warn("⚠️ No tournaments received from 1WIN API.");
+      return;
+    }
+
     // Filter categories to only those with sportId 18
     const countries = categoriesResponse.categories.filter(
       (cat: any) => cat.sportId === 18
@@ -76,7 +82,8 @@ class Fetch1WinLeaguesWithFixturesService {
     // fs.writeFileSync(filePath, JSON.stringify(unmatchedCountries, null, 2));
 
     // Process each country/category
-    for (const country of countries) {
+    for (const country of countries.filter((cat: any) => cat.name.trim() === "Austria")) {
+      // if(country.name.trim() !== "Germany") continue; // Skip Germany for now
       const categoryId = country.id;
       // const countryName = country.name.trim();
       const countryName = this.countryNameMappings[country.name.trim()] ?? country.name.trim();
@@ -92,6 +99,10 @@ class Fetch1WinLeaguesWithFixturesService {
         continue;
       }
 
+      let leagueMatches = tournamentsResponse.tournaments.filter(
+        (tournament: any) => tournament.sportId === 18 && tournament.categoryId === country.id
+      );
+
       // Build URL to get matches for this category
       const matchesUrl = this.matchesApiUrlTemplate.replace(
         "{categoryId}",
@@ -104,9 +115,11 @@ class Fetch1WinLeaguesWithFixturesService {
       }
 
       // Separate outright entries (leagues) from regular fixtures
-      const leagueMatches = matchesResponse.matches.filter(
-        (match: any) => match.outright === true
-      );
+
+      // if (!leagueMatches?.length) {
+      //   leagueMatches = matchesResponse.matches.filter((match: any) => match.outright === true);
+      // }
+
       const fixtureMatches = matchesResponse.matches.filter(
         (match: any) => match.outright === false
       );
@@ -126,9 +139,9 @@ class Fetch1WinLeaguesWithFixturesService {
 
   private async processLeague(dbCountry: any, league: any) {
     // Use tournamentId as our source league identifier
-    const sourceLeagueId = league.tournamentId;
+    const sourceLeagueId = league.id;
     // For outright entries, the homeTeamName typically holds the league/tournament name
-    const sourceLeagueName = league.homeTeamName.trim();
+    const sourceLeagueName = league.name.trim();
     const countryName = dbCountry.name;
 
     // // Optionally apply a name mapping
@@ -163,7 +176,7 @@ class Fetch1WinLeaguesWithFixturesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id"])
+        .onConflict(["league_id", "source_id","source_league_id"])
         .ignore()
         .returning("*");
 
@@ -194,6 +207,7 @@ class Fetch1WinLeaguesWithFixturesService {
       .where("source_league_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true)
       .andWhere("leagues.country_code", dbCountry.code);
+      // .andWhere("leagues.id", 10463);
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for 1WIN in our database.");
@@ -285,12 +299,12 @@ class Fetch1WinLeaguesWithFixturesService {
       .insert({
         source_fixture_id: sourceFixtureId,
         source_competition_id: match.tournamentId, // Assuming tournamentId maps to league
-        source_event_name: match.externalId, // Adjust if you have a different title field
+        source_event_name: `${homeTeam} vs ${awayTeam}`, // Adjust if you have a different title field
         fixture_id: fixture.id,
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 

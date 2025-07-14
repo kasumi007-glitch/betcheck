@@ -1,5 +1,5 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchBetclicFixturesService {
@@ -7,6 +7,8 @@ class FetchBetclicFixturesService {
   // Note: lc[]=1 is hardcoded for sport (soccer) here.
   private readonly apiUrlTemplate =
     "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&lsubc={leagueId}&ss=all&l=20&ltr=0";
+  private readonly fixturesApiUrlTemplateNonCountry = "https://uodyc08.com/api/v3/user/line/list?lc[]=1&lsc={countryId}&ss=all&l=20&ltr=0";
+  private readonly fixturesApiUrlTemplateNonPin = "https://lcj9iczmb.com/api/v3/user/line/pinned-list.json?lc[]=1&lsc={countryId}&ss=all&l=20&ltr=0";
   private readonly sourceName = "BETCLIC";
   private sourceId!: number;
   private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
@@ -44,22 +46,50 @@ class FetchBetclicFixturesService {
       return;
     }
 
-    for (const league of leagues) {
-      // Use the stored source_country_id (from the leagues service)
-      const countryId = league.source_country_id;
-      const leagueId = league.source_league_id;
-      const apiUrl = this.apiUrlTemplate
-        .replace("{countryId}", String(countryId))
-        .replace("{leagueId}", String(leagueId));
-      const response = await httpClientFromApi(apiUrl);
-      if (!response?.lines_hierarchy?.length) {
-        console.warn(`⚠️ No fixture data for league id: ${leagueId}`);
-        continue;
-      }
-      await this.processFixtures(response.lines_hierarchy, league);
-    }
+    await this.processLeagues(leagues);
 
     console.log("✅ Betclic fixtures synced successfully!");
+  }
+
+  private async processLeagues(leagues: any[]) {
+    for (const league of leagues) {
+      const countryId = league.source_country_id;
+      const leagueId = league.source_league_id;
+      console.log(`🔍 Processing fixtures for league: ${league.league_id}`);
+
+      if (!countryId) {
+        await this.processNonCountryFixtures(leagueId, league);
+      } else {
+        await this.processCountryFixtures(countryId, leagueId, league);
+      }
+    }
+  }
+
+  private async processNonCountryFixtures(leagueId: number, league: any) {
+    const fixturesUrlPin = this.fixturesApiUrlTemplateNonPin.replace("{countryId}", String(leagueId));
+    const responsePin = await httpClientFromApi(fixturesUrlPin);
+    if (!responsePin?.lines_hierarchy?.length) {
+      const fixturesUrl = this.fixturesApiUrlTemplateNonCountry
+        .replace("{countryId}", String(leagueId));
+      const response = await httpClientFromApi(fixturesUrl);
+      if (!response?.lines_hierarchy?.length) { return; }
+      await this.processFixtures(response.lines_hierarchy, league);
+    } else {
+      await this.processFixtures(responsePin.lines_hierarchy, league);
+    }
+  }
+
+  private async processCountryFixtures(countryId: number, leagueId: number, league: any) {
+    const apiUrl = this.apiUrlTemplate
+      .replace("{countryId}", String(countryId))
+      .replace("{leagueId}", String(leagueId));
+
+    const response = await httpClientFromApi(apiUrl);
+    if (!response?.lines_hierarchy?.length) {
+      console.warn(`⚠️ No fixture data for league id: ${leagueId}`);
+      return;
+    }
+    await this.processFixtures(response.lines_hierarchy, league);
   }
 
   private async processFixtures(linesHierarchy: any[], league: any) {
@@ -165,7 +195,7 @@ class FetchBetclicFixturesService {
         competition_id: fixture.parent_league_id,
         source_id: this.sourceId,
       })
-      .onConflict(["fixture_id", "source_id"])
+      .onConflict(["fixture_id", "source_id", "source_fixture_id"])
       .ignore()
       .returning("*");
 

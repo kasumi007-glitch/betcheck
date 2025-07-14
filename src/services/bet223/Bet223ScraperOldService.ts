@@ -1,4 +1,4 @@
-import { launchBrowser } from "../../utils/launchBrowserUtil";
+import {  launchBrowserWithProxy, launchBrowserWithoutProxy } from "../../utils/launchBrowserUtil";
 import puppeteer, { Browser, Page, ElementHandle, JSHandle } from "puppeteer";
 
 interface MatchInfo {
@@ -21,7 +21,7 @@ interface Match {
 
 class Bet223ScraperOldService {
   async scrape(): Promise<void> {
-    const { browser, page } = await launchBrowser();
+    const { browser, page } = await launchBrowserWithProxy();
     await this.setupPage(page);
     const countryElements = await this.getCountryElements(page);
 
