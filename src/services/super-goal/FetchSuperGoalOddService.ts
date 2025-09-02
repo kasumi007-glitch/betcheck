@@ -3,6 +3,7 @@ import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { httpClientFromApi } from "../../utils/HttpClientCM";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 import GetAccessTokenService from "./GetAccessTokenService";
 
 class FetchSuperGoalOddService {
@@ -175,13 +176,23 @@ class FetchSuperGoalOddService {
         );
         continue;
       }
-      await this.saveMarketOutcome(
-        dbGroup.group_id,
-        Number(selection.price),
-        dbMarket.market_id,
-        fixtureId,
-        externalFixtureId
-      );
+
+      await OddsSnapshotService.saveOrUpdate({
+        group_id: dbGroup.group_id,
+        market_id: dbMarket.market_id,
+        fixture_id: fixtureId,
+        source_id: this.sourceId,
+        external_source_fixture_id: externalFixtureId,
+        coefficient: selection.price,
+      });
+
+      // await this.saveMarketOutcome(
+      //   dbGroup.group_id,
+      //   Number(selection.price),
+      //   dbMarket.market_id,
+      //   fixtureId,
+      //   externalFixtureId
+      // );
     }
   }
 

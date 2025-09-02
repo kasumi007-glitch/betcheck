@@ -1,7 +1,7 @@
 import fs from "fs";
 import { fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
 
-class SaveTopParserLeaguesWithFixturesService {
+class Save1WinProLeaguesWithFixturesService {
     private readonly countriesApiUrl = "https://api-gateway.top-parser.com/categories/get-many";
     private readonly leaguesApiUrl = "https://api-gateway.top-parser.com/tournaments/get-many";
     private readonly fixturesApiUrl = "https://api-gateway.top-parser.com/matches/get-many";
@@ -66,10 +66,10 @@ class SaveTopParserLeaguesWithFixturesService {
         }
 
         const dateStr = new Date().toISOString().split("T")[0];
-        const filePath = `./files/1win_pro_leagues_fixtures_${dateStr}.json`;
+        const filePath = `./files/common/1win_pro_leagues_fixtures_${dateStr}.json`;
         fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
         console.log(`✅ JSON file saved: ${filePath}`);
     }
 }
 
-export default new SaveTopParserLeaguesWithFixturesService();
+export default new Save1WinProLeaguesWithFixturesService();

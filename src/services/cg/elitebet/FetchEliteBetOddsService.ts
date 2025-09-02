@@ -3,6 +3,7 @@ import { db } from '../../../infrastructure/database/Database';
 import { fetchFromApiWithoutProxy } from '../../../utils/HttpClientCG';
 import Group from "../../../models/Group";
 import Market from "../../../models/Market";
+import { OddsSnapshotService } from '../../../utils/OddsSnapshotService';
 
 interface OddsOutput {
     homeWin?: string;
@@ -69,22 +70,31 @@ export class FetchEliteBetOddsService {
             );
             if (!group || !market || !oddsValue) return;
 
-            await db('fixture_odds')
-                .insert({
-                    group_id: group.group_id,
-                    market_id: market.market_id,
-                    coefficient: oddsValue,
-                    fixture_id: fixtureId,
-                    external_source_fixture_id: sourceFixtureId,
-                    source_id: this.sourceId,
-                })
-                .onConflict(['group_id', 'market_id', 'fixture_id', 'external_source_fixture_id', 'source_id'])
-                .merge({
-                    coefficient: db.raw('EXCLUDED.coefficient'),
-                    updated_at: db.fn.now(),
-                });
+            await OddsSnapshotService.saveOrUpdate({
+                group_id: group.group_id,
+                market_id: market.market_id,
+                fixture_id: fixtureId,
+                source_id: this.sourceId,
+                external_source_fixture_id: sourceFixtureId,
+                coefficient: Number(oddsValue),
+            });
 
-            console.log(`✅ Odds saved: ${groupName} - ${marketName} @ ${oddsValue}`);
+            // await db('fixture_odds')
+            //     .insert({
+            //         group_id: group.group_id,
+            //         market_id: market.market_id,
+            //         coefficient: oddsValue,
+            //         fixture_id: fixtureId,
+            //         external_source_fixture_id: sourceFixtureId,
+            //         source_id: this.sourceId,
+            //     })
+            //     .onConflict(['group_id', 'market_id', 'fixture_id', 'external_source_fixture_id', 'source_id'])
+            //     .merge({
+            //         coefficient: db.raw('EXCLUDED.coefficient'),
+            //         updated_at: db.fn.now(),
+            //     });
+
+            // console.log(`✅ Odds saved: ${groupName} - ${marketName} @ ${oddsValue}`);
         };
 
         // Save all odds

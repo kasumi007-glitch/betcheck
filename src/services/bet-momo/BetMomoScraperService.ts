@@ -13,6 +13,7 @@ import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
 import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
 import fs from "fs";
 import path from "path";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 interface MatchInfo {
   teams: string[];
@@ -880,13 +881,22 @@ class BetMomoScraperService {
             console.warn(`❌ No market found for outcome: ${outcome.alias}`);
             continue;
           }
-          await this.saveMarketOutcome(
-            dbGroup.group_id,
-            outcome.coefficient,
-            dbMarket.market_id,
-            fixtureId,
-            String(odds.external_source_fixture_id)
-          );
+
+          await OddsSnapshotService.saveOrUpdate({
+            group_id: dbGroup.group_id,
+            market_id: dbMarket.market_id,
+            fixture_id: fixtureId,
+            source_id: this.sourceId,
+            external_source_fixture_id: odds.external_source_fixture_id?.toString() || "",
+            coefficient: outcome.coefficient,
+          });
+          // await this.saveMarketOutcome(
+          //   dbGroup.group_id,
+          //   outcome.coefficient,
+          //   dbMarket.market_id,
+          //   fixtureId,
+          //   String(odds.external_source_fixture_id)
+          // );
         }
       }
     }

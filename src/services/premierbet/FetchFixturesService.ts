@@ -1,20 +1,99 @@
 import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClientCI";
+import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI";
+import { httpClientFromApi as httpClientML } from "../../utils/HttpClientML";
+import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
+import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
+import { httpClientFromApi as httpClientGA } from "../../utils/HttpClientGA";
+import { httpClientFromApi as httpClientTG } from "../../utils/HttpClientTG";
+import { httpClientFromApi as httpClientCG } from "../../utils/HttpClientCG";
+import { httpClientFromApi as httpClientCD } from "../../utils/HttpClientCD";
+import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
+import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
+import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
 import { teamNameMappings } from "../teamNameMappings";
 
 class FetchFixturesService {
-  private readonly apiUrlTemplate =
-    "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
 
-  private readonly sourceName = "PREMIERBET";
   private sourceId!: number;
+  private httpClient!: (url: string) => Promise<any>;
+  private apiUrlTemplate!: string;
   private teamNameMappings: Record<number, { name: string; mapped_name: string }[]> = {};
 
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
+  async init(sourceName: string) {
+    switch (sourceName.toUpperCase()) {
+      // case "CI_PREMIERBET":
+      //   this.apiUrlTemplate =
+      //     "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientCI;
+      //   break;
+
+      case "ML_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ml/v1/events?country=ML&group=g7&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientML;
+        break;
+
+      case "SN_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/sn/v1/events?country=SN&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientSN;
+        break;
+
+      case "CM_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cm/v1/events?country=CM&group=g1&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientCM;
+        break;
+
+      case "GA_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ga/v1/events?country=GA&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientGA;
+        break;
+
+      case "TG_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/tg/v2/events?country=TG&group=g3&platform=desktop&locale=en&sportId=SOCCER&competitionId={leagueId}&limit=10";
+        this.httpClient = httpClientTG;
+        break;
+
+      case "CG_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cg/v1/events?country=CG&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientCG;
+        break;
+
+      case "CD_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cd/v1/events?country=CD&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientCD;
+        break;
+
+      case "SL_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.mercurybet.com/v1/events?country=SL&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false&limit=10";
+        this.httpClient = httpClientSL;
+        break;
+
+      case "AO_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.co.ao/v1/events?country=AO&group=g2&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false&limit=10";
+        this.httpClient = httpClientAO;
+        break;
+
+      case "ZW_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/zw/v1/events?country=ZW&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientZW;
+        break;
+      default:
+        throw new Error(`Unknown source: ${sourceName}`);
+    }
+
+    const source = await db("sources").where("name", sourceName).first();
     if (!source) {
       [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
+        .insert({ name: sourceName })
         .returning("id");
     } else {
       this.sourceId = source.id;
@@ -22,8 +101,8 @@ class FetchFixturesService {
     await this.loadTeamNameMappings();
   }
 
-  async syncFixtures() {
-    await this.init();
+  async syncFixtures(sourceName: string) {
+    await this.init(sourceName);
     console.log("🚀 Fetching competitions data...");
 
     // Get all leagues for ONEBET from the source_league_matches table
@@ -36,7 +115,7 @@ class FetchFixturesService {
       )
       .where("source_league_matches.source_id", this.sourceId)
       .andWhere("leagues.is_active", true);
-      // .andWhere("source_league_matches.source_league_id", "1008226");
+    // .andWhere("source_league_matches.source_league_id", "1008226");
 
     if (!leagues.length) {
       console.warn("⚠️ No leagues found for ONEBET in our database.");
@@ -49,7 +128,7 @@ class FetchFixturesService {
         "{leagueId}",
         String(leagueId)
       );
-      const response = await httpClientFromApi(apiUrl);
+      const response = await this.httpClient(apiUrl);
       if (!response?.data?.categories.length) {
         console.warn("⚠️ No data received from API.");
         continue;
@@ -80,7 +159,7 @@ class FetchFixturesService {
     const eventDate = new Date(startTime);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to start of day
-    
+
     // Replace event names with mappings if available
     // const homeTeam = teamNameMappings[eventNames[0]] || eventNames[0];
     // const awayTeam = teamNameMappings[eventNames[1]] || eventNames[1];
@@ -183,4 +262,4 @@ class FetchFixturesService {
   }
 }
 
-export default new FetchFixturesService();
+export default FetchFixturesService;

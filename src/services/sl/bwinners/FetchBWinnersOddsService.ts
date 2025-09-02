@@ -2,6 +2,7 @@ import { db } from "../../../infrastructure/database/Database";
 import { httpClientFromApi, fetchFromApiWithoutProxy } from "../../../utils/HttpClientSL";
 import Group from "../../../models/Group";
 import Market from "../../../models/Market";
+import { OddsSnapshotService } from "../../../utils/OddsSnapshotService";
 
 class FetchBWinnersOddsService {
     private readonly oddsApiUrl = "https://bwinners.sl/services/evapi/event/GetEvents?eventIds=";
@@ -140,26 +141,35 @@ class FetchBWinnersOddsService {
         const coefficient = Number(odd.p);
         if (isNaN(coefficient)) return;
 
-        await db("fixture_odds").insert({
+        await OddsSnapshotService.saveOrUpdate({
             group_id: groupId,
             market_id: dbMarket.market_id,
-            coefficient,
             fixture_id: fixtureId,
-            external_source_fixture_id: sourceFixtureId,
             source_id: this.sourceId,
-        }).onConflict([
-            "group_id",
-            "market_id",
-            "fixture_id",
-            "external_source_fixture_id",
-            "source_id",
-        ])
-            .merge({
-                coefficient: db.raw("EXCLUDED.coefficient"),
-                updated_at: db.fn.now(),
-            });
+            external_source_fixture_id: sourceFixtureId,
+            coefficient,
+        });
 
-        console.log(`✅ Odds updated: ${groupId}/${dbMarket.market_id} @ ${coefficient}`);
+        // await db("fixture_odds").insert({
+        //     group_id: groupId,
+        //     market_id: dbMarket.market_id,
+        //     coefficient,
+        //     fixture_id: fixtureId,
+        //     external_source_fixture_id: sourceFixtureId,
+        //     source_id: this.sourceId,
+        // }).onConflict([
+        //     "group_id",
+        //     "market_id",
+        //     "fixture_id",
+        //     "external_source_fixture_id",
+        //     "source_id",
+        // ])
+        //     .merge({
+        //         coefficient: db.raw("EXCLUDED.coefficient"),
+        //         updated_at: db.fn.now(),
+        //     });
+
+        // console.log(`✅ Odds updated: ${groupId}/${dbMarket.market_id} @ ${coefficient}`);
     }
 }
 

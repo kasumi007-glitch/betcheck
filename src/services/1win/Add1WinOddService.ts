@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import { httpClientFromApi } from "../../utils/HttpClientCI";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class Add1WinOddService {
   // Endpoint template for fetching odds for a single fixture by match id
@@ -70,8 +71,8 @@ class Add1WinOddService {
       .where("fixtures.date", ">=", new Date())
       .andWhere("leagues.is_active", true)
       .andWhere("source_matches.source_id", this.sourceId);
-      // .andWhere("leagues.id", 10463)
-      // .andWhere("fixtures.id", 40536);
+    // .andWhere("leagues.id", 10463)
+    // .andWhere("fixtures.id", 40536);
 
     if (!fixtures.length) {
       console.warn("⚠️ No fixtures found for 1WIN in our database.");
@@ -202,14 +203,23 @@ class Add1WinOddService {
           continue;
         }
 
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureId,
+          source_id: this.sourceId,
+          external_source_fixture_id: sourceFixtureId,
+          coefficient: odd.coefficient,
+        });
+
         // Await the asynchronous operation in a sequential manner
-        await this.saveMarketOutcome(
-          dbGroup.group_id,
-          Number(odd.coefficient),
-          dbMarket.market_id,
-          fixtureId,
-          sourceFixtureId
-        );
+        // await this.saveMarketOutcome(
+        //   dbGroup.group_id,
+        //   Number(odd.coefficient),
+        //   dbMarket.market_id,
+        //   fixtureId,
+        //   sourceFixtureId
+        // );
       }
     }
   }

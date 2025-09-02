@@ -16,6 +16,8 @@ const proxies = [
 ];
 
 let proxyIndex = 0; // ✅ Track which proxy is being used
+// ✅ Helper for random delay between retries
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const httpClientFromApi = async (
   url: string,
@@ -56,22 +58,20 @@ export const httpClientFromApi = async (
     const response = await axios.request(axiosConfig);
     return response.data;
   } catch (error: any) {
-    console.error(`❌ Error fetching data: ${error.message}`);
+    const status = error?.response?.status;
+    const code = error?.code;
+    console.error(`❌ Error fetching data: ${error.message || status || code}`);
 
-    // ✅ Handle specific error codes and retry if possible.
-    if (
-      retries > 0 &&
-      (error.code === "ECONNABORTED" || error.code === "ECONNREFUSED")
-    ) {
-      console.warn(
-        `⚠️ Request timed out or connection refused. Retrying... Attempts left: ${retries}`
-      );
-      // Rotate to the next proxy
+    const transientErrors = ["ECONNABORTED", "ECONNREFUSED", "ECONNRESET", "ETIMEDOUT"];
+    const shouldRetry = transientErrors.includes(code) || status === 502 || status === 403;
+
+    if (retries > 0 && shouldRetry) {
+      console.warn(`🔁 Retrying... Reason: ${code || status}, Attempts left: ${retries}`);
+      await delay(1000 + Math.random() * 2000);
       proxyIndex = (proxyIndex + 1) % proxies.length;
       return await httpClientFromApi(url, options, retries - 1);
     }
 
-    // ✅ Optional fallback without proxy
     console.warn("🛑 All retries failed. Trying without proxy...");
     return await fetchFromApiWithoutProxy(url, options);
   }

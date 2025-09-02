@@ -6,6 +6,7 @@ import { chromium, Page, ElementHandle } from 'playwright';
 import { db } from '../../infrastructure/database/Database';
 import Group from '../../models/Group';
 import Market from '../../models/Market';
+import { OddsSnapshotService } from '../../utils/OddsSnapshotService';
 
 interface MatchInfo {
   teams: string[];
@@ -221,17 +222,27 @@ class BetMomoScraperV2Service {
         const marketName = outcomeMap[outcome.alias];
         const dbMarket = this.dbMarkets.find(m => m.market_name.toLowerCase() === marketName.toLowerCase() && m.group_id === dbGroup.group_id);
         if (!dbMarket) continue;
-        await db('fixture_odds')
-          .insert({
-            group_id: dbGroup.group_id,
-            market_id: dbMarket.market_id,
-            coefficient: outcome.coefficient,
-            fixture_id: fixtureId,
-            external_source_fixture_id: String(odds.external_source_fixture_id),
-            source_id: this.sourceId
-          })
-          .onConflict(['group_id', 'market_id', 'fixture_id', 'external_source_fixture_id', 'source_id'])
-          .merge({ coefficient: db.raw('EXCLUDED.coefficient'), updated_at: db.fn.now() });
+
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureId,
+          source_id: this.sourceId,
+          external_source_fixture_id: odds.external_source_fixture_id?.toString() || "",
+          coefficient: outcome.coefficient,
+        });
+
+        // await db('fixture_odds')
+        //   .insert({
+        //     group_id: dbGroup.group_id,
+        //     market_id: dbMarket.market_id,
+        //     coefficient: outcome.coefficient,
+        //     fixture_id: fixtureId,
+        //     external_source_fixture_id: String(odds.external_source_fixture_id),
+        //     source_id: this.sourceId
+        //   })
+        //   .onConflict(['group_id', 'market_id', 'fixture_id', 'external_source_fixture_id', 'source_id'])
+        //   .merge({ coefficient: db.raw('EXCLUDED.coefficient'), updated_at: db.fn.now() });
       }
     };
 

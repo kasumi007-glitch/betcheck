@@ -36,7 +36,7 @@ class Save888BetsLeaguesWithFixturesService {
 
         const today = new Date();
         const dateStr = today.toISOString().split("T")[0];
-        const filePath = `./files/ao_888bets_countries_leagues_fixtures_${dateStr}.json`;
+        const filePath = `./files/ao/ao_888bets_countries_leagues_fixtures_${dateStr}.json`;
 
         fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
         console.log(`✅ JSON file generated: ${filePath}`);

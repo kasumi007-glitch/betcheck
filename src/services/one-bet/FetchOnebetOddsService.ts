@@ -4,6 +4,7 @@ import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { httpClientFromApi } from "../../utils/HttpClient";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class FetchOnebetOddsService {
   // ONEBET API endpoint for odds data for a given match.
@@ -151,13 +152,22 @@ class FetchOnebetOddsService {
           continue;
         }
 
-        await this.saveMarketOutcome(
-          dbGroup.group_id,
-          Number(outcome.odds),
-          dbMarket.market_id,
-          fixtureId,
-          sourceFixtureId
-        );
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureId,
+          source_id: this.sourceId,
+          external_source_fixture_id: sourceFixtureId,
+          coefficient: outcome.odds,
+        });
+
+        // await this.saveMarketOutcome(
+        //   dbGroup.group_id,
+        //   Number(outcome.odds),
+        //   dbMarket.market_id,
+        //   fixtureId,
+        //   sourceFixtureId
+        // );
       }
     }
   }

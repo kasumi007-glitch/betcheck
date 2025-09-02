@@ -4,6 +4,7 @@ import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { httpClientFromApi } from "../../utils/HttpClientCM";
 import GetAccessTokenService from "./GetAccessTokenService";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class FetchSuperGoalFixturesWithOddsService {
   // Endpoint to fetch fixtures (with odds) for a given league.
@@ -247,13 +248,22 @@ class FetchSuperGoalFixturesWithOddsService {
       return;
     }
 
-    await this.saveMarketOutcome(
-      dbGroup.group_id,
-      Number(outcome.price),
-      dbMarket.market_id,
-      fixtureId,
-      String(sourceFixtureId)
-    );
+    await OddsSnapshotService.saveOrUpdate({
+      group_id: dbGroup.group_id,
+      market_id: dbMarket.market_id,
+      fixture_id: fixtureId,
+      source_id: this.sourceId,
+      external_source_fixture_id: sourceFixtureId,
+      coefficient: outcome.price,
+    });
+
+    // await this.saveMarketOutcome(
+    //   dbGroup.group_id,
+    //   Number(outcome.price),
+    //   dbMarket.market_id,
+    //   fixtureId,
+    //   String(sourceFixtureId)
+    // );
   }
 
   // Helper method to get the internal fixture id based on the source_fixture_id.

@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { httpClientFromApi } from "../../utils/HttpClientGN";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 import { teamNameMappings } from "../teamNameMappings";
 
 // Interfaces for YellowBet API response structure
@@ -288,13 +289,22 @@ class FetchYellowBetFixturesWithOddsService {
           continue;
         }
 
-        await this.saveMarketOutcome(
-          dbGroup.group_id,
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureRecord.id,
+          source_id: this.sourceId,
+          external_source_fixture_id: sourceFixtureId,
           coefficient,
-          dbMarket.market_id,
-          fixtureRecord.id,
-          sourceFixtureId
-        );
+        });
+
+        // await this.saveMarketOutcome(
+        //   dbGroup.group_id,
+        //   coefficient,
+        //   dbMarket.market_id,
+        //   fixtureRecord.id,
+        //   sourceFixtureId
+        // );
       }
     }
   }

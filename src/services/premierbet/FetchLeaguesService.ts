@@ -1,10 +1,16 @@
 import { db } from "../../infrastructure/database/Database";
 // import { httpClientFromApi } from "../../utils/HttpClientML";
-import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
-import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
 import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI";
 import { httpClientFromApi as httpClientML } from "../../utils/HttpClientML";
-
+import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
+import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
+import { httpClientFromApi as httpClientGA, fetchFromApiWithoutProxy as fetchFromApiWithoutProxyGA } from "../../utils/HttpClientGA";
+import { httpClientFromApi as httpClientTG } from "../../utils/HttpClientTG";
+import { httpClientFromApi as httpClientCG } from "../../utils/HttpClientCG";
+import { httpClientFromApi as httpClientCD } from "../../utils/HttpClientCD";
+import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
+import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
+import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
 
 class FetchLeaguesService {
   private sourceId!: number;
@@ -15,28 +21,70 @@ class FetchLeaguesService {
 
   async init(sourceName: string) {
     switch (sourceName.toUpperCase()) {
-      case "CMPREMIERBET":
+      // case "PREMIERBET":
+      //   this.apiUrlTemplate =
+      //     "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.httpClient = httpClientCI;
+      //   break;
+
+      case "ML_PREMIERBET":
         this.apiUrlTemplate =
-          "https://sports-api.premierbet.com/cm/v1/competitions?country=CM&group=g1&platform=desktop&locale=en&timeOffset=-180&sportId=1";
-        this.httpClient = httpClientCM;
+          "https://sports-api.premierbet.com/ml/v1/competitions?country=ML&group=g7&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientML;
         break;
 
-      case "SNPREMIERBET":
+      case "SN_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/sn/v1/competitions?country=SN&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
         this.httpClient = httpClientSN;
         break;
 
-      case "PREMIERBET":
+      case "CM_PREMIERBET":
         this.apiUrlTemplate =
-          "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
-        this.httpClient = httpClientCI;
+          "https://sports-api.premierbet.com/cm/v1/competitions?country=CM&group=g1&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientCM;
         break;
 
-      case "MLPREMIERBET":
+      case "GA_PREMIERBET":
         this.apiUrlTemplate =
-          "https://sports-api.premierbet.com/ml/v1/competitions?country=ML&group=g7&platform=desktop&locale=en&timeOffset=-180&sportId=1";
-        this.httpClient = httpClientML;
+          "https://sports-api.premierbet.com/ga/v1/competitions?country=GA&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = fetchFromApiWithoutProxyGA;
+        break;
+
+      case "TG_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/tg/v2/competitions?country=TG&group=g3&platform=desktop&locale=en&timeOffset=-180&sportId=SOCCER";
+        this.httpClient = httpClientTG;
+        break;
+
+      case "CG_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cg/v1/competitions?country=CG&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientCG;
+        break;
+
+      case "CD_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/cd/v1/competitions?country=CD&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientCD;
+        break;
+
+      case "SL_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.mercurybet.com/v1/competitions?country=SL&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientSL;
+        break;
+
+      case "AO_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/ao/v1/competitions?country=AO&group=g2&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientAO;
+        break;
+
+      case "ZW_PREMIERBET":
+        this.apiUrlTemplate =
+          "https://sports-api.premierbet.com/zw/v1/competitions?country=ZW&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.httpClient = httpClientZW;
         break;
 
       default:
@@ -69,8 +117,12 @@ class FetchLeaguesService {
     for (const category of response.categories) {
       const sourceCountryName = category.name;
       console.log(`🔍 Processing leagues for country: ${sourceCountryName}`);
+      if (!sourceCountryName) {
+        console.warn("⚠️ No country name found in category.");
+        continue;
+      }
 
-      const countryName = this.countryNameMappings[sourceCountryName.trim()] ?? sourceCountryName.trim();
+      const countryName = this.countryNameMappings[sourceCountryName?.trim()] ?? sourceCountryName?.trim();
       const dbCountry = await db("countries")
         .where("name", countryName)
         .andWhere("is_active", true)
@@ -82,6 +134,8 @@ class FetchLeaguesService {
         );
         continue;
       }
+
+      // if (dbCountry.name !== 'England') continue;
 
       for (const competition of category.competitions) {
         await this.processCompetition(dbCountry, category, competition);
@@ -136,7 +190,7 @@ class FetchLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id","source_league_id"])
+        .onConflict(["league_id", "source_id", "source_league_id"])
         .ignore() // This prevents duplicate inserts
         .returning("*"); // Returns the inserted row(s) if successful
 
@@ -192,4 +246,4 @@ class FetchLeaguesService {
   }
 }
 
-export default new FetchLeaguesService();
+export default FetchLeaguesService;

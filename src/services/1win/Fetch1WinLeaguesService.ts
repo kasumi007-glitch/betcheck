@@ -1,5 +1,6 @@
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+// import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { leagueNameMappings } from "../leagueNameMappings";
 
 class Fetch1WinLeaguesService {
@@ -27,7 +28,7 @@ class Fetch1WinLeaguesService {
 
   async syncLeagues() {
     console.log("🚀 Fetching 1WIN countries (categories)...");
-    const categoriesResponse = await fetchFromApi(this.categoriesApiUrl);
+    const categoriesResponse = await httpClientFromApi(this.categoriesApiUrl);
     if (!categoriesResponse?.categories?.length) {
       console.warn("⚠️ No categories received from 1WIN API.");
       return;
@@ -57,7 +58,7 @@ class Fetch1WinLeaguesService {
         "{categoryId}",
         String(countryId)
       );
-      const matchesResponse = await fetchFromApi(matchesUrl);
+      const matchesResponse = await httpClientFromApi(matchesUrl);
       if (!matchesResponse?.matches?.length) {
         console.warn(`⚠️ No matches received for country: ${countryName}`);
         continue;
@@ -108,7 +109,7 @@ class Fetch1WinLeaguesService {
           country_code: dbCountry.code,
           source_id: this.sourceId,
         })
-        .onConflict(["league_id", "source_id","source_league_id"])
+        .onConflict(["league_id", "source_id", "source_league_id"])
         .ignore()
         .returning("*");
 

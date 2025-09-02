@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import Market from "../../models/Market";
 import Group from "../../models/Group";
 import { fetchFromApi, fetchFromApiWithoutProxy } from "../../utils/ApiClientWithPost";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class FetchGeniusBetFixturesWithOddsService {
     private readonly apiUrlTemplate =
@@ -276,14 +277,23 @@ class FetchGeniusBetFixturesWithOddsService {
                     continue;
                 }
 
+                await OddsSnapshotService.saveOrUpdate({
+                    group_id: dbGroup.group_id,
+                    market_id: dbMarket.market_id,
+                    fixture_id: fixture.id,
+                    source_id: this.sourceId,
+                    external_source_fixture_id: sourceFixtureId,
+                    coefficient: odd.value,
+                });
+
                 // If there's a single coefficient .value, store as an outcome
-                await this.saveMarketOutcome(
-                    dbGroup.group_id,
-                    Number(odd.value),
-                    dbMarket.market_id,
-                    fixture.id,
-                    sourceFixtureId
-                );
+                // await this.saveMarketOutcome(
+                //     dbGroup.group_id,
+                //     Number(odd.value),
+                //     dbMarket.market_id,
+                //     fixture.id,
+                //     sourceFixtureId
+                // );
             }
 
             // If you also have multiple "outcomes" in market.ME or market.outcomes, you’d loop them similarly

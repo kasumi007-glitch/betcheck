@@ -52,7 +52,7 @@ class SaveGeniusBetLeaguesWithFixturesService {
         const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
 
         // 📝 Save into /src/files/ folder
-        const filePath = `./files/geniusbet_countries_leagues_fixtures_${dateStr}.json`;
+        const filePath = `./files/gn/gn_geniusbet_countries_leagues_fixtures_${dateStr}.json`;
         fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
         console.log(`✅ JSON file generated: ${filePath}`);
     }

@@ -1,30 +1,31 @@
+
+import app from "./api/app";
 import express from "express";
 import cron from "node-cron";
 import dotenv from "dotenv";
 import FetchYellowBetFixturesWithOddsService from "./services/yellowbet/FetchYellowBetFixturesWithOddsService";
-import FetchBetclicFixturesService from "./services/betclic/FetchBetclicFixturesService";
+// import FetchBetclicLeaguesService from "./services/betclic/FetchBetclicLeaguesService";
+// import FetchBetclicFixturesService from "./services/betclic/FetchBetclicFixturesService";
+// import AddBetclicOddService from "./services/betclic/AddBetclicOddService";
 import FetchOnebetOddsService from "./services/one-bet/FetchOnebetOddsService";
 import Fetch22betFixturesWithOddsService from "./services/22bet/Fetch22betFixturesWithOddsService";
 import FetchSunubetOddService from "./services/sunu-bet/FetchSunubetOddService";
 import FetchSuperGoalOddService from "./services/super-goal/FetchSuperGoalOddService";
-import FetchPremierBetOddService from "./services/premierbet/FetchPremierBetOddService";
 import FetchPremierBetFixtureService from "./services/premierbet/FetchFixturesService";
 import FetchMegaPariFixturesService from "./services/mega-pari/FetchMegaPariFixturesService";
 import FetchOnebetFixturesService from "./services/one-bet/FetchOnebetFixturesService";
 import FetchSunubetFixturesService from "./services/sunu-bet/FetchSunubetFixturesService";
 import FetchSuperGoalFixturesService from "./services/super-goal/FetchSuperGoalFixturesService";
 import AddPremierBetOddService from "./services/premierbet/AddPremierBetOddService";
-import FetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService";
 import Fetch1WinLeaguesWithFixturesService from "./services/1win/Fetch1WinLeaguesWithFixturesService";
 import Add1WinOddService from "./services/1win/Add1WinOddService";
 import BetMomoScraperService from "./services/bet-momo/BetMomoScraperService";
 import BetMomoScraperV2Service from "./services/bet-momo/BetMomoScraperServiceV2";
 import Bet22333ScraperService from "./services/bet223/FetchBet223Service";
-import AddBetclicOddService from "./services/betclic/AddBetclicOddService";
 import SaveBetsOddsService from "./services/SaveBetsOddsService";
 import Fetch22betLeaguesService from "./services/22bet/Fetch22betLeaguesService";
-import FetchBetclicLeaguesService from "./services/betclic/FetchBetclicLeaguesService";
 import FetchMegaPariLeagueService from "./services/mega-pari/FetchMegaPariLeagueService";
+import FetchMegaPariFixturesWithOddsService from "./services/mega-pari/FetchMegaPariFixturesWithOddsService";
 import FetchPremierBetLeagueService from "./services/premierbet/FetchLeaguesService";
 import FetchSunubetLeaguesService from "./services/sunu-bet/FetchSunubetLeaguesService";
 import FetchSuperGoalLeaguesService from "./services/super-goal/FetchSuperGoalLeaguesServiceV2";
@@ -32,41 +33,21 @@ import FetchYellowBetLeagueService from "./services/yellowbet/FetchYellowBetLeag
 
 import FetchGeniusBetLeagueService from "./services/geniusbet/FetchGeniusBetLeagueService";
 import FetchGeniusBetFixturesWithOddsService from "./services/geniusbet/FetchGeniusBetFixturesWithOddsService";
-import saveGeniusBetLeaguesWithFixturesService from "./services/geniusbet/SaveGeniusBetLeaguesWithFixturesService";
 import FetchGuineeGamesLeagueService from "./services/guinee-games/FetchGuineeGamesLeagueService";
 import FetchGuineeGamesFixturesWithOddsService from "./services/guinee-games/FetchGuineeGamesFixturesWithOddsService";
-import saveGuineeGamesLeaguesWithFixturesService
-  from "./services/guinee-games/SaveGuineeGamesLeaguesWithFixturesService";
-import saveAkwaBetLeaguesWithFixturesService from "./services/akwabet/SaveAkwaBetLeaguesWithFixturesService";
-import saveBetPawaLeaguesWithFixturesService from "./services/betpawa/SaveBetPawaLeaguesWithFixturesService";
-import Save1xBetLeaguesWithFixturesService from "./services/1xbet/Save1xBetLeaguesWithFixturesService";
-import saveParipesaLeaguesWithFixturesService from "./services/paripesa/SaveParipesaLeaguesWithFixturesService";
-import saveLineBetLeaguesWithFixturesService from "./services/linebet/SaveLineBetLeaguesWithFixturesService";
-import saveMelBetLeaguesWithFixturesService from "./services/melbet/SaveMelBetLeaguesWithFixturesService";
 import FetchAkwaBetLeagueService from "./services/akwabet/FetchAkwaBetLeagueService";
+import FetchAkwaBetFixturesService from "./services/akwabet/FetchAkwaBetFixturesService";
+import FetchAkwaBetOddsService from "./services/akwabet/FetchAkwaBetOddsService";
 import FetchBetPawaLeagueService from "./services/betpawa/FetchBetPawaLeagueService";
 import Fetch1xBetLeagueService from "./services/1xbet/Fetch1xBetLeagueService";
-import FetchLineBetLeagueService from "./services/linebet/FetchLineBetLeagueService";
-import FetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueService";
-import FetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService";
-import FetchAkwaBetFixturesWithOddsService from "./services/akwabet/FetchAkwaBetFixturesWithOddsService";
-import FetchBetPawaFixturesWithOddsService from "./services/betpawa/FetchBetPawaFixturesWithOddsService";
 import Fetch1xBetFixturesWithOddsService from "./services/1xbet/Fetch1xBetFixturesWithOddsService";
+import FetchLineBetLeagueService from "./services/linebet/FetchLineBetLeagueService";
 import FetchLineBetFixturesWithOddsService from "./services/linebet/FetchLineBetFixturesWithOddsService";
+import FetchParipesaLeagueService from "./services/paripesa/FetchParipesaLeagueService";
 import FetchParipesaFixturesWithOddsService from "./services/paripesa/FetchParipesaFixturesWithOddsService";
+import FetchMelBetLeagueService from "./services/melbet/FetchMelBetLeagueService";
 import FetchMelBetFixturesWithOddsService from "./services/melbet/FetchMelBetFixturesWithOddsService";
-import Save1WinLeaguesWithFixturesService from "./services/1win/Save1WinLeaguesWithFixturesService";
-import Save22BetLeaguesWithFixturesService from "./services/22bet/Save22BetLeaguesWithFixturesService";
-import SaveBetMomoLeaguesWithFixturesService from "./services/bet-momo/SaveBetMomoLeaguesWithFixturesService";
-import { launchPremierBetWithProxy } from "./services/premierbet/LaunchPremierBetService";
-import SaveBetclicLeaguesWithFixturesService from "./services/betclic/SaveBetclicLeaguesWithFixturesService";
-import SaveSuperGoalLeaguesWithFixturesService from "./services/super-goal/SaveSuperGoalLeaguesWithFixturesService";
-import SaveBet223LeaguesWithFixturesService from "./services/bet223/SaveBet223LeaguesWithFixturesService";
-import SaveMelBetLeaguesWithFixturesService from "./services/melbet/SaveMelBetLeaguesWithFixturesService";
-import SaveMegaPariLeaguesWithFixturesService from "./services/mega-pari/SaveMegaPariLeaguesWithFixturesService";
-import SavePremierBetLeaguesWithFixturesService from "./services/premierbet/SavePremierBetLeaguesWithFixturesService";
-import SaveSunubetLeaguesWithFixturesService from "./services/sunu-bet/SaveSunubetLeaguesWithFixturesService";
-import SaveYellowBetLeaguesWithFixturesService from "./services/yellowbet/SaveYellowBetLeaguesWithFixturesService";
+import FetchBetPawaFixturesWithOddsService from "./services/betpawa/FetchBetPawaFixturesWithOddsService";
 import Fetch1WinProLeagueService from "./services/1win-pro/Fetch1WinProLeaguesService";
 import Fetch1WinProFixturesService from "./services/1win-pro/Fetch1WinProFixturesService";
 import Fetch1WinProOddsService from "./services/1win-pro/Fetch1WinProOddsService";
@@ -90,12 +71,34 @@ import FetchPlayongoFixturesService from "./services/cg/playongo/FetchPlayongoFi
 import FetchPlayongoLeaguesService from "./services/cg/playongo/FetchPlayongoLeaguesService";
 import FetchMWosFixturesService from "./services/zw/mwos/FetchMWosFixturesService";
 import FetchMWosOddsService from "./services/zw/mwos/FetchMWosOddsService";
-import SaveMWosLeaguesWithFixturesService from "./services/zw/mwos/SaveMWosLeaguesWithFixturesService";
+import FetchBettomaxLeaguesService from "./services/sl/bettomax/FetchBettomaxLeaguesService";
+import FetchBettomaxFixturesService from "./services/sl/bettomax/FetchBettomaxFixturesService";
+import FetchBettomaxOddsService from "./services/sl/bettomax/FetchBettomaxOddsService";
+import FetchCmBettomaxLeaguesService from "./services/cm/bettomax/FetchCmBettomaxLeaguesService";
+import FetchCmBettomaxFixturesService from "./services/cm/bettomax/FetchCmBettomaxFixturesService";
+import FetchCmBettomaxOddsService from "./services/cm/bettomax/FetchCmBettomaxOddsService";
+import FetchAllPremierBetLeaguesService from "./services/ao/ao-premierbet/FetchAllPremierBetLeaguesService";
+import FetchAllPremierBetFixturesService from "./services/ao/ao-premierbet/FetchAllPremierBetFixturesService";
+import FetchAllPremierBetOddService from "./services/ao/ao-premierbet/FetchAllPremierBetOddService";
+import SaveBetmomoLeaguesWithFixturesService from "./services/betmomo/SaveBetmomoLeaguesWithFixturesService";
+import FetchBetmomoLeaguesService from "./services/betmomo/FetchBetmomoLeaguesService";
+import FetchBetmomoFixturesService from "./services/betmomo/FetchBetmomoFixturesService";
+import FetchBetmomoOddsService from "./services/betmomo/FetchBetmomoOddsService";
+import SaveAkwaBetLeaguesWithFixturesService from "./services/akwabet/SaveAkwaBetLeaguesWithFixturesService";
+import SaveCiBetclicLeaguesWithFixturesService from "./services/ci/betclic/SaveCiBetclicLeaguesWithFixturesService";
+import FetchCiBetclicLeaguesService from "./services/ci/betclic/FetchCiBetclicLeaguesService";
+import FetchCiBetclicFixturesService from "./services/ci/betclic/FetchCiBetclicFixturesService";
+import FetchCiBetclicOddService from "./services/ci/betclic/FetchCiBetclicOddService";
+import Save1WinProLeaguesWithFixturesService from "./services/1win-pro/Save1WinProLeaguesWithFixturesService";
+import FetchCdBetwinnerLeagueService from "./services/cd/betwinner1/FetchCdBetwinnerLeagueService";
+import FetchCdBetwinnerFixturesService from "./services/cd/betwinner1/FetchCdBetwinnerFixturesService";
+import FetchCdBetwinnerOddsService from "./services/cd/betwinner1/FetchCdBetwinnerOddsService";
+import SaveCdBetwinnerLeaguesWithFixturesService from "./services/cd/betwinner1/SaveCdBetwinnerLeaguesWithFixturesService";
 
-dotenv.config();
+// dotenv.config();
 
-const app = express();
-app.use(express.json());
+// const app = express();
+// app.use(express.json());
 
 // Read cron schedules from environment variables
 const SYNC_ODDS_CRON = process.env.SYNC_ODDS_CRON ?? "0 * * * *"; // Default: every hour
@@ -112,28 +115,60 @@ const syncAllOdds = async () => {
   const results = await Promise.allSettled([
     Add1WinOddService.syncOdds(),
     Fetch22betFixturesWithOddsService.syncFixtures(false, true),
-    AddBetclicOddService.syncOdds(),
+    // AddBetclicOddService.syncOdds(),
     FetchMegaPariFixturesWithOddsService.syncFixtures(false, true),
     // FetchOnebetOddsService.syncOdds(),
-    new AddPremierBetOddService().syncOdds("PREMIERBET"),
+    // new AddPremierBetOddService().syncOdds("PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("ML_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("SN_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("CM_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("GA_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("TG_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("CG_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("CD_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("SL_PREMIERBET"),
+    new AddPremierBetOddService().syncOdds("ZW_PREMIERBET"),
     FetchSunubetOddService.syncOdds(),
     FetchSuperGoalOddService.syncOdds(),
     FetchYellowBetFixturesWithOddsService.syncFixtures(false, true),
     // ...betMomoSources.map(src => new BetMomoScraperService().scrape(src)),
 
     // BetMomoScraperV2Service.scrape(), //scrapper
-    new BetMomoScraperService().scrape("AOMOBET"),
-    new BetMomoScraperService().scrape("AOAFRIBET"),
-    new BetMomoScraperService().scrape("AOELEPHANTBET"),
-    new BetMomoScraperService().scrape("AOBANTUBET"),
-    new BetMomoScraperService().scrape("BETMOMO"),
-    new BetMomoScraperService().scrape("SLELEPHANTBET"),
-    new BetMomoScraperService().scrape("ZWAFRICABET"),
+
+    //Old Betmomo
+    // new BetMomoScraperService().scrape("AOMOBET"),
+    // new BetMomoScraperService().scrape("AOAFRIBET"),
+    // new BetMomoScraperService().scrape("AOELEPHANTBET"),
+    // new BetMomoScraperService().scrape("AOBANTUBET"),
+    // new BetMomoScraperService().scrape("BETMOMO"),
+    // new BetMomoScraperService().scrape("SLELEPHANTBET"),
+    // new BetMomoScraperService().scrape("ZWAFRICABET"),
+
+    //Betmomo
+    new FetchBetmomoOddsService().syncOdds("AOMOBET"),
+    new FetchBetmomoOddsService().syncOdds("AOAFRIBET"),
+    new FetchBetmomoOddsService().syncOdds("AOELEPHANTBET"),
+    new FetchBetmomoOddsService().syncOdds("AOBANTUBET"),
+
+    //CI
+    new FetchBetmomoOddsService().syncOdds("BETMOMO"),
+    new FetchCiBetclicOddService().syncOdds("CI_BETCLIC"),
+
+    //SN
+    new FetchCiBetclicOddService().syncOdds("SN_BETCLIC"),
+
+    //BJ
+    new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC"),
+
+    new FetchBetmomoOddsService().syncOdds("SLELEPHANTBET"),
+    new FetchBetmomoOddsService().syncOdds("ZWAFRICABET"),
+    new FetchBetmomoOddsService().syncOdds("ML_BET223"),
+    new FetchBetmomoOddsService().syncOdds("GA_BET223"),
 
     Bet22333ScraperService.scrape(), //scrapepr
     FetchGeniusBetFixturesWithOddsService.syncFixtures(false, true),
     FetchGuineeGamesFixturesWithOddsService.syncFixtures(false, true),
-    FetchAkwaBetFixturesWithOddsService.syncFixtures(false, true),
+    new FetchAkwaBetOddsService().syncOdds(),
     FetchBetPawaFixturesWithOddsService.syncFixtures(false, true),
     Fetch1xBetFixturesWithOddsService.syncFixtures(false, true),
     FetchLineBetFixturesWithOddsService.syncFixtures(false, true),
@@ -144,14 +179,19 @@ const syncAllOdds = async () => {
     //AO Odds
     new Fetch888BetsOddsService().syncOdds(), //scraper
     new FetchEBetFixturesWithOddsService().syncFixtures(false, true),
+    new FetchAllPremierBetOddService().syncOdds("AO_PREMIERBET"),
 
     //CG Odds
     new FetchEliteBetOddsService().syncOdds(),
     new FetchApolloGamesOddsService().syncOdds(),
     new FetchPlayongoOddsService().syncOdds(),
 
+    //CM Odds
+    new FetchCmBettomaxOddsService().syncOdds(),
+
     //SL Odds;
     new FetchBWinnersOddsService().syncOdds(),
+    new FetchBettomaxOddsService().syncOdds(),
 
     //ZW Odds
     new FetchMWosOddsService().syncOdds(),
@@ -183,16 +223,46 @@ const syncAllFixtures = async () => {
   const results = await Promise.allSettled([
     Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(false, true), // on hold
     Fetch22betFixturesWithOddsService.syncFixtures(true), //on hold
-    FetchBetclicFixturesService.syncFixtures(),
+    // FetchBetclicFixturesService.syncFixtures(),
     FetchMegaPariFixturesWithOddsService.syncFixtures(true), //on hold
     // FetchOnebetFixturesService.syncFixtures(),
-    FetchPremierBetFixtureService.syncFixtures(),
+    new FetchPremierBetFixtureService().syncFixtures("ML_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("SN_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("CM_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("GA_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("TG_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("CG_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("CD_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("SL_PREMIERBET"),
+    new FetchPremierBetFixtureService().syncFixtures("ZW_PREMIERBET"),
     FetchSunubetFixturesService.syncFixtures(),
     FetchSuperGoalFixturesService.syncFixtures(), //timeout error
     FetchYellowBetFixturesWithOddsService.syncFixtures(true), //on hold
+
+    //Bemomo
+    new FetchBetmomoFixturesService().syncFixtures("AOMOBET"),
+    new FetchBetmomoFixturesService().syncFixtures("AOAFRIBET"),
+    new FetchBetmomoFixturesService().syncFixtures("AOELEPHANTBET"),
+    new FetchBetmomoFixturesService().syncFixtures("AOBANTUBET"),
+
+    //CI
+    new FetchBetmomoFixturesService().syncFixtures("BETMOMO"),
+    new FetchCiBetclicFixturesService().syncFixtures("CI_BETCLIC"),
+
+    //SN
+    new FetchCiBetclicFixturesService().syncFixtures("SN_BETCLIC"),
+
+    //BJ
+    new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC"),
+
+    new FetchBetmomoFixturesService().syncFixtures("SLELEPHANTBET"),
+    new FetchBetmomoFixturesService().syncFixtures("ZWAFRICABET"),
+    new FetchBetmomoFixturesService().syncFixtures("ML_BET223"),
+    new FetchBetmomoFixturesService().syncFixtures("GA_BET223"),
+
     FetchGeniusBetFixturesWithOddsService.syncFixtures(true),
     FetchGuineeGamesFixturesWithOddsService.syncFixtures(true),
-    FetchAkwaBetFixturesWithOddsService.syncFixtures(true), //proxy timeout error
+    new FetchAkwaBetFixturesService().syncFixtures(), //proxy timeout error
     FetchBetPawaFixturesWithOddsService.syncFixtures(true),
     Fetch1xBetFixturesWithOddsService.syncFixtures(true),
     FetchLineBetFixturesWithOddsService.syncFixtures(true),
@@ -204,14 +274,19 @@ const syncAllFixtures = async () => {
     //AO Fixtures
     new Fetch888BetsFixturesService().syncFixtures(),
     new FetchEBetFixturesWithOddsService().syncFixtures(true),
+    new FetchAllPremierBetFixturesService().syncFixtures("AO_PREMIERBET"),
 
     //CG Fixtures
     new FetchEliteBetFixturesService().syncFixtures(),
     new FetchApolloGamesFixturesService().syncFixtures(),
     new FetchPlayongoFixturesService().syncFixtures(),
 
+    //CM Fixtures
+    new FetchCmBettomaxFixturesService().syncFixtures(),
+
     //SL Fixtures
     new FetchBWinnersFixturesService().syncFixtures(),
+    new FetchBettomaxFixturesService().syncFixtures(),
 
     //ZW Fixtures
     new FetchMWosFixturesService().syncFixtures(),
@@ -238,16 +313,47 @@ const syncAllLeagues = async () => {
   const results = await Promise.allSettled([
     Fetch1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(true),
     Fetch22betLeaguesService.syncLeagues(),
-    FetchBetclicLeaguesService.syncLeagues(),
+    // FetchBetclicLeaguesService.syncLeagues(),
     FetchMegaPariLeagueService.syncLeagues(),
     // FetchOnebetFixturesService.syncFixtures(),
-    FetchPremierBetLeagueService.syncLeagues("PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("ML_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("SN_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("CM_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("GA_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("TG_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("CG_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("CD_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("SL_PREMIERBET"),
+    new FetchPremierBetLeagueService().syncLeagues("ZW_PREMIERBET"),
     FetchSunubetLeaguesService.syncLeagues(),
     FetchSuperGoalLeaguesService.syncLeagues(),
     FetchYellowBetLeagueService.syncLeagues(),
+
+    //Betmomo
+
+    new FetchBetmomoLeaguesService().syncLeagues("AOMOBET"),
+    new FetchBetmomoLeaguesService().syncLeagues("AOAFRIBET"),
+    new FetchBetmomoLeaguesService().syncLeagues("AOELEPHANTBET"),
+    new FetchBetmomoLeaguesService().syncLeagues("AOBANTUBET"),
+
+    //CI
+    new FetchBetmomoLeaguesService().syncLeagues("BETMOMO"),
+    new FetchCiBetclicLeaguesService().syncLeagues("CI_BETCLIC"),
+
+    //SN
+    new FetchCiBetclicLeaguesService().syncLeagues("SN_BETCLIC"),
+
+    //BJ
+    new FetchCiBetclicLeaguesService().syncLeagues("BJ_BETCLIC"),
+
+    new FetchBetmomoLeaguesService().syncLeagues("SLELEPHANTBET"),
+    new FetchBetmomoLeaguesService().syncLeagues("ZWAFRICABET"),
+    new FetchBetmomoLeaguesService().syncLeagues("ML_BET223"),
+    new FetchBetmomoLeaguesService().syncLeagues("GA_BET223"),
+
     FetchGeniusBetLeagueService.syncLeagues(),
     FetchGuineeGamesLeagueService.syncLeagues(),
-    FetchAkwaBetLeagueService.syncLeagues(),  //need check
+    new FetchAkwaBetLeagueService().syncLeagues(),  //need check
     FetchBetPawaLeagueService.syncLeagues(),
     Fetch1xBetLeagueService.syncLeagues(),
     FetchLineBetLeagueService.syncLeagues(),
@@ -259,14 +365,19 @@ const syncAllLeagues = async () => {
     //AO Leagues
     new Fetch888BetsLeaguesService().syncLeagues(),
     new FetchEBetLeaguesService().syncLeagues(),
+    new FetchAllPremierBetLeaguesService().syncLeagues("AO_PREMIERBET"),
 
     //CG Leagues
     new FetchEliteBetLeaguesService().syncLeagues(),
     new FetchApolloGamesLeaguesService().syncLeagues(),
     new FetchPlayongoLeaguesService().syncLeagues(),
 
+    //CM Leagues
+    new FetchCmBettomaxLeaguesService().syncLeagues(),
+
     //SL Leagues
     new FetchBWinnersLeaguesService().syncLeagues(),
+    new FetchBettomaxLeaguesService().syncLeagues(),
 
     //ZW Leagues
     new FetchMWosLeaguesService().syncLeagues(),
@@ -285,52 +396,14 @@ const syncAllLeagues = async () => {
 
 // Run fixture sync first, then odds sync immediately
 const runInitialSync = async () => {
+  // new FetchCdBetwinnerLeagueService().syncLeagues("BJ_BETCLIC");
+  // new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC");
+  // new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC");
 
-  // const bettingService = new BettingApiService({
-  //   headless: false, // Set to true in production
-  //   proxyUrl: 'http://v2.proxyempire.io:5000', // Recommended for geo-restricted content
-  //   proxyUsername: 'r_5bc8550750-country-zw-sid-b367c8dh',     // Your proxy username
-  //   proxyPassword: '77dc4d16bf',     // Your proxy password
-  //   timeout: 90000, // Longer timeout for Cloudflare challenges
-  // });
-
-  // const eventId = '357033571';
-  // const eventData = await bettingService.scrapeEvent(eventId);
-
-  // const scraper = new BettingScraper({
-  //   baseUrl: 'https://betting.co.zw',
-  //   proxy: {
-  //     host: 'v2.proxyempire.io',
-  //     port: 5000,
-  //     username: 'r_5bc8550750-country-zw-sid-b367c8dh', // Optional
-  //     password: '77dc4d16bf'  // Optional
-  //   },
-  //   headless: false // Set to true in production
-  // });
-  // const api = new BettingAPI();
-
-  // try {
-  //   await api.initialize();
-  //   const result = await api.getSportsTree();
-
-  //   if (result.success) {
-  //     console.log('API Response:', result.data);
-  //   } else {
-  //     console.error('API Error:', result.error);
-  //   }
-  // } catch (error) {
-  //   console.error('Initialization error:', error);
-  // } finally {
-  //   await api.close();
-  // }
-
-  console.log('Access result:');
-
-  // new FetchMWosLeaguesService().syncLeagues();
-  // new FetchMWosFixturesService().syncFixtures();
-  // new FetchMWosOddsService().syncOdds();
-
-  // SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures();
+  // new FetchCdBetwinnerLeagueService().syncLeagues();
+  new FetchCdBetwinnerFixturesService().syncFixtures();
+  // new FetchCdBetwinnerOddsService().syncOdds();
+  // SaveCdBetwinnerLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
   console.log("⏳ Running initial league sync...");
   // await syncAllLeagues();
@@ -343,45 +416,6 @@ const runInitialSync = async () => {
   console.log("⏳ Running initial odds sync...");
   // await syncAllOdds();
   console.log("✅ Initial odds sync done!");
-};
-
-const runSourceJobSync = async () => {
-  console.log(
-    `⏳ Running save get sources... at ${new Date().toLocaleTimeString()}...`
-  );
-
-  const results = await Promise.allSettled([
-    Save1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    Save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    Save22BetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveAkwaBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveBetMomoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveBet223LeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveBetPawaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveGeniusBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveGuineeGamesLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveLineBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveMegaPariLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveMelBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SavePremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveSunubetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveSuperGoalLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-    SaveYellowBetLeaguesWithFixturesService.syncLeaguesAndFixtures()
-  ]);
-
-  // await launchPremierBetWithProxy("https://www.bantubet.co.ao/en/sports/pre-match/event-view/Soccer");
-
-  results.forEach((result, index) => {
-    if (result.status === "rejected") {
-      console.error(`❌ Source save ${index + 1} failed:`, result.reason);
-    } else {
-      console.log(`✅ Source save ${index + 1} completed.`);
-    }
-  });
-
-  console.log("✅ Get source done!");
 };
 
 const runScheduleSync = async () => {

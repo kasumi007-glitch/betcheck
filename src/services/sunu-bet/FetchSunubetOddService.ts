@@ -4,6 +4,7 @@ import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { fetchFromApi } from "../../utils/ApiClient";
 import { httpClientFromApi } from "../../utils/HttpClientSN";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 import { MarketObj } from "../interfaces/MarketObj";
 
 class FetchSunubetOddService {
@@ -139,15 +140,24 @@ class FetchSunubetOddService {
           continue;
         }
 
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureId,
+          source_id: this.sourceId,
+          external_source_fixture_id: sourceFixtureId,
+          coefficient: outcome.odds,
+        });
+
         //if (internalMarketName.toLowerCase() === "over / under"{}
 
-        await this.saveMarketOutcome(
-          dbGroup.group_id,
-          Number(outcome.odds),
-          dbMarket.market_id,
-          fixtureId,
-          sourceFixtureId
-        );
+        // await this.saveMarketOutcome(
+        //   dbGroup.group_id,
+        //   Number(outcome.odds),
+        //   dbMarket.market_id,
+        //   fixtureId,
+        //   sourceFixtureId
+        // );
       }
     }
   }

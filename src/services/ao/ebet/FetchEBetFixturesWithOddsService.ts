@@ -2,6 +2,7 @@ import { db } from "../../../infrastructure/database/Database";
 import { fetchFromApiWithoutProxy } from "../../../utils/HttpClientAO";
 import Group from "../../../models/Group";
 import Market from "../../../models/Market";
+import { OddsSnapshotService } from "../../../utils/OddsSnapshotService";
 
 class FetchEBetFixturesWithOddsService {
     private readonly fixturesApiUrlTemplate = "https://bitville-sports.bitville-api.com/sports/callback/events?page=1&tournament={tournamentId}&country={countryId}&time_slug=all&bsid=sr%3Asport%3A1&code=online-ebet-ao-sports";
@@ -236,13 +237,22 @@ class FetchEBetFixturesWithOddsService {
         const coefficient = parseFloat(oddsData.odd);
         if (isNaN(coefficient)) return;
 
-        await this.saveMarketOutcome(
-            dbGroup.group_id,
+        await OddsSnapshotService.saveOrUpdate({
+            group_id: dbGroup.group_id,
+            market_id: dbMarket.market_id,
+            fixture_id: fixtureId,
+            source_id: this.sourceId,
+            external_source_fixture_id: sourceFixtureId,
             coefficient,
-            dbMarket.market_id,
-            fixtureId,
-            sourceFixtureId
-        );
+        });
+
+        // await this.saveMarketOutcome(
+        //     dbGroup.group_id,
+        //     coefficient,
+        //     dbMarket.market_id,
+        //     fixtureId,
+        //     sourceFixtureId
+        // );
     }
 
     private async saveMarketOutcome(

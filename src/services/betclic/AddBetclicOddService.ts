@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { httpClientFromApi } from "../../utils/HttpClientCI";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 import { MarketObj } from "../interfaces/MarketObj";
 
 class AddBetclicOddService {
@@ -147,13 +148,22 @@ class AddBetclicOddService {
           continue;
         }
 
-        await this.saveMarketOutcome(
-          dbGroup.group_id,
-          Number(outcome.odd),
-          dbMarket.market_id,
-          fixtureId,
-          sourceFixtureId
-        );
+        await OddsSnapshotService.saveOrUpdate({
+          group_id: dbGroup.group_id,
+          market_id: dbMarket.market_id,
+          fixture_id: fixtureId,
+          source_id: this.sourceId,
+          external_source_fixture_id: sourceFixtureId,
+          coefficient: outcome.coefficient,
+        });
+
+        // await this.saveMarketOutcome(
+        //   dbGroup.group_id,
+        //   Number(outcome.odd),
+        //   dbMarket.market_id,
+        //   fixtureId,
+        //   sourceFixtureId
+        // );
       }
     }
   }

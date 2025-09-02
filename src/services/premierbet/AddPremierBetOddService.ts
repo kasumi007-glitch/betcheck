@@ -13,6 +13,7 @@ import { httpClientFromApi as httpClientCD } from "../../utils/HttpClientCD";
 import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
 import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
 import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class AddPremierBetOddService {
   // private readonly apiUrlTemplate =
@@ -34,67 +35,67 @@ class AddPremierBetOddService {
 
   async init(sourceName: string) {
     switch (sourceName.toUpperCase()) {
-      case "PREMIERBET":
-        this.apiUrlTemplate =
-          "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
-        this.httpClient = httpClientCI;
-        break;
+      // case "PREMIERBET":
+      //   this.apiUrlTemplate =
+      //     "https://sports-api.premierbet.com/ci/v1/events/{fixtureId}?country=CI&group=g4&platform=desktop&locale=en";
+      //   this.httpClient = httpClientCI;
+      //   break;
 
-      case "MLPREMIERBET":
+      case "ML_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/ml/v1/events/{fixtureId}?country=ML&group=g7&platform=desktop&locale=en";
         this.httpClient = httpClientML;
         break;
 
-      case "SNPREMIERBET":
+      case "SN_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/sn/v1/events/{fixtureId}?country=SN&group=g5&platform=desktop&locale=en";
         this.httpClient = httpClientSN;
         break;
 
-      case "CMPREMIERBET":
+      case "CM_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/cm/v1/events/{fixtureId}?country=CM&group=g1&platform=desktop&locale=en";
         this.httpClient = httpClientCM;
         break;
 
-      case "GAPREMIERBET":
+      case "GA_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/ga/v1/events/{fixtureId}?country=GA&group=g4&platform=desktop&locale=en";
         this.httpClient = httpClientGA;
         break;
 
-      case "TGPREMIERBET":
+      case "TG_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/tg/v2/events/{fixtureId}?country=TG&group=g3&platform=desktop&locale=en";
         this.httpClient = httpClientTG;
         break;
 
-      case "CGPREMIERBET":
+      case "CG_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/cg/v1/events/{fixtureId}?country=CG&group=g5&platform=desktop&locale=en";
         this.httpClient = httpClientCG;
         break;
 
-      case "CDPREMIERBET":
+      case "CD_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/cd/v1/events/{fixtureId}?country=CD&group=g5&platform=desktop&locale=en";
         this.httpClient = httpClientCD;
         break;
 
-      case "SLPREMIERBET":
+      case "SL_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.mercurybet.com/v1/events/{fixtureId}?country=SL&group=g5&platform=desktop&locale=en";
         this.httpClient = httpClientSL;
         break;
 
-      case "AOPREMIERBET":
+      case "AO_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.co.ao/v1/events/{fixtureId}?country=AO&group=g2&platform=desktop&locale=en";
         this.httpClient = httpClientAO;
         break;
 
-      case "ZWPREMIERBET":
+      case "ZW_PREMIERBET":
         this.apiUrlTemplate =
           "https://sports-api.premierbet.com/zw/v1/events/{fixtureId}?country=ZW&group=g4&platform=desktop&locale=en";
         this.httpClient = httpClientZW;
@@ -228,13 +229,22 @@ class AddPremierBetOddService {
         continue;
       }
 
-      await this.saveMarketOutcome(
-        dbGroup.group_id,
-        outcome.value,
-        dbMarket.market_id,
-        fixtureId,
-        sourceFixtureId
-      );
+      await OddsSnapshotService.saveOrUpdate({
+        group_id: dbGroup.group_id,
+        market_id: dbMarket.market_id,
+        fixture_id: fixtureId,
+        source_id: this.sourceId,
+        external_source_fixture_id: sourceFixtureId,
+        coefficient: outcome.value,
+      });
+
+      // await this.saveMarketOutcome(
+      //   dbGroup.group_id,
+      //   outcome.value,
+      //   dbMarket.market_id,
+      //   fixtureId,
+      //   sourceFixtureId
+      // );
     }
   }
 

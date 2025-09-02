@@ -58,7 +58,7 @@ class SaveBetPawaLeaguesWithFixturesService {
 
         const today = new Date();
         const dateStr = today.toISOString().split("T")[0];
-        const filePath = `./files/betpawa_countries_leagues_fixtures_${dateStr}.json`;
+        const filePath = `./files/common/betpawa_countries_leagues_fixtures_${dateStr}.json`;
         fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
         console.log(`✅ JSON file saved at ${filePath}`);
     }

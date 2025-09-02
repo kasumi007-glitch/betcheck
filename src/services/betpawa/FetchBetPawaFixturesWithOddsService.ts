@@ -5,6 +5,7 @@ import { EventResponse } from "../interfaces/BetPawa/EventResponse";
 import { ResponseData } from "../interfaces/BetPawa/ResponseData";
 import { QueryObject } from "../interfaces/BetPawa/QueryObject";
 import { httpClientFromApi } from "../../utils/HttpClientSN";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class FetchBetPawaFixturesWithOddsService {
     private readonly sourceName = "BETPAWA";
@@ -404,14 +405,23 @@ class FetchBetPawaFixturesWithOddsService {
                     continue;
                 }
 
+                await OddsSnapshotService.saveOrUpdate({
+                    group_id: dbGroup.group_id,
+                    market_id: dbMarket.market_id,
+                    fixture_id: fixture.id,
+                    source_id: this.sourceId,
+                    external_source_fixture_id: sourceFixtureId,
+                    coefficient: outcomeData.price,
+                });
+
                 // If there's a single coefficient .Value, store as an outcome
-                await this.saveMarketOutcome(
-                    dbGroup.group_id,
-                    outcomeData.price,
-                    dbMarket.market_id,
-                    fixture.id,
-                    sourceFixtureId
-                );
+                // await this.saveMarketOutcome(
+                //     dbGroup.group_id,
+                //     outcomeData.price,
+                //     dbMarket.market_id,
+                //     fixture.id,
+                //     sourceFixtureId
+                // );
             }
             // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
         }

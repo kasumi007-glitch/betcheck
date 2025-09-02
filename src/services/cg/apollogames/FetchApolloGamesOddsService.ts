@@ -2,6 +2,7 @@ import { db } from "../../../infrastructure/database/Database";
 import { fetchFromApiWithoutProxy } from "../../../utils/HttpClientCG";
 import Group from "../../../models/Group";
 import Market from "../../../models/Market";
+import { OddsSnapshotService } from "../../../utils/OddsSnapshotService";
 
 class FetchApolloGamesOddsService {
     private readonly oddsApiUrl = "https://sportapis-apollo.webapis.sk/SportsOfferApi/api/sport/offer/v3/match/offers?MatchId={matchId}";
@@ -135,26 +136,35 @@ class FetchApolloGamesOddsService {
         const coefficient = Number(odd.Odd);
         if (isNaN(coefficient)) return;
 
-        await db("fixture_odds").insert({
+        await OddsSnapshotService.saveOrUpdate({
             group_id: groupId,
             market_id: dbMarket.market_id,
-            coefficient,
             fixture_id: fixtureId,
-            external_source_fixture_id: sourceFixtureId,
             source_id: this.sourceId,
-        }).onConflict([
-            "group_id",
-            "market_id",
-            "fixture_id",
-            "external_source_fixture_id",
-            "source_id",
-        ])
-            .merge({
-                coefficient: db.raw("EXCLUDED.coefficient"),
-                updated_at: db.fn.now(),
-            });
+            external_source_fixture_id: sourceFixtureId,
+            coefficient,
+        });
 
-        console.log(`✅ Odds updated: ${groupId}/${dbMarket.market_id} @ ${coefficient}`);
+        // await db("fixture_odds").insert({
+        //     group_id: groupId,
+        //     market_id: dbMarket.market_id,
+        //     coefficient,
+        //     fixture_id: fixtureId,
+        //     external_source_fixture_id: sourceFixtureId,
+        //     source_id: this.sourceId,
+        // }).onConflict([
+        //     "group_id",
+        //     "market_id",
+        //     "fixture_id",
+        //     "external_source_fixture_id",
+        //     "source_id",
+        // ])
+        //     .merge({
+        //         coefficient: db.raw("EXCLUDED.coefficient"),
+        //         updated_at: db.fn.now(),
+        //     });
+
+        // console.log(`✅ Odds updated: ${groupId}/${dbMarket.market_id} @ ${coefficient}`);
     }
 }
 

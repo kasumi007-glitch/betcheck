@@ -1,46 +1,40 @@
-import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApiV2, fetchFromApiWithoutProxyV2 } from "../../utils/ApiClientAkwaBet";
-import { httpClientFromApi,fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
+import { fetchFromApiWithoutProxy } from "../../utils/HttpClientCI";
 import fs from "fs";
 
 class SaveAkwaBetLeaguesWithFixturesService {
-    private readonly apiUrl =
-        "https://api.logiqsport.com:60009/api/pregame/getPregameData?providerId=1&h24=false&lang=en&siteid=43";
-    private readonly fixturesApiUrl =
-        "https://api.logiqsport.com:60009/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
-    private readonly sourceName = "AKWABET";
-    private sourceId!: number;
-
-    async init() {
-        const source = await db("sources").where("name", this.sourceName).first();
-        if (!source) {
-            [this.sourceId] = await db("sources")
-                .insert({ name: this.sourceName })
-                .returning("id");
-        } else {
-            this.sourceId = source.id;
-        }
-    }
+    private readonly leaguesApiUrl = "https://sports-apipro.logiqsport.com/api/pregame/getPregameData?providerId=1&h24=false&lang=en&siteid=43";
+    private readonly fixturesApiUrl = "https://sports-apipro.logiqsport.com/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
 
     async syncLeaguesAndFixtures() {
-        console.log("🚀 Fetching AkwaBet leagues...");
+        console.log("🚀 Fetching AkwaBet leagues and fixtures...");
 
-        const response = await fetchFromApiWithoutProxy(this.apiUrl);
-        if (!response?.Sports?.length) {
-            console.warn("⚠️ No leagues found in AkwaBet API response.");
+        const response = await fetchFromApiWithoutProxy(this.leaguesApiUrl);
+
+        if (!response?.Sports) {
+            console.error("❌ No sports data found in response");
+            return;
+        }
+
+        // Find football sport (International name = "Football")
+        const footballSport = response.Sports.find((sport: any) =>
+            sport.Name?.International === "Football"
+        );
+
+        if (!footballSport) {
+            console.error("❌ Football sport not found");
             return;
         }
 
         let jsonData: any = { countries: {} };
-        const sports = response.Sports;
 
-        for (const sport of sports) {
-            if (sport.Name?.International === "Football") {
-                if (!sport.Categories) continue; // Skip if no leagues exist
+        for (const category of footballSport.Categories || []) {
+            const countryName = category.Name?.International;
+            if (!countryName) continue;
 
-                for (const country of sport.Categories) {
-                    await this.processCountry(country, jsonData);
-                }
+            jsonData.countries[countryName] = { leagues: {} };
+
+            for (const tournament of category.Tournaments || []) {
+                await this.processLeague(countryName, tournament, category.Id, jsonData);
             }
         }
 
@@ -48,105 +42,52 @@ class SaveAkwaBetLeaguesWithFixturesService {
             Object.entries(jsonData.countries).sort(([a], [b]) => a.localeCompare(b))
         );
 
-        // 🗓️ Add today's date
         const today = new Date();
-        const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
+        const dateStr = today.toISOString().split("T")[0];
+        const filePath = `./files/ci/ci_akwabet_countries_leagues_fixtures_${dateStr}.json`;
 
-        // 📝 Save into /src/files/ folder
-        const filePath = `./files/akwabet_countries_leagues_fixtures_${dateStr}.json`;
         fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
         console.log(`✅ JSON file generated: ${filePath}`);
     }
 
-    private async processCountry(country: any, jsonData: any) {
-        const countryId = country.Id;
-        const countryName = country.Name.International;
-        console.log(`🌍 Processing country: ${countryName}`);
+    private async processLeague(countryName: string, tournament: any, categoryId: string, jsonData: any) {
+        const leagueId = tournament.Id;
+        const leagueName = tournament.Name?.International;
 
-        jsonData.countries[countryName] = { leagues: {} };
+        if (!leagueId || !leagueName) return;
 
-        if (country.Tournaments) {
-            for (const league of country.Tournaments) {
-                await this.processLeague(league, jsonData, countryName, countryId);
-            }
-        }
-    }
+        console.log(`⚽ Processing league: ${leagueName}`);
+        jsonData.countries[countryName].leagues[leagueId] = { name: leagueName, fixtures: [] };
 
-    private async processLeague(league: any, jsonData: any, countryName: string, countryId: number) {
-        const leagueId = league.Id;
-        const leagueName = league.Name.International;
-        console.log(`⚽ Processing league: ${leagueName} in ${countryName}`);
-
-        // jsonData.countries[countryName].leagues[leagueId] = {
-        //     name: leagueName,
-        //     fixtures: [],
-        // };
-
-        if (!jsonData.countries[countryName].leagues[leagueId]) {
-            jsonData.countries[countryName].leagues[leagueId] = { name: leagueName, fixtures: [] };
-        }
-
-        await this.fetchAndProcessFixtures(leagueId, jsonData, countryName, countryId);
-    }
-
-    private async fetchAndProcessFixtures(
-        leagueId: number,
-        jsonData: any,
-        countryName: string,
-        countryId: number
-    ) {
-        const fixturesUrl = this.fixturesApiUrl;
-
-        const payloadData = {
-            data: JSON.stringify({
-                ProviderId: 1, // Fixed value
-                tournId: `1,${String(countryId)},${String(leagueId)}`, // Concatenated tournId format: sportId, countryId, tournamentId
-                filter: "All",
-                groupName: null,
-                subGroupName: null,
-            }),
+        // Fetch fixtures for this league
+        const requestData = {
+            ProviderId: 1,
+            tournId: `1,${categoryId},${leagueId}`,
+            filter: "All",
+            groupName: "null",
+            subGroupName: "null"
         };
 
-        const response = await fetchFromApiWithoutProxyV2(fixturesUrl, "POST", payloadData);
+        const response = await fetchFromApiWithoutProxy(this.fixturesApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            data: { data: JSON.stringify(requestData) }
+        });
 
-        if (!response?.Contents) {
-            console.warn(`⚠️ No fixtures received for league  ID: ${leagueId}`);
+        const events = response?.Contents?.Events || [];
+        if (!events.length) {
+            console.warn(`⚠️ No events found for league: ${leagueName}`);
             return;
         }
 
-        if (!response?.Contents?.Events.length) {
-            console.warn(`⚠️ No fixtures received for league  ID: ${leagueId}`);
-            return;
-        }
+        for (const event of events) {
+            const homeTeam = event.Info?.HomeTeamName?.International || "";
+            const awayTeam = event.Info?.AwayTeamName?.International || "";
 
-        const fixtures = response?.Contents?.Events;
-
-        for (const fixture of fixtures) {
-            this.processMatch(fixture, leagueId, jsonData, countryName);
-        }
-    }
-
-    private processMatch(
-        match: any,
-        leagueId: number,
-        jsonData: any,
-        countryName: string
-    ) {
-        const homeTeam = match.Info?.HomeTeamName?.International?.trim();
-        const awayTeam = match.Info?.AwayTeamName?.International?.trim();
-
-        if (
-            homeTeam &&
-            awayTeam &&
-            jsonData.countries[countryName].leagues[leagueId]
-        ) {
-            const fixtures =
-                jsonData.countries[countryName].leagues[leagueId].fixtures;
-            if (!fixtures.includes(homeTeam)) {
-                fixtures.push(homeTeam);
-            }
-            if (!fixtures.includes(awayTeam)) {
-                fixtures.push(awayTeam);
+            if (homeTeam && awayTeam) {
+                const fixtures = jsonData.countries[countryName].leagues[leagueId].fixtures;
+                if (!fixtures.includes(homeTeam)) fixtures.push(homeTeam);
+                if (!fixtures.includes(awayTeam)) fixtures.push(awayTeam);
             }
         }
     }

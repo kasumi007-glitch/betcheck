@@ -5,8 +5,11 @@ import fs from "fs";
 class Save22BetLeaguesWithFixturesService {
   private readonly leaguesApiUrl =
     "https://platform.22bet.com.sn/api/v3/menu/line/en";
+  //https://platform.22betcd.com/api/v4/menu/line/en?period=0&withOutrightMarkets=1
   private readonly fixturesApiUrlTemplate =
     "https://platform.22bet.com.sn/api/event/list?status_in[]=0&limit=150&relations[]=competitors&leagueId_in[]={leagueId}&lang=en";
+  //https://platform.22betcd.com/api/event/list?period=0&competitor1Id_neq=&competitor2Id_neq=&status_in%5B%5D=0&limit=150&main=1&relations%5B%5D=odds&relations%5B%5D=league&relations%5B%5D=result&relations%5B%5D=competitors&relations%5B%5D=withMarketsCount&relations%5B%5D=players&relations%5B%5D=sportCategories&relations%5B%5D=broadcasts&relations%5B%5D=statistics&relations%5B%5D=additionalInfo&relations%5B%5D=tips&leagueId_in%5B%5D=1008013&oddsExists_eq=1&lang=en
+
   private readonly sourceName = "22BET";
   private sourceId!: number;
 
@@ -47,7 +50,7 @@ class Save22BetLeaguesWithFixturesService {
     const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
 
     // 📝 Save into /src/files/ folder
-    const filePath = `./files/22bet_countries_leagues_fixtures_${dateStr}.json`;
+    const filePath = `./files/common/22bet_countries_leagues_fixtures_${dateStr}.json`;
     fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
     console.log(`✅ JSON file generated: ${filePath}`);
   }

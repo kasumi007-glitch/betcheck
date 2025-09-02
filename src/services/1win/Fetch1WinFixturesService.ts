@@ -1,7 +1,7 @@
 // src/services/1win/Fetch1WinFixturesService.ts
 
 import { db } from "../../infrastructure/database/Database";
-import { fetchFromApi } from "../../utils/ApiClient";
+import { httpClientFromApi } from "../../utils/HttpClientCI";
 import { teamNameMappings } from "../teamNameMappings";
 
 class Fetch1WinFixturesService {
@@ -55,7 +55,7 @@ class Fetch1WinFixturesService {
         "{categoryId}",
         String(categoryId)
       );
-      const response = await fetchFromApi(apiUrl);
+      const response = await httpClientFromApi(apiUrl);
       if (!response?.matches?.length) {
         console.warn(
           `⚠️ No match data for country/category id: ${categoryId}`

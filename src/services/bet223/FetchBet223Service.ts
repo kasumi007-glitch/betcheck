@@ -3,6 +3,7 @@ import { Page, ElementHandle, JSHandle } from "puppeteer";
 import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 interface MatchInfo {
   teams: string[];
@@ -625,13 +626,23 @@ class BetMomoScraperService {
             console.warn(`❌ No market found for outcome: ${outcome.alias}`);
             continue;
           }
-          await this.saveMarketOutcome(
-            dbGroup.group_id,
-            outcome.coefficient,
-            dbMarket.market_id,
-            fixtureId,
-            String(odds.external_source_fixture_id)
-          );
+
+          await OddsSnapshotService.saveOrUpdate({
+            group_id: dbGroup.group_id,
+            market_id: dbMarket.market_id,
+            fixture_id: fixtureId,
+            source_id: this.sourceId,
+            external_source_fixture_id: odds.external_source_fixture_id?.toString() || "",
+            coefficient: outcome.coefficient,
+          });
+
+          // await this.saveMarketOutcome(
+          //   dbGroup.group_id,
+          //   outcome.coefficient,
+          //   dbMarket.market_id,
+          //   fixtureId,
+          //   String(odds.external_source_fixture_id)
+          // );
         }
       }
     }

@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
 import { httpClientFromApi } from "../../utils/HttpClientCI";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 import { MarketObj } from "../interfaces/MarketObj";
 
 //for count get it from leagues "GC": 20, but must be multiple of 10
@@ -267,14 +268,23 @@ class FetchLineBetFixturesWithOddsService {
         continue;
       }
 
+      await OddsSnapshotService.saveOrUpdate({
+        group_id: dbGroup.group_id,
+        market_id: dbMarket.market_id,
+        fixture_id: matchedFixture.id,
+        source_id: this.sourceId,
+        external_source_fixture_id: sourceFixtureId,
+        coefficient: marketObj.C, // e.g. 1.5
+      });
+
       // If there's a single coefficient .C, store as an outcome
-      await this.saveMarketOutcome(
-        dbGroup.group_id,
-        Number(marketObj.C),
-        dbMarket.market_id,
-        matchedFixture.id,
-        sourceFixtureId
-      );
+      // await this.saveMarketOutcome(
+      //   dbGroup.group_id,
+      //   Number(marketObj.C),
+      //   dbMarket.market_id,
+      //   matchedFixture.id,
+      //   sourceFixtureId
+      // );
 
       // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
     }

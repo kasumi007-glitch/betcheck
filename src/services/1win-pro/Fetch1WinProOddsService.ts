@@ -2,6 +2,7 @@ import { db } from "../../infrastructure/database/Database";
 import WebSocket from "ws";
 import Group from "../../models/Group";
 import Market from "../../models/Market";
+import { OddsSnapshotService } from "../../utils/OddsSnapshotService";
 
 class Fetch1WinProOddsService {
     private readonly WS_URL =
@@ -208,30 +209,39 @@ class Fetch1WinProOddsService {
                     const coefficient = parseFloat(odd.cf);
                     if (!coefficient || coefficient <= 0) continue;
 
-                    await db("fixture_odds")
-                        .insert({
-                            group_id: dbGroup.group_id,
-                            market_id: dbMarket.market_id,
-                            coefficient,
-                            fixture_id: fixtureId,
-                            external_source_fixture_id: sourceFixtureId,
-                            source_id: this.sourceId,
-                        })
-                        .onConflict([
-                            "group_id",
-                            "market_id",
-                            "fixture_id",
-                            "external_source_fixture_id",
-                            "source_id",
-                        ])
-                        .merge({
-                            coefficient: db.raw("EXCLUDED.coefficient"),
-                            updated_at: db.fn.now(),
-                        });
+                    await OddsSnapshotService.saveOrUpdate({
+                        group_id: dbGroup.group_id,
+                        market_id: dbMarket.market_id,
+                        fixture_id: fixtureId,
+                        source_id: this.sourceId,
+                        external_source_fixture_id: sourceFixtureId,
+                        coefficient,
+                    });
 
-                    console.log(
-                        `✅ ${group.name} - ${mappedOutcome} (${coefficient}) saved for fixture ${fixtureId}`
-                    );
+                    // await db("fixture_odds")
+                    //     .insert({
+                    //         group_id: dbGroup.group_id,
+                    //         market_id: dbMarket.market_id,
+                    //         coefficient,
+                    //         fixture_id: fixtureId,
+                    //         external_source_fixture_id: sourceFixtureId,
+                    //         source_id: this.sourceId,
+                    //     })
+                    //     .onConflict([
+                    //         "group_id",
+                    //         "market_id",
+                    //         "fixture_id",
+                    //         "external_source_fixture_id",
+                    //         "source_id",
+                    //     ])
+                    //     .merge({
+                    //         coefficient: db.raw("EXCLUDED.coefficient"),
+                    //         updated_at: db.fn.now(),
+                    //     });
+
+                    // console.log(
+                    //     `✅ ${group.name} - ${mappedOutcome} (${coefficient}) saved for fixture ${fixtureId}`
+                    // );
                 }
             }
         } catch (error) {

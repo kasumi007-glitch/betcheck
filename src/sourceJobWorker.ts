@@ -7,7 +7,7 @@ import Save1xBetLeaguesWithFixturesService from "./services/1xbet/Save1xBetLeagu
 import Save22BetLeaguesWithFixturesService from "./services/22bet/Save22BetLeaguesWithFixturesService";
 import SaveBetMomoLeaguesWithFixturesService from "./services/bet-momo/SaveBetMomoLeaguesWithFixturesService";
 import SaveBet223LeaguesWithFixturesService from "./services/bet223/SaveBet223LeaguesWithFixturesService";
-import SaveBetclicLeaguesWithFixturesService from "./services/betclic/SaveBetclicLeaguesWithFixturesService";
+// import SaveBetclicLeaguesWithFixturesService from "./services/betclic/SaveBetclicLeaguesWithFixturesService";
 import SaveMegaPariLeaguesWithFixturesService from "./services/mega-pari/SaveMegaPariLeaguesWithFixturesService";
 import SavePremierBetLeaguesWithFixturesService from "./services/premierbet/SavePremierBetLeaguesWithFixturesService";
 import SaveSunubetLeaguesWithFixturesService from "./services/sunu-bet/SaveSunubetLeaguesWithFixturesService";
@@ -27,6 +27,12 @@ import SaveEliteBetLeaguesWithFixturesService from "./services/cg/elitebet/SaveE
 import SavePlayongoLeaguesWithFixturesService from "./services/cg/playongo/SavePlayongoLeaguesWithFixturesService";
 import SaveBWinnersLeaguesWithFixturesService from "./services/sl/bwinners/SaveBWinnersLeaguesWithFixturesService";
 import SaveMWosLeaguesWithFixturesService from "./services/zw/mwos/SaveMWosLeaguesWithFixturesService";
+import SaveCmBettomaxLeaguesWithFixturesService from "./services/cm/bettomax/SaveCmBettomaxLeaguesWithFixturesService";
+import SaveBettomaxLeaguesWithFixturesService from "./services/sl/bettomax/SaveBettomaxLeaguesWithFixturesService";
+import SaveAllPremierBetLeaguesWithFixturesService from "./services/ao/ao-premierbet/SaveAllPremierBetLeaguesWithFixturesService";
+import SaveBetmomoLeaguesWithFixturesService from "./services/betmomo/SaveBetmomoLeaguesWithFixturesService";
+import SaveCiBetclicLeaguesWithFixturesService from "./services/ci/betclic/SaveCiBetclicLeaguesWithFixturesService";
+import Save1WinProLeaguesWithFixturesService from "./services/1win-pro/Save1WinProLeaguesWithFixturesService";
 
 dotenv.config();
 const SYNC_FIXTURES_CRON = process.env.SYNC_FIXTURES_CRON ?? "0 0 * * *"; // Default: every day at midnight
@@ -38,13 +44,14 @@ const runSourceJobSync = async () => {
     );
 
     const results = await Promise.allSettled([
-        Save1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // Save1WinLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         Save1xBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         Save22BetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveAkwaBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-        SaveBetMomoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // SaveBetMomoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveBetmomoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveBet223LeaguesWithFixturesService.syncLeaguesAndFixtures(),
-        SaveBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // SaveBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveBetPawaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveGeniusBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveGuineeGamesLeaguesWithFixturesService.syncLeaguesAndFixtures(),
@@ -52,7 +59,8 @@ const runSourceJobSync = async () => {
         SaveMegaPariLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveMelBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-        SavePremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        new SavePremierBetLeaguesWithFixturesService().syncLeaguesAndFixtures("ML_PREMIERBET"),
+        new SavePremierBetLeaguesWithFixturesService().syncLeaguesAndFixtures("TG_PREMIERBET"),
         SaveSunubetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveSuperGoalLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveYellowBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
@@ -60,17 +68,27 @@ const runSourceJobSync = async () => {
         //AO Sources
         Save888BetsLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveEBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveAllPremierBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //CG Sources
         SaveApolloGamesLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveEliteBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SavePlayongoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
+        Save1WinProLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+
+        //CM Sources
+        SaveCmBettomaxLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+
         //SL Sources
         SaveBWinnersLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveBettomaxLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //ZW Sources
-        SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures()
+        SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+
+        //CI
+        SaveCiBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures()
     ]);
 
     // await launchPremierBetWithProxy("https://www.bantubet.co.ao/en/sports/pre-match/event-view/Soccer");
@@ -100,13 +118,13 @@ const runScheduleSync = async () => {
 
     try {
         // Always start cron
-        // await runScheduleSync();
+        await runScheduleSync();
 
-        // if (triggerImmediately) {
-        //     console.log("🚀 SOURCE_JOB_RUN_IMMEDIATELY=true → Running job immediately...");
-        //     await runSourceJobSync();
-        //     console.log("✅ Immediate Source Job completed.");
-        // }
+        if (triggerImmediately) {
+            console.log("🚀 SOURCE_JOB_RUN_IMMEDIATELY=true → Running job immediately...");
+            await runSourceJobSync();
+            console.log("✅ Immediate Source Job completed.");
+        }
 
         // Keep process alive
         console.log("🕒 Waiting for scheduled jobs...");

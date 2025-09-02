@@ -1,29 +1,138 @@
-import { db } from "../../infrastructure/database/Database";
-import { httpClientFromApi } from "../../utils/HttpClientCI";
+
+import { httpClientFromApi as httpClientCI } from "../../utils/HttpClientCI";
+import { httpClientFromApi as httpClientML } from "../../utils/HttpClientML";
+import { httpClientFromApi as httpClientSN } from "../../utils/HttpClientSN";
+import { httpClientFromApi as httpClientCM } from "../../utils/HttpClientCM";
+import { httpClientFromApi as httpClientGA, fetchFromApiWithoutProxy as fetchFromApiWithoutProxyGA } from "../../utils/HttpClientGA";
+import { httpClientFromApi as httpClientTG } from "../../utils/HttpClientTG";
+import { httpClientFromApi as httpClientCG } from "../../utils/HttpClientCG";
+import { httpClientFromApi as httpClientCD } from "../../utils/HttpClientCD";
+import { httpClientFromApi as httpClientSL } from "../../utils/HttpClientSL";
+import { httpClientFromApi as httpClientAO } from "../../utils/HttpClientAO";
+import { httpClientFromApi as httpClientZW } from "../../utils/HttpClientZW";
 import fs from "fs";
 
 class SavePremierBetLeaguesWithFixturesService {
-  private readonly leaguesApiUrl =
-    "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
-  private readonly fixturesApiUrl =
-    "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={competitionId}&isGroup=false";
-  private readonly sourceName = "PREMIERBET";
-  private sourceId!: number;
+  // private readonly leaguesApiUrl =
+  //   "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+  // private readonly fixturesApiUrl =
+  //   "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={competitionId}&isGroup=false";
 
-  async init() {
-    const source = await db("sources").where("name", this.sourceName).first();
-    if (!source) {
-      [this.sourceId] = await db("sources")
-        .insert({ name: this.sourceName })
-        .returning("id");
-    } else {
-      this.sourceId = source.id;
+  private httpClient!: (url: string) => Promise<any>;
+  private leaguesApiUrl!: string;
+  private fixturesApiUrl!: string;
+  private countryCode!: string;
+
+  async init(sourceName: string) {
+    switch (sourceName.toUpperCase()) {
+      // case "PREMIERBET":
+      //   this.apiUrlTemplate =
+      //     "https://sports-api.premierbet.com/ci/v1/competitions?country=CI&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.apiUrlTemplate =
+      //     "https://sports-api.premierbet.com/ci/v1/events?country=CI&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientCI;
+      // this.countryCode = "ci";
+      //   break;
+
+      case "ML_PREMIERBET":
+        this.leaguesApiUrl =
+          "https://sports-api.premierbet.com/ml/v1/competitions?country=ML&group=g7&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+        this.fixturesApiUrl =
+          "https://sports-api.premierbet.com/ml/v1/events?country=ML&group=g7&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+        this.httpClient = httpClientML;
+        this.countryCode = "common";
+        break;
+
+      // case "SN_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/sn/v1/competitions?country=SN&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/sn/v1/events?country=SN&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientSN;
+      //   this.countryCode = "sn";
+      //   break;
+
+      // case "CM_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/cm/v1/competitions?country=CM&group=g1&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/cm/v1/events?country=CM&group=g1&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientCM;
+      //   this.countryCode = "cm";
+      //   break;
+
+      // case "GA_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/ga/v1/competitions?country=GA&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/ga/v1/events?country=GA&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = fetchFromApiWithoutProxyGA;
+      //   this.countryCode = "ga";
+      //   break;
+
+      case "TG_PREMIERBET":
+        this.leaguesApiUrl =
+          "https://sports-api.premierbet.com/tg/v2/competitions?country=TG&group=g3&platform=desktop&locale=en&timeOffset=-180&sportId=SOCCER";
+        this.fixturesApiUrl =
+          "https://sports-api.premierbet.com/tg/v2/events?country=TG&group=g3&platform=desktop&locale=en&sportId=SOCCER&competitionId={leagueId}&limit=10";
+        this.httpClient = httpClientTG;
+        this.countryCode = "tg";
+        break;
+
+      // case "CG_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/cg/v1/competitions?country=CG&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/cg/v1/events?country=CG&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientCG;
+      //   this.countryCode = "cg";
+      //   break;
+
+      // case "CD_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/cd/v1/competitions?country=CD&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/cd/v1/events?country=CD&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientCD;
+      //   this.countryCode = "cd";
+      //   break;
+
+      // case "SL_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.mercurybet.com/v1/competitions?country=SL&group=g5&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.mercurybet.com/v1/events?country=SL&group=g5&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false&limit=10";
+      //   this.httpClient = httpClientSL;
+      //   this.countryCode = "sl";
+      //   break;
+
+      // case "AO_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/ao/v1/competitions?country=AO&group=g2&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.co.ao/v1/events?country=AO&group=g2&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false&limit=10";
+      //   this.httpClient = httpClientAO;
+      //   this.countryCode = "ao";
+      //   break;
+
+      // case "ZW_PREMIERBET":
+      //   this.leaguesApiUrl =
+      //     "https://sports-api.premierbet.com/zw/v1/competitions?country=ZW&group=g4&platform=desktop&locale=en&timeOffset=-180&sportId=1";
+      //   this.fixturesApiUrl =
+      //     "https://sports-api.premierbet.com/zw/v1/events?country=ZW&group=g4&platform=desktop&locale=en&sportId=1&competitionId={leagueId}&isGroup=false";
+      //   this.httpClient = httpClientZW;
+      //   this.countryCode = "zw";
+      //   break;
+
+      default:
+        throw new Error(`Unknown source: ${sourceName}`);
     }
   }
 
-  async syncLeaguesAndFixtures() {
+  async syncLeaguesAndFixtures(sourceName: string) {
+    await this.init(sourceName);
     console.log("🚀 Fetching PremierBet leagues...");
-    const response = await httpClientFromApi(this.leaguesApiUrl);
+    const response = await this.httpClient(this.leaguesApiUrl);
     if (!response?.categories.length) {
       console.warn("⚠️ No leagues found in PremierBet API response.");
       return;
@@ -44,7 +153,7 @@ class SavePremierBetLeaguesWithFixturesService {
     const dateStr = today.toISOString().split("T")[0]; // Example: "2025-04-29"
 
     // 📝 Save into /src/files/ folder
-    const filePath = `./files/premierbet_countries_leagues_fixtures_${dateStr}.json`;
+    const filePath = `./files/${this.countryCode}_premierbet_countries_leagues_fixtures_${dateStr}.json`;
     fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2));
     console.log(`✅ JSON file generated: ${filePath}`);
   }
@@ -81,10 +190,10 @@ class SavePremierBetLeaguesWithFixturesService {
     countryName: string
   ) {
     const fixturesUrl = this.fixturesApiUrl.replace(
-      "{competitionId}",
+      "{leagueId}",
       String(competitionId)
     );
-    const response = await httpClientFromApi(fixturesUrl);
+    const response = await this.httpClient(fixturesUrl);
     if (!response?.data?.categories.length) return;
 
     for (const category of response.data.categories) {
@@ -122,4 +231,4 @@ class SavePremierBetLeaguesWithFixturesService {
   }
 }
 
-export default new SavePremierBetLeaguesWithFixturesService();
+export default SavePremierBetLeaguesWithFixturesService;

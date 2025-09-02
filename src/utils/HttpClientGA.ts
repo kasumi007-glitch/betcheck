@@ -63,7 +63,7 @@ export const httpClientFromApi = async (
     console.error(`❌ Error fetching data: ${error.message || status || code}`);
 
     const transientErrors = ["ECONNABORTED", "ECONNREFUSED", "ECONNRESET", "ETIMEDOUT"];
-    const shouldRetry = transientErrors.includes(code) || status === 502;
+    const shouldRetry = transientErrors.includes(code) || status === 502 || status === 403;
 
     if (retries > 0 && shouldRetry) {
       console.warn(`🔁 Retrying... Reason: ${code || status}, Attempts left: ${retries}`);

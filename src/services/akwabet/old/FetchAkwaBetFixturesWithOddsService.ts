@@ -1,8 +1,9 @@
-import { db } from "../../infrastructure/database/Database";
-import Market from "../../models/Market";
-import Group from "../../models/Group";
-import { httpClientFromApiV2, fetchFromApiWithoutProxyV2 } from "../../utils/ApiClientAkwaBet";
+import { db } from "../../../infrastructure/database/Database";
+import Market from "../../../models/Market";
+import Group from "../../../models/Group";
+import { httpClientFromApiV2, fetchFromApiWithoutProxyV2 } from "../../../utils/ApiClientAkwaBet";
 import fs from "fs";
+import { OddsSnapshotService } from "../../../utils/OddsSnapshotService";
 
 const path = require("path");
 
@@ -105,7 +106,8 @@ class FetchAkwaBetFixturesWithOddsService {
         leagueId: number,
         countryExternalId: string,
     ) {
-        const apiUrl = "https://api.logiqsport.com:60009/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
+        // const apiUrl = "https://api.logiqsport.com:60009/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
+        const apiUrl = "https://sports-apipro.logiqsport.com/api/Pregame/MarketsTreeEventsTable?lang=en&siteid=43";
 
         const payloadData = {
             data: JSON.stringify({
@@ -306,14 +308,23 @@ class FetchAkwaBetFixturesWithOddsService {
                     continue;
                 }
 
+                await OddsSnapshotService.saveOrUpdate({
+                    group_id: dbGroup.group_id,
+                    market_id: dbMarket.market_id,
+                    fixture_id: fixture.id,
+                    source_id: this.sourceId,
+                    external_source_fixture_id: sourceFixtureId,
+                    coefficient: Number(outcomeData.Value),
+                });
+
                 // If there's a single coefficient .Value, store as an outcome
-                await this.saveMarketOutcome(
-                    dbGroup.group_id,
-                    Number(outcomeData.Value),
-                    dbMarket.market_id,
-                    fixture.id,
-                    sourceFixtureId
-                );
+                // await this.saveMarketOutcome(
+                //     dbGroup.group_id,
+                //     Number(outcomeData.Value),
+                //     dbMarket.market_id,
+                //     fixture.id,
+                //     sourceFixtureId
+                // );
             }
             //     // If you also have multiple "outcomes" in marketObj.ME or marketObj.outcomes, you’d loop them similarly
         }
