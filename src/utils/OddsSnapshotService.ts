@@ -6,7 +6,7 @@ interface SnapshotInput {
     fixture_id: number;
     source_id: number;
     external_source_fixture_id: string;
-    coefficient: number;
+    coefficient: any; // bookmaker may send string/number/null
 }
 
 export class OddsSnapshotService {
@@ -17,8 +17,20 @@ export class OddsSnapshotService {
             fixture_id,
             source_id,
             external_source_fixture_id,
-            coefficient,
+            coefficient: rawCoefficient,
         } = snapshot;
+
+        // 🔒 Safely normalize coefficient
+        const parsed = Number(rawCoefficient);
+        if (isNaN(parsed)) {
+            console.warn(
+                `⚠️ Invalid coefficient skipped for fixture ${fixture_id} (got: ${rawCoefficient})`
+            );
+            return; // skip saving invalid odds
+        }
+
+        // Trim to 2 decimals
+        const coefficient = Number(parsed.toFixed(2));
 
         const existing = await db("fixture_odds")
             .where({
@@ -41,7 +53,7 @@ export class OddsSnapshotService {
                 updated_at: db.fn.now(),
             });
             console.log(`✅ Inserted new odd (${group_id}/${market_id}): ${coefficient}`);
-        } else if (existing.coefficient !== coefficient?.toString()) {
+        } else if (Number(existing.coefficient) !== coefficient) {
             await db("fixture_odds_history").insert({
                 group_id,
                 market_id,
@@ -62,7 +74,6 @@ export class OddsSnapshotService {
 
             console.log(`📝 Updated odd (${group_id}/${market_id}): ${existing.coefficient} → ${coefficient}`);
         } else {
-            // No change
             console.log(`⏭️ No change: ${group_id}/${market_id}: still ${coefficient}`);
         }
     }

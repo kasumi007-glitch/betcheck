@@ -33,6 +33,11 @@ import SaveAllPremierBetLeaguesWithFixturesService from "./services/ao/ao-premie
 import SaveBetmomoLeaguesWithFixturesService from "./services/betmomo/SaveBetmomoLeaguesWithFixturesService";
 import SaveCiBetclicLeaguesWithFixturesService from "./services/ci/betclic/SaveCiBetclicLeaguesWithFixturesService";
 import Save1WinProLeaguesWithFixturesService from "./services/1win-pro/Save1WinProLeaguesWithFixturesService";
+import SaveCdBetwinnerLeaguesWithFixturesService from "./services/cd/betwinner1/SaveCdBetwinnerLeaguesWithFixturesService";
+import SaveCdBetikaLeaguesWithFixturesService from "./services/cd/betika/SaveCdBetikaLeaguesWithFixturesService";
+import SaveCdMojabetLeaguesWithFixturesService from "./services/cd/mojabet/SaveCdMojabetLeaguesWithFixturesService";
+import SaveCdWinnerBetLeaguesWithFixturesService from "./services/cd/winner-bet/SaveCdWinnerBetLeaguesWithFixturesService";
+import SaveSnMojabetLeaguesWithFixturesService from "./services/sn/mojabet/SaveSnMojabetLeaguesWithFixturesService";
 
 dotenv.config();
 const SYNC_FIXTURES_CRON = process.env.SYNC_FIXTURES_CRON ?? "0 0 * * *"; // Default: every day at midnight
@@ -60,7 +65,7 @@ const runSourceJobSync = async () => {
         saveMelBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         saveParipesaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         new SavePremierBetLeaguesWithFixturesService().syncLeaguesAndFixtures("ML_PREMIERBET"),
-        new SavePremierBetLeaguesWithFixturesService().syncLeaguesAndFixtures("TG_PREMIERBET"),
+        // new SavePremierBetLeaguesWithFixturesService().syncLeaguesAndFixtures("TG_PREMIERBET"),
         SaveSunubetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveSuperGoalLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveYellowBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
@@ -88,7 +93,16 @@ const runSourceJobSync = async () => {
         SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //CI
-        SaveCiBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures()
+        SaveCiBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+
+        //CD
+        SaveCdBetwinnerLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveCdBetikaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveCdMojabetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        SaveCdWinnerBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+
+        //SN
+        SaveSnMojabetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
     ]);
 
     // await launchPremierBetWithProxy("https://www.bantubet.co.ao/en/sports/pre-match/event-view/Soccer");

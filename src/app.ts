@@ -94,6 +94,19 @@ import FetchCdBetwinnerLeagueService from "./services/cd/betwinner1/FetchCdBetwi
 import FetchCdBetwinnerFixturesService from "./services/cd/betwinner1/FetchCdBetwinnerFixturesService";
 import FetchCdBetwinnerOddsService from "./services/cd/betwinner1/FetchCdBetwinnerOddsService";
 import SaveCdBetwinnerLeaguesWithFixturesService from "./services/cd/betwinner1/SaveCdBetwinnerLeaguesWithFixturesService";
+import FetchCdWinnerBetLeaguesService from "./services/cd/winner-bet/FetchCdWinnerBetLeaguesService";
+import FetchCdWinnerBetFixturesService from "./services/cd/winner-bet/FetchCdWinnerBetFixturesService";
+import FetchCdWinnerBetOddsService from "./services/cd/winner-bet/FetchCdWinnerBetOddsService";
+import SaveCdBetikaLeaguesWithFixturesService from "./services/cd/betika/SaveCdBetikaLeaguesWithFixturesService";
+import FetchCdBetikaLeaguesService from "./services/cd/betika/FetchCdBetikaLeaguesService";
+import FetchCdBetikaFixturesService from "./services/cd/betika/FetchCdBetikaFixturesService";
+import FetchCdBetikaOddsService from "./services/cd/betika/FetchCdBetikaOddsService";
+import SaveCdMojabetLeaguesWithFixturesService from "./services/cd/mojabet/SaveCdMojabetLeaguesWithFixturesService";
+import FetchCdMojabetFixturesService from "./services/cd/mojabet/FetchCdMojabetFixturesService";
+import FetchCdMojabetOddsService from "./services/cd/mojabet/FetchCdMojabetOddsService";
+import SaveSnMojabetLeaguesWithFixturesService from "./services/sn/mojabet/SaveSnMojabetLeaguesWithFixturesService";
+import FetchSnMojabetFixturesService from "./services/sn/mojabet/FetchSnMojabetFixturesService";
+import FetchSnMojabetOddsService from "./services/sn/mojabet/FetchSnMojabetOddsService";
 
 // dotenv.config();
 
@@ -123,7 +136,7 @@ const syncAllOdds = async () => {
     new AddPremierBetOddService().syncOdds("SN_PREMIERBET"),
     new AddPremierBetOddService().syncOdds("CM_PREMIERBET"),
     new AddPremierBetOddService().syncOdds("GA_PREMIERBET"),
-    new AddPremierBetOddService().syncOdds("TG_PREMIERBET"),
+    // new AddPremierBetOddService().syncOdds("TG_PREMIERBET"),
     new AddPremierBetOddService().syncOdds("CG_PREMIERBET"),
     new AddPremierBetOddService().syncOdds("CD_PREMIERBET"),
     new AddPremierBetOddService().syncOdds("SL_PREMIERBET"),
@@ -156,6 +169,7 @@ const syncAllOdds = async () => {
 
     //SN
     new FetchCiBetclicOddService().syncOdds("SN_BETCLIC"),
+    new FetchSnMojabetOddsService().syncOdds(),
 
     //BJ
     new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC"),
@@ -195,6 +209,12 @@ const syncAllOdds = async () => {
 
     //ZW Odds
     new FetchMWosOddsService().syncOdds(),
+
+    //CD Odds
+    new FetchCdBetwinnerOddsService().syncOdds(),
+    new FetchCdBetikaOddsService().syncOdds(),
+    new FetchCdMojabetOddsService().syncOdds(),
+    new FetchCdWinnerBetOddsService().syncOdds(),
   ]);
 
   results.forEach((result, index) => {
@@ -230,7 +250,7 @@ const syncAllFixtures = async () => {
     new FetchPremierBetFixtureService().syncFixtures("SN_PREMIERBET"),
     new FetchPremierBetFixtureService().syncFixtures("CM_PREMIERBET"),
     new FetchPremierBetFixtureService().syncFixtures("GA_PREMIERBET"),
-    new FetchPremierBetFixtureService().syncFixtures("TG_PREMIERBET"),
+    // new FetchPremierBetFixtureService().syncFixtures("TG_PREMIERBET"),
     new FetchPremierBetFixtureService().syncFixtures("CG_PREMIERBET"),
     new FetchPremierBetFixtureService().syncFixtures("CD_PREMIERBET"),
     new FetchPremierBetFixtureService().syncFixtures("SL_PREMIERBET"),
@@ -251,6 +271,7 @@ const syncAllFixtures = async () => {
 
     //SN
     new FetchCiBetclicFixturesService().syncFixtures("SN_BETCLIC"),
+    new FetchSnMojabetFixturesService().syncFixtures(),
 
     //BJ
     new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC"),
@@ -290,6 +311,12 @@ const syncAllFixtures = async () => {
 
     //ZW Fixtures
     new FetchMWosFixturesService().syncFixtures(),
+
+    //CD Fixtures
+    new FetchCdBetwinnerFixturesService().syncFixtures(),
+    new FetchCdBetikaFixturesService().syncFixtures(),
+    new FetchCdWinnerBetFixturesService().syncFixtures(),
+    new FetchCdMojabetFixturesService().syncFixtures(),
   ]);
 
 
@@ -320,7 +347,7 @@ const syncAllLeagues = async () => {
     new FetchPremierBetLeagueService().syncLeagues("SN_PREMIERBET"),
     new FetchPremierBetLeagueService().syncLeagues("CM_PREMIERBET"),
     new FetchPremierBetLeagueService().syncLeagues("GA_PREMIERBET"),
-    new FetchPremierBetLeagueService().syncLeagues("TG_PREMIERBET"),
+    // new FetchPremierBetLeagueService().syncLeagues("TG_PREMIERBET"),
     new FetchPremierBetLeagueService().syncLeagues("CG_PREMIERBET"),
     new FetchPremierBetLeagueService().syncLeagues("CD_PREMIERBET"),
     new FetchPremierBetLeagueService().syncLeagues("SL_PREMIERBET"),
@@ -381,6 +408,11 @@ const syncAllLeagues = async () => {
 
     //ZW Leagues
     new FetchMWosLeaguesService().syncLeagues(),
+
+    //CD Leagues
+    new FetchCdBetwinnerLeagueService().syncLeagues(),
+    new FetchCdBetikaLeaguesService().syncLeagues(),
+    new FetchCdWinnerBetLeaguesService().syncLeagues(),
   ]);
 
   results.forEach((result, index) => {
@@ -400,10 +432,10 @@ const runInitialSync = async () => {
   // new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC");
   // new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC");
 
-  // new FetchCdBetwinnerLeagueService().syncLeagues();
-  new FetchCdBetwinnerFixturesService().syncFixtures();
-  // new FetchCdBetwinnerOddsService().syncOdds();
-  // SaveCdBetwinnerLeaguesWithFixturesService.syncLeaguesAndFixtures();
+  // new FetchCdMojabetFixturesService().syncLeagues();
+  // new FetchSnMojabetFixturesService().syncFixtures();
+  // new FetchSnMojabetOddsService().syncOdds();
+  // SaveSnMojabetLeaguesWithFixturesService.syncLeaguesAndFixtures();
 
   console.log("⏳ Running initial league sync...");
   // await syncAllLeagues();
