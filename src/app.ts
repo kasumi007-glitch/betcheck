@@ -172,7 +172,7 @@ const syncAllOdds = async () => {
     new FetchSnMojabetOddsService().syncOdds(),
 
     //BJ
-    new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC"),
+    // new FetchCiBetclicOddService().syncOdds("BJ_BETCLIC"),
 
     new FetchBetmomoOddsService().syncOdds("SLELEPHANTBET"),
     new FetchBetmomoOddsService().syncOdds("ZWAFRICABET"),
@@ -198,7 +198,7 @@ const syncAllOdds = async () => {
     //CG Odds
     new FetchEliteBetOddsService().syncOdds(),
     new FetchApolloGamesOddsService().syncOdds(),
-    new FetchPlayongoOddsService().syncOdds(),
+    // new FetchPlayongoOddsService().syncOdds(),
 
     //CM Odds
     new FetchCmBettomaxOddsService().syncOdds(),
@@ -208,13 +208,13 @@ const syncAllOdds = async () => {
     new FetchBettomaxOddsService().syncOdds(),
 
     //ZW Odds
-    new FetchMWosOddsService().syncOdds(),
+    // new FetchMWosOddsService().syncOdds(),
 
     //CD Odds
     new FetchCdBetwinnerOddsService().syncOdds(),
     new FetchCdBetikaOddsService().syncOdds(),
     new FetchCdMojabetOddsService().syncOdds(),
-    new FetchCdWinnerBetOddsService().syncOdds(),
+    // new FetchCdWinnerBetOddsService().syncOdds(),
   ]);
 
   results.forEach((result, index) => {
@@ -274,7 +274,7 @@ const syncAllFixtures = async () => {
     new FetchSnMojabetFixturesService().syncFixtures(),
 
     //BJ
-    new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC"),
+    // new FetchCiBetclicFixturesService().syncFixtures("BJ_BETCLIC"),
 
     new FetchBetmomoFixturesService().syncFixtures("SLELEPHANTBET"),
     new FetchBetmomoFixturesService().syncFixtures("ZWAFRICABET"),
@@ -300,7 +300,7 @@ const syncAllFixtures = async () => {
     //CG Fixtures
     new FetchEliteBetFixturesService().syncFixtures(),
     new FetchApolloGamesFixturesService().syncFixtures(),
-    new FetchPlayongoFixturesService().syncFixtures(),
+    // new FetchPlayongoFixturesService().syncFixtures(),
 
     //CM Fixtures
     new FetchCmBettomaxFixturesService().syncFixtures(),
@@ -310,12 +310,12 @@ const syncAllFixtures = async () => {
     new FetchBettomaxFixturesService().syncFixtures(),
 
     //ZW Fixtures
-    new FetchMWosFixturesService().syncFixtures(),
+    // new FetchMWosFixturesService().syncFixtures(),
 
     //CD Fixtures
     new FetchCdBetwinnerFixturesService().syncFixtures(),
     new FetchCdBetikaFixturesService().syncFixtures(),
-    new FetchCdWinnerBetFixturesService().syncFixtures(),
+    // new FetchCdWinnerBetFixturesService().syncFixtures(),
     new FetchCdMojabetFixturesService().syncFixtures(),
   ]);
 
@@ -371,7 +371,7 @@ const syncAllLeagues = async () => {
     new FetchCiBetclicLeaguesService().syncLeagues("SN_BETCLIC"),
 
     //BJ
-    new FetchCiBetclicLeaguesService().syncLeagues("BJ_BETCLIC"),
+    // new FetchCiBetclicLeaguesService().syncLeagues("BJ_BETCLIC"),
 
     new FetchBetmomoLeaguesService().syncLeagues("SLELEPHANTBET"),
     new FetchBetmomoLeaguesService().syncLeagues("ZWAFRICABET"),
@@ -397,7 +397,7 @@ const syncAllLeagues = async () => {
     //CG Leagues
     new FetchEliteBetLeaguesService().syncLeagues(),
     new FetchApolloGamesLeaguesService().syncLeagues(),
-    new FetchPlayongoLeaguesService().syncLeagues(),
+    // new FetchPlayongoLeaguesService().syncLeagues(),
 
     //CM Leagues
     new FetchCmBettomaxLeaguesService().syncLeagues(),
@@ -407,12 +407,12 @@ const syncAllLeagues = async () => {
     new FetchBettomaxLeaguesService().syncLeagues(),
 
     //ZW Leagues
-    new FetchMWosLeaguesService().syncLeagues(),
+    // new FetchMWosLeaguesService().syncLeagues(),
 
     //CD Leagues
     new FetchCdBetwinnerLeagueService().syncLeagues(),
     new FetchCdBetikaLeaguesService().syncLeagues(),
-    new FetchCdWinnerBetLeaguesService().syncLeagues(),
+    // new FetchCdWinnerBetLeaguesService().syncLeagues(),
   ]);
 
   results.forEach((result, index) => {

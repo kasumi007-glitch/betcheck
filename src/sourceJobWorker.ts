@@ -78,7 +78,7 @@ const runSourceJobSync = async () => {
         //CG Sources
         SaveApolloGamesLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveEliteBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-        SavePlayongoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // SavePlayongoLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         Save1WinProLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
@@ -90,7 +90,7 @@ const runSourceJobSync = async () => {
         SaveBettomaxLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //ZW Sources
-        SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // SaveMWosLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //CI
         SaveCiBetclicLeaguesWithFixturesService.syncLeaguesAndFixtures(),
@@ -99,7 +99,7 @@ const runSourceJobSync = async () => {
         SaveCdBetwinnerLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveCdBetikaLeaguesWithFixturesService.syncLeaguesAndFixtures(),
         SaveCdMojabetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
-        SaveCdWinnerBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
+        // SaveCdWinnerBetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
 
         //SN
         SaveSnMojabetLeaguesWithFixturesService.syncLeaguesAndFixtures(),
